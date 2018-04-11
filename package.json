@@ -2,10 +2,29 @@
   "name": "contentful-schema-diff",
   "version": "0.1.0",
   "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "main": "dist/main.js",
+  "bin": {
+    "contentful-schema-diff": "bin/index.js"
   },
-  "author": "",
-  "license": "ISC"
+  "scripts": {
+    "test": "mocha --require ts-node/register src/**/*.test.ts",
+    "test-watch": "nodemon --watch src/ -e ts --exec 'npm run test'",
+    "build": "tsc",
+    "prepare": "npm run build"
+  },
+  "author": "Gordon Burgett (gordon@gordonburgett.net)",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/chai": "^4.1.2",
+    "@types/mocha": "^5.0.0",
+    "@types/node": "^9.6.4",
+    "@types/yargs": "^11.0.0",
+    "chai": "^4.1.2",
+    "mocha": "^5.0.5",
+    "ts-node": "^5.0.1",
+    "typescript": "^2.8.1"
+  },
+  "dependencies": {
+    "yargs": "^11.0.0"
+  }
 }
