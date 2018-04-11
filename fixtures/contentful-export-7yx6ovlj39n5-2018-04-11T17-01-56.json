@@ -1,0 +1,2020 @@
+{
+  "contentTypes": [
+    {
+      "sys": {
+        "space": {
+          "sys": {
+            "type": "Link",
+            "linkType": "Space",
+            "id": "7yx6ovlj39n5"
+          }
+        },
+        "id": "migrationHistory",
+        "type": "ContentType",
+        "createdAt": "2018-03-27T18:04:08.416Z",
+        "updatedAt": "2018-03-27T18:04:08.690Z",
+        "createdBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0SUbYs2vZlXjVR6bH6o83O"
+          }
+        },
+        "updatedBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0SUbYs2vZlXjVR6bH6o83O"
+          }
+        },
+        "publishedCounter": 1,
+        "version": 2,
+        "publishedBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0SUbYs2vZlXjVR6bH6o83O"
+          }
+        },
+        "publishedVersion": 1,
+        "firstPublishedAt": "2018-03-27T18:04:08.690Z",
+        "publishedAt": "2018-03-27T18:04:08.690Z"
+      },
+      "displayField": "migrationName",
+      "name": "Migration History",
+      "description": "System Type - Do Not Modify",
+      "fields": [
+        {
+          "id": "migrationName",
+          "name": "Migration Name",
+          "type": "Symbol",
+          "localized": false,
+          "required": true,
+          "validations": [
+          ],
+          "disabled": false,
+          "omitted": false
+        },
+        {
+          "id": "started",
+          "name": "Started",
+          "type": "Date",
+          "localized": false,
+          "required": false,
+          "validations": [
+          ],
+          "disabled": false,
+          "omitted": false
+        },
+        {
+          "id": "completed",
+          "name": "Completed",
+          "type": "Date",
+          "localized": false,
+          "required": false,
+          "validations": [
+          ],
+          "disabled": false,
+          "omitted": false
+        },
+        {
+          "id": "detail",
+          "name": "Detail",
+          "type": "Object",
+          "localized": false,
+          "required": false,
+          "validations": [
+          ],
+          "disabled": false,
+          "omitted": false
+        }
+      ]
+    },
+    {
+      "sys": {
+        "space": {
+          "sys": {
+            "type": "Link",
+            "linkType": "Space",
+            "id": "7yx6ovlj39n5"
+          }
+        },
+        "id": "menu",
+        "type": "ContentType",
+        "createdAt": "2018-03-27T18:04:12.590Z",
+        "updatedAt": "2018-04-06T20:02:28.519Z",
+        "createdBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0SUbYs2vZlXjVR6bH6o83O"
+          }
+        },
+        "updatedBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0SUbYs2vZlXjVR6bH6o83O"
+          }
+        },
+        "publishedCounter": 8,
+        "version": 16,
+        "publishedBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0SUbYs2vZlXjVR6bH6o83O"
+          }
+        },
+        "publishedVersion": 15,
+        "firstPublishedAt": "2018-03-27T18:04:12.855Z",
+        "publishedAt": "2018-04-06T20:02:28.519Z"
+      },
+      "displayField": "name",
+      "name": "Menu",
+      "description": "A Menu contains a number of Menu Buttons or other Menus, which will be rendered as drop-downs.",
+      "fields": [
+        {
+          "id": "name",
+          "name": "Menu Name",
+          "type": "Symbol",
+          "localized": false,
+          "required": true,
+          "validations": [
+          ],
+          "disabled": false,
+          "omitted": false
+        },
+        {
+          "id": "topButton",
+          "name": "Top Button",
+          "type": "Link",
+          "localized": false,
+          "required": false,
+          "validations": [
+            {
+              "linkContentType": [
+                "menuButton"
+              ],
+              "message": "The Top Button must be a button linking to a URL or page.  If the menu is a dropdown, this button is visible when it is collapsed."
+            }
+          ],
+          "disabled": false,
+          "omitted": false,
+          "linkType": "Entry"
+        },
+        {
+          "id": "items",
+          "name": "Items",
+          "type": "Array",
+          "localized": false,
+          "required": false,
+          "validations": [
+          ],
+          "disabled": false,
+          "omitted": false,
+          "items": {
+            "type": "Link",
+            "validations": [
+              {
+                "linkContentType": [
+                  "menu",
+                  "menuButton"
+                ],
+                "message": "The items must be either buttons or drop-down menus"
+              }
+            ],
+            "linkType": "Entry"
+          }
+        },
+        {
+          "id": "secondaryItems",
+          "name": "Secondary Items",
+          "type": "Array",
+          "localized": false,
+          "required": false,
+          "validations": [
+          ],
+          "disabled": false,
+          "omitted": false,
+          "items": {
+            "type": "Link",
+            "validations": [
+              {
+                "linkContentType": [
+                  "menu",
+                  "menuButton"
+                ],
+                "message": "The items must be either buttons or drop-down menus"
+              }
+            ],
+            "linkType": "Entry"
+          }
+        },
+        {
+          "id": "sideMenu",
+          "name": "Side Menu",
+          "type": "Link",
+          "localized": false,
+          "required": false,
+          "validations": [
+            {
+              "linkContentType": [
+                "menu"
+              ],
+              "message": "The Side Menu must be a Menu"
+            }
+          ],
+          "disabled": false,
+          "omitted": false,
+          "linkType": "Entry"
+        }
+      ]
+    },
+    {
+      "sys": {
+        "space": {
+          "sys": {
+            "type": "Link",
+            "linkType": "Space",
+            "id": "7yx6ovlj39n5"
+          }
+        },
+        "id": "menuButton",
+        "type": "ContentType",
+        "createdAt": "2018-03-27T18:04:13.254Z",
+        "updatedAt": "2018-04-06T20:02:29.300Z",
+        "createdBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0SUbYs2vZlXjVR6bH6o83O"
+          }
+        },
+        "updatedBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0SUbYs2vZlXjVR6bH6o83O"
+          }
+        },
+        "publishedCounter": 7,
+        "version": 14,
+        "publishedBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0SUbYs2vZlXjVR6bH6o83O"
+          }
+        },
+        "publishedVersion": 13,
+        "firstPublishedAt": "2018-03-27T18:04:13.537Z",
+        "publishedAt": "2018-04-06T20:02:29.300Z"
+      },
+      "displayField": "text",
+      "name": "Menu Button",
+      "description": "A Menu Button is a clickable button that goes on a Menu.  It has a link to a Page or a URL.",
+      "fields": [
+        {
+          "id": "text",
+          "name": "Text",
+          "type": "Symbol",
+          "localized": false,
+          "required": true,
+          "validations": [
+            {
+              "size": {
+                "min": 1,
+                "max": 60
+              },
+              "message": "A Menu Button should have a very short text field - ideally a single word.  Please limit the text to 60 characters."
+            }
+          ],
+          "disabled": false,
+          "omitted": false
+        },
+        {
+          "id": "icon",
+          "name": "Icon",
+          "type": "Link",
+          "localized": false,
+          "required": false,
+          "validations": [
+            {
+              "linkMimetypeGroup": [
+                "image"
+              ]
+            }
+          ],
+          "disabled": false,
+          "omitted": false,
+          "linkType": "Asset"
+        },
+        {
+          "id": "externalLink",
+          "name": "External Link",
+          "type": "Symbol",
+          "localized": false,
+          "required": false,
+          "validations": [
+            {
+              "regexp": {
+                "pattern": "^(ftp|http|https):\\/\\/(\\w+:{0,1}\\w*@)?(\\S+)(:[0-9]+)?(\\/|\\/([\\w#!:.?+=&%@!\\-\\/]))?$"
+              },
+              "message": "The external link must be a URL like 'https://www.watermark.org/'"
+            }
+          ],
+          "disabled": false,
+          "omitted": false
+        },
+        {
+          "id": "link",
+          "name": "Page Link",
+          "type": "Link",
+          "localized": false,
+          "required": false,
+          "validations": [
+            {
+              "linkContentType": [
+                "page"
+              ],
+              "message": "The Page Link must be a link to a Page which has a slug."
+            }
+          ],
+          "disabled": false,
+          "omitted": false,
+          "linkType": "Entry"
+        },
+        {
+          "id": "ionIcon",
+          "name": "Ion Icon",
+          "type": "Symbol",
+          "localized": false,
+          "required": false,
+          "validations": [
+            {
+              "regexp": {
+                "pattern": "^ion-[a-z\\-]+$"
+              },
+              "message": "The icon should start with 'ion-', like 'ion-arrow-down-c'.  See http://ionicons.com/"
+            }
+          ],
+          "disabled": false,
+          "omitted": false
+        }
+      ]
+    },
+    {
+      "sys": {
+        "space": {
+          "sys": {
+            "type": "Link",
+            "linkType": "Space",
+            "id": "7yx6ovlj39n5"
+          }
+        },
+        "id": "section-hero",
+        "type": "ContentType",
+        "createdAt": "2018-03-29T19:20:56.843Z",
+        "updatedAt": "2018-04-03T18:48:54.101Z",
+        "createdBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0SUbYs2vZlXjVR6bH6o83O"
+          }
+        },
+        "updatedBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0SUbYs2vZlXjVR6bH6o83O"
+          }
+        },
+        "publishedCounter": 3,
+        "version": 6,
+        "publishedBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0SUbYs2vZlXjVR6bH6o83O"
+          }
+        },
+        "publishedVersion": 5,
+        "firstPublishedAt": "2018-03-29T19:20:58.933Z",
+        "publishedAt": "2018-04-03T18:48:54.101Z"
+      },
+      "displayField": "text",
+      "name": "Section: Hero",
+      "description": "",
+      "fields": [
+        {
+          "id": "backgroundImage",
+          "name": "Background Image",
+          "type": "Link",
+          "localized": false,
+          "required": false,
+          "validations": [
+            {
+              "linkMimetypeGroup": [
+                "image"
+              ],
+              "message": "Must be an image"
+            }
+          ],
+          "disabled": false,
+          "omitted": false,
+          "linkType": "Asset"
+        },
+        {
+          "id": "text",
+          "name": "Text",
+          "type": "Symbol",
+          "localized": true,
+          "required": true,
+          "validations": [
+            {
+              "size": {
+                "max": 150
+              },
+              "message": "Hero text should be no longer than 150 characters"
+            }
+          ],
+          "disabled": false,
+          "omitted": false
+        },
+        {
+          "id": "styles",
+          "name": "Styles",
+          "type": "Array",
+          "localized": false,
+          "required": false,
+          "validations": [
+          ],
+          "disabled": false,
+          "omitted": false,
+          "items": {
+            "type": "Symbol",
+            "validations": [
+              {
+                "in": [
+                  "large",
+                  "mega-title"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "sys": {
+        "space": {
+          "sys": {
+            "type": "Link",
+            "linkType": "Space",
+            "id": "7yx6ovlj39n5"
+          }
+        },
+        "id": "section-video-highlight",
+        "type": "ContentType",
+        "createdAt": "2018-03-29T21:49:58.802Z",
+        "updatedAt": "2018-03-29T21:51:13.389Z",
+        "createdBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0SUbYs2vZlXjVR6bH6o83O"
+          }
+        },
+        "updatedBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0SUbYs2vZlXjVR6bH6o83O"
+          }
+        },
+        "publishedCounter": 2,
+        "version": 4,
+        "publishedBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0SUbYs2vZlXjVR6bH6o83O"
+          }
+        },
+        "publishedVersion": 3,
+        "firstPublishedAt": "2018-03-29T21:49:59.048Z",
+        "publishedAt": "2018-03-29T21:51:13.389Z"
+      },
+      "displayField": "title",
+      "name": "Section: Video Highlight",
+      "description": "Highlight a video with some text",
+      "fields": [
+        {
+          "id": "tag",
+          "name": "Tag",
+          "type": "Symbol",
+          "localized": true,
+          "required": false,
+          "validations": [
+            {
+              "size": {
+                "max": 75
+              },
+              "message": "Tag must be short!"
+            }
+          ],
+          "disabled": false,
+          "omitted": false
+        },
+        {
+          "id": "title",
+          "name": "Title",
+          "type": "Symbol",
+          "localized": false,
+          "required": true,
+          "validations": [
+          ],
+          "disabled": false,
+          "omitted": false
+        },
+        {
+          "id": "subtext",
+          "name": "Subtext",
+          "type": "Text",
+          "localized": true,
+          "required": false,
+          "validations": [
+            {
+              "size": {
+                "max": 500
+              }
+            }
+          ],
+          "disabled": false,
+          "omitted": false
+        },
+        {
+          "id": "embedCode",
+          "name": "Embed Code",
+          "type": "Text",
+          "localized": false,
+          "required": true,
+          "validations": [
+          ],
+          "disabled": false,
+          "omitted": false
+        }
+      ]
+    },
+    {
+      "sys": {
+        "space": {
+          "sys": {
+            "type": "Link",
+            "linkType": "Space",
+            "id": "7yx6ovlj39n5"
+          }
+        },
+        "id": "section-featured-items",
+        "type": "ContentType",
+        "createdAt": "2018-03-29T22:57:31.605Z",
+        "updatedAt": "2018-04-10T19:03:45.656Z",
+        "createdBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0SUbYs2vZlXjVR6bH6o83O"
+          }
+        },
+        "updatedBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0SUbYs2vZlXjVR6bH6o83O"
+          }
+        },
+        "publishedCounter": 2,
+        "version": 4,
+        "publishedBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0SUbYs2vZlXjVR6bH6o83O"
+          }
+        },
+        "publishedVersion": 3,
+        "firstPublishedAt": "2018-03-29T22:57:31.868Z",
+        "publishedAt": "2018-04-10T19:03:45.656Z"
+      },
+      "displayField": "title",
+      "name": "Section: Featured Items",
+      "description": "Display a row of cards",
+      "fields": [
+        {
+          "id": "title",
+          "name": "Title",
+          "type": "Symbol",
+          "localized": true,
+          "required": true,
+          "validations": [
+            {
+              "size": {
+                "max": 150
+              }
+            }
+          ],
+          "disabled": false,
+          "omitted": false
+        },
+        {
+          "id": "cards",
+          "name": "Cards",
+          "type": "Array",
+          "localized": false,
+          "required": false,
+          "validations": [
+          ],
+          "disabled": false,
+          "omitted": false,
+          "items": {
+            "type": "Link",
+            "validations": [
+              {
+                "linkContentType": [
+                  "featuredCard"
+                ]
+              }
+            ],
+            "linkType": "Entry"
+          }
+        },
+        {
+          "id": "link",
+          "name": "Link",
+          "type": "Link",
+          "localized": false,
+          "required": true,
+          "validations": [
+            {
+              "linkContentType": [
+                "menuButton"
+              ]
+            }
+          ],
+          "disabled": false,
+          "omitted": false,
+          "linkType": "Entry"
+        }
+      ]
+    },
+    {
+      "sys": {
+        "space": {
+          "sys": {
+            "type": "Link",
+            "linkType": "Space",
+            "id": "7yx6ovlj39n5"
+          }
+        },
+        "id": "featuredCard",
+        "type": "ContentType",
+        "createdAt": "2018-03-29T23:05:42.547Z",
+        "updatedAt": "2018-04-10T19:07:03.103Z",
+        "createdBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0SUbYs2vZlXjVR6bH6o83O"
+          }
+        },
+        "updatedBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0SUbYs2vZlXjVR6bH6o83O"
+          }
+        },
+        "publishedCounter": 7,
+        "version": 14,
+        "publishedBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0SUbYs2vZlXjVR6bH6o83O"
+          }
+        },
+        "publishedVersion": 13,
+        "firstPublishedAt": "2018-03-29T23:05:43.718Z",
+        "publishedAt": "2018-04-10T19:07:03.103Z"
+      },
+      "displayField": "title",
+      "name": "Featured Card",
+      "description": "",
+      "fields": [
+        {
+          "id": "title",
+          "name": "Card Text",
+          "type": "Symbol",
+          "localized": true,
+          "required": true,
+          "validations": [
+            {
+              "size": {
+                "max": 100
+              }
+            }
+          ],
+          "disabled": false,
+          "omitted": false
+        },
+        {
+          "id": "page",
+          "name": "Page",
+          "type": "Link",
+          "localized": false,
+          "required": true,
+          "validations": [
+            {
+              "linkContentType": [
+                "page"
+              ]
+            }
+          ],
+          "disabled": false,
+          "omitted": false,
+          "linkType": "Entry"
+        }
+      ]
+    },
+    {
+      "sys": {
+        "space": {
+          "sys": {
+            "type": "Link",
+            "linkType": "Space",
+            "id": "7yx6ovlj39n5"
+          }
+        },
+        "id": "section-faq",
+        "type": "ContentType",
+        "createdAt": "2018-04-03T20:46:37.876Z",
+        "updatedAt": "2018-04-03T21:40:28.098Z",
+        "createdBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0SUbYs2vZlXjVR6bH6o83O"
+          }
+        },
+        "updatedBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0SUbYs2vZlXjVR6bH6o83O"
+          }
+        },
+        "publishedCounter": 7,
+        "version": 14,
+        "publishedBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0SUbYs2vZlXjVR6bH6o83O"
+          }
+        },
+        "publishedVersion": 13,
+        "firstPublishedAt": "2018-04-03T20:46:38.181Z",
+        "publishedAt": "2018-04-03T21:40:28.098Z"
+      },
+      "displayField": "name",
+      "name": "Section: FAQ",
+      "description": "",
+      "fields": [
+        {
+          "id": "name",
+          "name": "Name",
+          "type": "Symbol",
+          "localized": false,
+          "required": true,
+          "validations": [
+            {
+              "unique": true
+            }
+          ],
+          "disabled": false,
+          "omitted": false
+        },
+        {
+          "id": "text",
+          "name": "Text",
+          "type": "Text",
+          "localized": false,
+          "required": false,
+          "validations": [
+          ],
+          "disabled": false,
+          "omitted": false
+        },
+        {
+          "id": "actionButton",
+          "name": "Action Button",
+          "type": "Link",
+          "localized": false,
+          "required": false,
+          "validations": [
+            {
+              "linkContentType": [
+                "menuButton"
+              ]
+            }
+          ],
+          "disabled": false,
+          "omitted": false,
+          "linkType": "Entry"
+        },
+        {
+          "id": "styles",
+          "name": "Styles",
+          "type": "Array",
+          "localized": false,
+          "required": false,
+          "validations": [
+          ],
+          "disabled": false,
+          "omitted": false,
+          "items": {
+            "type": "Symbol",
+            "validations": [
+              {
+                "in": [
+                  "No Overlap"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "faqs",
+          "name": "FAQs",
+          "type": "Array",
+          "localized": false,
+          "required": false,
+          "validations": [
+          ],
+          "disabled": false,
+          "omitted": false,
+          "items": {
+            "type": "Link",
+            "validations": [
+              {
+                "linkContentType": [
+                  "faq"
+                ]
+              }
+            ],
+            "linkType": "Entry"
+          }
+        }
+      ]
+    },
+    {
+      "sys": {
+        "space": {
+          "sys": {
+            "type": "Link",
+            "linkType": "Space",
+            "id": "7yx6ovlj39n5"
+          }
+        },
+        "id": "faq",
+        "type": "ContentType",
+        "createdAt": "2018-04-03T21:39:42.874Z",
+        "updatedAt": "2018-04-03T21:39:43.328Z",
+        "createdBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0SUbYs2vZlXjVR6bH6o83O"
+          }
+        },
+        "updatedBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0SUbYs2vZlXjVR6bH6o83O"
+          }
+        },
+        "publishedCounter": 1,
+        "version": 2,
+        "publishedBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0SUbYs2vZlXjVR6bH6o83O"
+          }
+        },
+        "publishedVersion": 1,
+        "firstPublishedAt": "2018-04-03T21:39:43.328Z",
+        "publishedAt": "2018-04-03T21:39:43.328Z"
+      },
+      "displayField": "question",
+      "name": "Faq",
+      "description": "A faq is a question + answer pair used in the Faq section on a page",
+      "fields": [
+        {
+          "id": "question",
+          "name": "Question",
+          "type": "Symbol",
+          "localized": false,
+          "required": true,
+          "validations": [
+          ],
+          "disabled": false,
+          "omitted": false
+        },
+        {
+          "id": "answer",
+          "name": "Answer",
+          "type": "Text",
+          "localized": false,
+          "required": false,
+          "validations": [
+          ],
+          "disabled": false,
+          "omitted": false
+        }
+      ]
+    },
+    {
+      "sys": {
+        "space": {
+          "sys": {
+            "type": "Link",
+            "linkType": "Space",
+            "id": "7yx6ovlj39n5"
+          }
+        },
+        "id": "page",
+        "type": "ContentType",
+        "createdAt": "2018-04-06T19:21:13.551Z",
+        "updatedAt": "2018-04-11T20:43:17.422Z",
+        "createdBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0SUbYs2vZlXjVR6bH6o83O"
+          }
+        },
+        "updatedBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0SUbYs2vZlXjVR6bH6o83O"
+          }
+        },
+        "publishedCounter": 3,
+        "version": 6,
+        "publishedBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0SUbYs2vZlXjVR6bH6o83O"
+          }
+        },
+        "publishedVersion": 5,
+        "firstPublishedAt": "2018-04-06T19:21:13.790Z",
+        "publishedAt": "2018-04-11T20:43:17.422Z"
+      },
+      "displayField": "title",
+      "name": "Page",
+      "description": "A page describes a collection of sections that correspondto a URL slug",
+      "fields": [
+        {
+          "id": "title",
+          "name": "Title",
+          "type": "Symbol",
+          "localized": false,
+          "required": true,
+          "validations": [
+          ],
+          "disabled": false,
+          "omitted": false
+        },
+        {
+          "id": "slug",
+          "name": "Slug",
+          "type": "Symbol",
+          "localized": false,
+          "required": true,
+          "validations": [
+            {
+              "unique": true
+            },
+            {
+              "regexp": {
+                "pattern": "(\\/|\\/([\\w#!:.?+=&%@!\\-\\/]))?$",
+                "flags": null
+              },
+              "message": "The slug must look like the path part of a URL and begin with a forward slash, example: '/my-page-slug'"
+            }
+          ],
+          "disabled": false,
+          "omitted": false
+        },
+        {
+          "id": "sections",
+          "name": "Sections",
+          "type": "Array",
+          "localized": false,
+          "required": false,
+          "validations": [
+          ],
+          "disabled": false,
+          "omitted": false,
+          "items": {
+            "type": "Link",
+            "validations": [
+            ],
+            "linkType": "Entry"
+          }
+        },
+        {
+          "id": "subpages",
+          "name": "Subpages",
+          "type": "Array",
+          "localized": false,
+          "required": false,
+          "validations": [
+          ],
+          "disabled": false,
+          "omitted": false,
+          "items": {
+            "type": "Link",
+            "validations": [
+              {
+                "linkContentType": [
+                  "page"
+                ]
+              }
+            ],
+            "linkType": "Entry"
+          }
+        },
+        {
+          "id": "domainObject",
+          "name": "Associated Ministry or Conference",
+          "type": "Link",
+          "localized": false,
+          "required": false,
+          "validations": [
+            {
+              "linkContentType": [
+                "ministry",
+                "conference"
+              ],
+              "message": "This can be a Ministry or Conference."
+            }
+          ],
+          "disabled": false,
+          "omitted": false,
+          "linkType": "Entry"
+        }
+      ]
+    },
+    {
+      "sys": {
+        "space": {
+          "sys": {
+            "type": "Link",
+            "linkType": "Space",
+            "id": "7yx6ovlj39n5"
+          }
+        },
+        "id": "ministry",
+        "type": "ContentType",
+        "createdAt": "2018-04-06T22:21:40.917Z",
+        "updatedAt": "2018-04-06T22:25:42.846Z",
+        "createdBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0SUbYs2vZlXjVR6bH6o83O"
+          }
+        },
+        "updatedBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0SUbYs2vZlXjVR6bH6o83O"
+          }
+        },
+        "publishedCounter": 2,
+        "version": 4,
+        "publishedBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0SUbYs2vZlXjVR6bH6o83O"
+          }
+        },
+        "publishedVersion": 3,
+        "firstPublishedAt": "2018-04-06T22:21:41.146Z",
+        "publishedAt": "2018-04-06T22:25:42.846Z"
+      },
+      "displayField": "title",
+      "name": "Ministry",
+      "description": null,
+      "fields": [
+        {
+          "id": "title",
+          "name": "Title",
+          "type": "Symbol",
+          "localized": false,
+          "required": true,
+          "validations": [
+            {
+              "unique": true
+            }
+          ],
+          "disabled": false,
+          "omitted": false
+        },
+        {
+          "id": "abstractTitle",
+          "name": "Short Description",
+          "type": "Symbol",
+          "localized": false,
+          "required": false,
+          "validations": [
+          ],
+          "disabled": false,
+          "omitted": false
+        },
+        {
+          "id": "thumbnail",
+          "name": "Thumbnail",
+          "type": "Link",
+          "localized": false,
+          "required": false,
+          "validations": [
+            {
+              "linkMimetypeGroup": [
+                "image"
+              ]
+            }
+          ],
+          "disabled": false,
+          "omitted": false,
+          "linkType": "Asset"
+        },
+        {
+          "id": "backgroundColor",
+          "name": "Background Color",
+          "type": "Symbol",
+          "localized": false,
+          "required": false,
+          "validations": [
+            {
+              "regexp": {
+                "pattern": "#([a-f]|[A-F]|[0-9]){3}(([a-f]|[A-F]|[0-9]){3})?\\b"
+              },
+              "message": "Must be a hex value (ex: '#EEE' or '#FFAA55')"
+            }
+          ],
+          "disabled": false,
+          "omitted": false
+        }
+      ]
+    },
+    {
+      "sys": {
+        "space": {
+          "sys": {
+            "type": "Link",
+            "linkType": "Space",
+            "id": "7yx6ovlj39n5"
+          }
+        },
+        "id": "conference",
+        "type": "ContentType",
+        "createdAt": "2018-04-06T22:26:48.842Z",
+        "updatedAt": "2018-04-06T22:26:49.264Z",
+        "createdBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0SUbYs2vZlXjVR6bH6o83O"
+          }
+        },
+        "updatedBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0SUbYs2vZlXjVR6bH6o83O"
+          }
+        },
+        "publishedCounter": 1,
+        "version": 2,
+        "publishedBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0SUbYs2vZlXjVR6bH6o83O"
+          }
+        },
+        "publishedVersion": 1,
+        "firstPublishedAt": "2018-04-06T22:26:49.264Z",
+        "publishedAt": "2018-04-06T22:26:49.264Z"
+      },
+      "displayField": null,
+      "name": "Conference",
+      "description": null,
+      "fields": [
+        {
+          "id": "title",
+          "name": "Title",
+          "type": "Symbol",
+          "localized": false,
+          "required": true,
+          "validations": [
+            {
+              "unique": true
+            }
+          ],
+          "disabled": false,
+          "omitted": false
+        },
+        {
+          "id": "abstractTitle",
+          "name": "Short Description",
+          "type": "Symbol",
+          "localized": false,
+          "required": false,
+          "validations": [
+          ],
+          "disabled": false,
+          "omitted": false
+        },
+        {
+          "id": "thumbnail",
+          "name": "Thumbnail",
+          "type": "Link",
+          "localized": false,
+          "required": false,
+          "validations": [
+            {
+              "linkMimetypeGroup": [
+                "image"
+              ]
+            }
+          ],
+          "disabled": false,
+          "omitted": false,
+          "linkType": "Asset"
+        },
+        {
+          "id": "backgroundColor",
+          "name": "Background Color",
+          "type": "Symbol",
+          "localized": false,
+          "required": false,
+          "validations": [
+            {
+              "regexp": {
+                "pattern": "#([a-f]|[A-F]|[0-9]){3}(([a-f]|[A-F]|[0-9]){3})?\\b"
+              },
+              "message": "Must be a hex value (ex: '#EEE' or '#FFAA55')"
+            }
+          ],
+          "disabled": false,
+          "omitted": false
+        }
+      ]
+    }
+  ],
+  "editorInterfaces": [
+    {
+      "sys": {
+        "id": "default",
+        "type": "EditorInterface",
+        "space": {
+          "sys": {
+            "id": "7yx6ovlj39n5",
+            "type": "Link",
+            "linkType": "Space"
+          }
+        },
+        "version": 1,
+        "createdAt": "2018-03-27T18:04:08.889Z",
+        "createdBy": {
+          "sys": {
+            "id": "0SUbYs2vZlXjVR6bH6o83O",
+            "type": "Link",
+            "linkType": "User"
+          }
+        },
+        "updatedAt": "2018-03-27T18:04:08.890Z",
+        "updatedBy": {
+          "sys": {
+            "id": "0SUbYs2vZlXjVR6bH6o83O",
+            "type": "Link",
+            "linkType": "User"
+          }
+        },
+        "contentType": {
+          "sys": {
+            "id": "migrationHistory",
+            "type": "Link",
+            "linkType": "ContentType"
+          }
+        }
+      },
+      "controls": [
+        {
+          "fieldId": "migrationName",
+          "widgetId": "singleLine"
+        },
+        {
+          "fieldId": "started",
+          "widgetId": "datePicker"
+        },
+        {
+          "fieldId": "completed",
+          "widgetId": "datePicker"
+        },
+        {
+          "fieldId": "detail",
+          "widgetId": "objectEditor"
+        }
+      ]
+    },
+    {
+      "sys": {
+        "id": "default",
+        "type": "EditorInterface",
+        "space": {
+          "sys": {
+            "id": "7yx6ovlj39n5",
+            "type": "Link",
+            "linkType": "Space"
+          }
+        },
+        "version": 14,
+        "createdAt": "2018-03-27T18:04:12.981Z",
+        "createdBy": {
+          "sys": {
+            "id": "0SUbYs2vZlXjVR6bH6o83O",
+            "type": "Link",
+            "linkType": "User"
+          }
+        },
+        "updatedAt": "2018-04-06T20:02:28.673Z",
+        "updatedBy": {
+          "sys": {
+            "id": "0SUbYs2vZlXjVR6bH6o83O",
+            "type": "Link",
+            "linkType": "User"
+          }
+        },
+        "contentType": {
+          "sys": {
+            "id": "menu",
+            "type": "Link",
+            "linkType": "ContentType"
+          }
+        }
+      },
+      "controls": [
+        {
+          "fieldId": "name",
+          "widgetId": "singleLine"
+        },
+        {
+          "fieldId": "topButton",
+          "widgetId": "entryLinkEditor"
+        },
+        {
+          "fieldId": "items",
+          "widgetId": "entryLinksEditor"
+        }
+      ]
+    },
+    {
+      "sys": {
+        "id": "default",
+        "type": "EditorInterface",
+        "space": {
+          "sys": {
+            "id": "7yx6ovlj39n5",
+            "type": "Link",
+            "linkType": "Space"
+          }
+        },
+        "version": 12,
+        "createdAt": "2018-03-27T18:04:13.731Z",
+        "createdBy": {
+          "sys": {
+            "id": "0SUbYs2vZlXjVR6bH6o83O",
+            "type": "Link",
+            "linkType": "User"
+          }
+        },
+        "updatedAt": "2018-04-06T20:02:29.425Z",
+        "updatedBy": {
+          "sys": {
+            "id": "0SUbYs2vZlXjVR6bH6o83O",
+            "type": "Link",
+            "linkType": "User"
+          }
+        },
+        "contentType": {
+          "sys": {
+            "id": "menuButton",
+            "type": "Link",
+            "linkType": "ContentType"
+          }
+        }
+      },
+      "controls": [
+        {
+          "fieldId": "text",
+          "widgetId": "singleLine"
+        },
+        {
+          "fieldId": "icon",
+          "settings": {
+            "helpText": "(Optional) Select an image to use as the icon instead of using the 'ion icon' and 'text' fields."
+          },
+          "widgetId": "assetLinkEditor"
+        },
+        {
+          "fieldId": "externalLink",
+          "settings": {
+            "helpText": "A link to an external URL.  Use 'Page Link' to link to other pages on Watermark Resources."
+          },
+          "widgetId": "urlEditor"
+        },
+        {
+          "fieldId": "link",
+          "settings": {
+            "helpText": "A link to another page on this same site"
+          },
+          "widgetId": "entryCardEditor"
+        }
+      ]
+    },
+    {
+      "sys": {
+        "id": "default",
+        "type": "EditorInterface",
+        "space": {
+          "sys": {
+            "id": "7yx6ovlj39n5",
+            "type": "Link",
+            "linkType": "Space"
+          }
+        },
+        "version": 6,
+        "createdAt": "2018-03-29T19:20:59.432Z",
+        "createdBy": {
+          "sys": {
+            "id": "0SUbYs2vZlXjVR6bH6o83O",
+            "type": "Link",
+            "linkType": "User"
+          }
+        },
+        "updatedAt": "2018-04-03T18:48:54.679Z",
+        "updatedBy": {
+          "sys": {
+            "id": "0SUbYs2vZlXjVR6bH6o83O",
+            "type": "Link",
+            "linkType": "User"
+          }
+        },
+        "contentType": {
+          "sys": {
+            "id": "section-hero",
+            "type": "Link",
+            "linkType": "ContentType"
+          }
+        }
+      },
+      "controls": [
+        {
+          "fieldId": "backgroundImage",
+          "widgetId": "assetLinkEditor"
+        },
+        {
+          "fieldId": "text",
+          "settings": {
+            "helpText": "This text will be the largest text on the screen"
+          },
+          "widgetId": "singleLine"
+        },
+        {
+          "fieldId": "styles",
+          "widgetId": "checkbox"
+        }
+      ]
+    },
+    {
+      "sys": {
+        "id": "default",
+        "type": "EditorInterface",
+        "space": {
+          "sys": {
+            "id": "7yx6ovlj39n5",
+            "type": "Link",
+            "linkType": "Space"
+          }
+        },
+        "version": 4,
+        "createdAt": "2018-03-29T21:49:59.179Z",
+        "createdBy": {
+          "sys": {
+            "id": "0SUbYs2vZlXjVR6bH6o83O",
+            "type": "Link",
+            "linkType": "User"
+          }
+        },
+        "updatedAt": "2018-03-29T21:51:13.861Z",
+        "updatedBy": {
+          "sys": {
+            "id": "0SUbYs2vZlXjVR6bH6o83O",
+            "type": "Link",
+            "linkType": "User"
+          }
+        },
+        "contentType": {
+          "sys": {
+            "id": "section-video-highlight",
+            "type": "Link",
+            "linkType": "ContentType"
+          }
+        }
+      },
+      "controls": [
+        {
+          "fieldId": "tag",
+          "settings": {
+            "helpText": "This will be displayed in small text above the video title"
+          },
+          "widgetId": "singleLine"
+        },
+        {
+          "fieldId": "title",
+          "widgetId": "singleLine"
+        },
+        {
+          "fieldId": "subtext",
+          "settings": {
+            "helpText": "This text will be subdued beneath the title"
+          },
+          "widgetId": "multipleLine"
+        },
+        {
+          "fieldId": "embedCode",
+          "settings": {
+            "helpText": "This must be an \"iframe\" or \"script\" snippet"
+          },
+          "widgetId": "multipleLine"
+        }
+      ]
+    },
+    {
+      "sys": {
+        "id": "default",
+        "type": "EditorInterface",
+        "space": {
+          "sys": {
+            "id": "7yx6ovlj39n5",
+            "type": "Link",
+            "linkType": "Space"
+          }
+        },
+        "version": 4,
+        "createdAt": "2018-03-29T22:57:31.965Z",
+        "createdBy": {
+          "sys": {
+            "id": "0SUbYs2vZlXjVR6bH6o83O",
+            "type": "Link",
+            "linkType": "User"
+          }
+        },
+        "updatedAt": "2018-04-10T19:03:46.149Z",
+        "updatedBy": {
+          "sys": {
+            "id": "0SUbYs2vZlXjVR6bH6o83O",
+            "type": "Link",
+            "linkType": "User"
+          }
+        },
+        "contentType": {
+          "sys": {
+            "id": "section-featured-items",
+            "type": "Link",
+            "linkType": "ContentType"
+          }
+        }
+      },
+      "controls": [
+        {
+          "fieldId": "title",
+          "settings": {
+            "helpText": "This will be displayed at the top of the section"
+          },
+          "widgetId": "singleLine"
+        },
+        {
+          "fieldId": "cards",
+          "settings": {
+            "bulkEditing": false
+          },
+          "widgetId": "entryLinksEditor"
+        },
+        {
+          "fieldId": "link",
+          "settings": {
+            "helpText": "This will lead to the list of all items of this type"
+          },
+          "widgetId": "entryLinkEditor"
+        }
+      ]
+    },
+    {
+      "sys": {
+        "id": "default",
+        "type": "EditorInterface",
+        "space": {
+          "sys": {
+            "id": "7yx6ovlj39n5",
+            "type": "Link",
+            "linkType": "Space"
+          }
+        },
+        "version": 14,
+        "createdAt": "2018-03-29T23:05:43.862Z",
+        "createdBy": {
+          "sys": {
+            "id": "0SUbYs2vZlXjVR6bH6o83O",
+            "type": "Link",
+            "linkType": "User"
+          }
+        },
+        "updatedAt": "2018-04-10T19:07:03.523Z",
+        "updatedBy": {
+          "sys": {
+            "id": "0SUbYs2vZlXjVR6bH6o83O",
+            "type": "Link",
+            "linkType": "User"
+          }
+        },
+        "contentType": {
+          "sys": {
+            "id": "featuredCard",
+            "type": "Link",
+            "linkType": "ContentType"
+          }
+        }
+      },
+      "controls": [
+        {
+          "fieldId": "title",
+          "settings": {
+            "helpText": "This will display on the card"
+          },
+          "widgetId": "singleLine"
+        },
+        {
+          "fieldId": "page",
+          "widgetId": "entryLinkEditor"
+        }
+      ]
+    },
+    {
+      "sys": {
+        "id": "default",
+        "type": "EditorInterface",
+        "space": {
+          "sys": {
+            "id": "7yx6ovlj39n5",
+            "type": "Link",
+            "linkType": "Space"
+          }
+        },
+        "version": 14,
+        "createdAt": "2018-04-03T20:46:38.276Z",
+        "createdBy": {
+          "sys": {
+            "id": "0SUbYs2vZlXjVR6bH6o83O",
+            "type": "Link",
+            "linkType": "User"
+          }
+        },
+        "updatedAt": "2018-04-03T21:40:28.659Z",
+        "updatedBy": {
+          "sys": {
+            "id": "0SUbYs2vZlXjVR6bH6o83O",
+            "type": "Link",
+            "linkType": "User"
+          }
+        },
+        "contentType": {
+          "sys": {
+            "id": "section-faq",
+            "type": "Link",
+            "linkType": "ContentType"
+          }
+        }
+      },
+      "controls": [
+        {
+          "fieldId": "name",
+          "widgetId": "singleLine"
+        },
+        {
+          "fieldId": "text",
+          "widgetId": "markdown"
+        },
+        {
+          "fieldId": "actionButton",
+          "widgetId": "entryLinkEditor"
+        },
+        {
+          "fieldId": "styles",
+          "widgetId": "checkbox"
+        },
+        {
+          "fieldId": "faqs",
+          "settings": {
+            "bulkEditing": true
+          },
+          "widgetId": "entryLinksEditor"
+        }
+      ]
+    },
+    {
+      "sys": {
+        "id": "default",
+        "type": "EditorInterface",
+        "space": {
+          "sys": {
+            "id": "7yx6ovlj39n5",
+            "type": "Link",
+            "linkType": "Space"
+          }
+        },
+        "version": 2,
+        "createdAt": "2018-04-03T21:39:43.481Z",
+        "createdBy": {
+          "sys": {
+            "id": "0SUbYs2vZlXjVR6bH6o83O",
+            "type": "Link",
+            "linkType": "User"
+          }
+        },
+        "updatedAt": "2018-04-03T21:39:43.864Z",
+        "updatedBy": {
+          "sys": {
+            "id": "0SUbYs2vZlXjVR6bH6o83O",
+            "type": "Link",
+            "linkType": "User"
+          }
+        },
+        "contentType": {
+          "sys": {
+            "id": "faq",
+            "type": "Link",
+            "linkType": "ContentType"
+          }
+        }
+      },
+      "controls": [
+        {
+          "fieldId": "question",
+          "widgetId": "singleLine"
+        },
+        {
+          "fieldId": "answer",
+          "widgetId": "markdown"
+        }
+      ]
+    },
+    {
+      "sys": {
+        "id": "default",
+        "type": "EditorInterface",
+        "space": {
+          "sys": {
+            "id": "7yx6ovlj39n5",
+            "type": "Link",
+            "linkType": "Space"
+          }
+        },
+        "version": 4,
+        "createdAt": "2018-04-06T19:21:14.000Z",
+        "createdBy": {
+          "sys": {
+            "id": "0SUbYs2vZlXjVR6bH6o83O",
+            "type": "Link",
+            "linkType": "User"
+          }
+        },
+        "updatedAt": "2018-04-11T20:43:17.757Z",
+        "updatedBy": {
+          "sys": {
+            "id": "0SUbYs2vZlXjVR6bH6o83O",
+            "type": "Link",
+            "linkType": "User"
+          }
+        },
+        "contentType": {
+          "sys": {
+            "id": "page",
+            "type": "Link",
+            "linkType": "ContentType"
+          }
+        }
+      },
+      "controls": [
+        {
+          "fieldId": "title",
+          "widgetId": "singleLine"
+        },
+        {
+          "fieldId": "slug",
+          "widgetId": "singleLine"
+        },
+        {
+          "fieldId": "sections",
+          "widgetId": "entryLinksEditor"
+        },
+        {
+          "fieldId": "subpages",
+          "widgetId": "entryLinksEditor"
+        },
+        {
+          "fieldId": "domainObject",
+          "widgetId": "entryLinkEditor"
+        }
+      ]
+    },
+    {
+      "sys": {
+        "id": "default",
+        "type": "EditorInterface",
+        "space": {
+          "sys": {
+            "id": "7yx6ovlj39n5",
+            "type": "Link",
+            "linkType": "Space"
+          }
+        },
+        "version": 3,
+        "createdAt": "2018-04-06T22:21:41.331Z",
+        "createdBy": {
+          "sys": {
+            "id": "0SUbYs2vZlXjVR6bH6o83O",
+            "type": "Link",
+            "linkType": "User"
+          }
+        },
+        "updatedAt": "2018-04-06T22:25:43.203Z",
+        "updatedBy": {
+          "sys": {
+            "id": "0SUbYs2vZlXjVR6bH6o83O",
+            "type": "Link",
+            "linkType": "User"
+          }
+        },
+        "contentType": {
+          "sys": {
+            "id": "ministry",
+            "type": "Link",
+            "linkType": "ContentType"
+          }
+        }
+      },
+      "controls": [
+        {
+          "fieldId": "title",
+          "widgetId": "singleLine"
+        },
+        {
+          "fieldId": "abstractTitle",
+          "settings": {
+            "helpText": "What should others associate with this ministry? (ex: \"Marriage Enrichment Ministry\")"
+          },
+          "widgetId": "singleLine"
+        },
+        {
+          "fieldId": "thumbnail",
+          "widgetId": "assetLinkEditor"
+        },
+        {
+          "fieldId": "backgroundColor",
+          "settings": {
+            "helpText": "Provide a hex value (ex: '#11eeff')"
+          },
+          "widgetId": "singleLine"
+        }
+      ]
+    },
+    {
+      "sys": {
+        "id": "default",
+        "type": "EditorInterface",
+        "space": {
+          "sys": {
+            "id": "7yx6ovlj39n5",
+            "type": "Link",
+            "linkType": "Space"
+          }
+        },
+        "version": 1,
+        "createdAt": "2018-04-06T22:26:49.400Z",
+        "createdBy": {
+          "sys": {
+            "id": "0SUbYs2vZlXjVR6bH6o83O",
+            "type": "Link",
+            "linkType": "User"
+          }
+        },
+        "updatedAt": "2018-04-06T22:26:49.400Z",
+        "updatedBy": {
+          "sys": {
+            "id": "0SUbYs2vZlXjVR6bH6o83O",
+            "type": "Link",
+            "linkType": "User"
+          }
+        },
+        "contentType": {
+          "sys": {
+            "id": "conference",
+            "type": "Link",
+            "linkType": "ContentType"
+          }
+        }
+      },
+      "controls": [
+        {
+          "fieldId": "title",
+          "widgetId": "singleLine"
+        },
+        {
+          "fieldId": "abstractTitle",
+          "widgetId": "singleLine"
+        },
+        {
+          "fieldId": "thumbnail",
+          "widgetId": "assetLinkEditor"
+        },
+        {
+          "fieldId": "backgroundColor",
+          "widgetId": "singleLine"
+        }
+      ]
+    }
+  ],
+  "locales": [
+    {
+      "name": "US English",
+      "code": "en-US",
+      "fallbackCode": null,
+      "default": true,
+      "contentManagementApi": true,
+      "contentDeliveryApi": true,
+      "optional": false,
+      "sys": {
+        "type": "Locale",
+        "id": "3RdzA63AZSkSOEuBRjvyRe",
+        "version": 0,
+        "space": {
+          "sys": {
+            "type": "Link",
+            "linkType": "Space",
+            "id": "7yx6ovlj39n5"
+          }
+        },
+        "createdBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0SUbYs2vZlXjVR6bH6o83O"
+          }
+        },
+        "createdAt": "2018-01-22T17:49:19Z",
+        "updatedBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "0SUbYs2vZlXjVR6bH6o83O"
+          }
+        },
+        "updatedAt": "2018-01-22T17:49:19Z"
+      }
+    }
+  ]
+}
