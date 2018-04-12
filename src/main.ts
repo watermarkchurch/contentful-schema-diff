@@ -9,17 +9,21 @@ import { writeCreate } from './create';
 import { writeModify } from './modify';
 import { writeDelete } from './delete';
 import { Writable } from 'stream';
+import { create } from 'domain';
+
+const {createClient} = require('contentful-management')
 
 export interface IArgs {
   from: string,
   to: string,
   oneFile: boolean,
-  outDir: string
+  outDir: string,
+  managementToken: string
 }
 
 export default async function Run(args: IArgs) {
 
-  const [from, to] = await loadSources(args.from, args.to)
+  const [from, to] = await loadSources(args)
 
   const fromTypes = indexById(from)
   const toTypes = indexById(to)
@@ -179,18 +183,29 @@ function formatFile(file: string): Promise<void> {
   })
 }
 
-function loadSources(from: string, to: string): Promise<IContentType[][]> {
+function loadSources(args: IArgs): Promise<IContentType[][]> {
   return Promise.all([
-    loadSource(from),
-    loadSource(to)
+    loadSource(args.from, args),
+    loadSource(args.to, args)
   ])
 }
 
-async function loadSource(source: string): Promise<IContentType[]> {
+async function loadSource(source: string, args: IArgs): Promise<IContentType[]> {
   if (await fs.pathExists(source)) {
     const contents = await fs.readFile(source)
     return JSON.parse(contents.toString()).contentTypes
   }
 
-  throw new Error(`${source} is not a file!`)
+  // get from space
+  if (!args.managementToken) {
+    throw new Error(`${source} is not a file and I don't have a management token to talk to contentful.`)
+  }
+
+  const client = createClient({
+    accessToken: args.managementToken
+  })
+
+  const space = await client.getSpace(source)
+  const types = await space.getContentTypes()
+  return types.toPlainObject().items
 }

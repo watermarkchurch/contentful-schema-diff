@@ -27,6 +27,7 @@
     "typescript": "^2.8.1"
   },
   "dependencies": {
+    "contentful-management": "^4.2.2",
     "fs-extra": "^5.0.0",
     "json-diff": "^0.5.2",
     "typescript-formatter": "^7.1.0",

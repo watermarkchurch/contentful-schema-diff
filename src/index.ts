@@ -19,6 +19,10 @@ const argv = yargs
     alias: 'o',
     description: 'The output directory in which to place the migration'
   })
+  .option('token', {
+    alias: 'a',
+    description: 'A Contentful management token to download content types from a space'
+  })
   .option('one-file', {
     description: 'Write all the migrations in a single file'
   })
@@ -37,6 +41,7 @@ Run({
   from: argv.from,
   outDir: argv.out,
   to: argv.to,
+  managementToken: argv.token || process.env['CONTENTFUL_MANAGEMENT_TOKEN'],
   oneFile: argv.oneFile
 })
   .catch((err) => {
