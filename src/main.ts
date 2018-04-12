@@ -146,7 +146,7 @@ class FilePerContentTypeRunner {
     return async (chunk: string) => {
       // don't open the file stream until first write
       if (!stream) {
-        const fileName = `${new Date().toISOString().replace(/[^\d]/g, '').substring(0, 14)}_diff_${id.underscore()}.ts`
+        const fileName = `${new Date().toISOString().replace(/[^\d]/g, '').substring(0, 14)}_generated_diff_${id.underscore()}.ts`
         stream = fs.createWriteStream(path.join(this.outDir, fileName))
         writer = asyncWriter(stream)
         this.streams.push({ stream, writer })

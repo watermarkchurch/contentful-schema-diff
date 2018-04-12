@@ -19,6 +19,9 @@ const argv = yargs
     alias: 'o',
     description: 'The output directory in which to place the migration'
   })
+  .option('one-file', {
+    description: 'Write all the migrations in a single file'
+  })
   .argv
 
 if (!argv.out) {
@@ -33,7 +36,8 @@ fs.mkdirp(argv.out)
 Run({
   from: argv.from,
   outDir: argv.out,
-  to: argv.to
+  to: argv.to,
+  oneFile: argv.oneFile
 })
   .catch((err) => {
     console.error(err)
