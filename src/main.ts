@@ -1,8 +1,10 @@
 
 import * as fs from 'fs-extra'
-import {diff} from 'deep-diff'
 import { IContentType } from './model'
 import * as util from 'util'
+
+const { diff } = require('json-diff')
+const { colorize } = require('json-diff/lib/colorize')
 
 export interface IArgs {
   from: string,
@@ -103,9 +105,25 @@ async function writeDelete(id: string): Promise<string> {
 }
 
 async function writeModify(from: IContentType, to: IContentType): Promise<string> {
-  return `
-  // TODO: modify ${from.sys.id}
+  const difference = diff(from.fields, to.fields)
+  if (!difference || difference.length == 0) {
+    return
+  }
+
+  const v = camelCase(from.sys.id)
+  const typeDef = Object.assign({}, to)
+  delete(typeDef.fields)
+  delete(typeDef.sys)
+
+  let str = `
+  var ${v} = migration.editContentType('${from.sys.id}', ${dump(typeDef)})
 `
+    str += `
+  /* TODO: automatically generate edits from this diff
+${colorize(difference, { color: false } )} */
+  `
+
+  return str
 }
 
 async function writeCreate(newType: IContentType): Promise<string> {

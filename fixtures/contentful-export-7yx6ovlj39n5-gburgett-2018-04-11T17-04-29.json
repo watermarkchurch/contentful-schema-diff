@@ -202,30 +202,6 @@
           }
         },
         {
-          "id": "secondaryItems",
-          "name": "Secondary Items",
-          "type": "Array",
-          "localized": false,
-          "required": false,
-          "validations": [
-          ],
-          "disabled": false,
-          "omitted": false,
-          "items": {
-            "type": "Link",
-            "validations": [
-              {
-                "linkContentType": [
-                  "menu",
-                  "menuButton"
-                ],
-                "message": "The items must be either buttons or drop-down menus"
-              }
-            ],
-            "linkType": "Entry"
-          }
-        },
-        {
           "id": "sideMenu",
           "name": "Side Menu",
           "type": "Link",

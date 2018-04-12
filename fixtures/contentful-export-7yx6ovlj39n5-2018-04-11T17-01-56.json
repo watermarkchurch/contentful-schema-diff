@@ -294,23 +294,6 @@
           "omitted": false
         },
         {
-          "id": "icon",
-          "name": "Icon",
-          "type": "Link",
-          "localized": false,
-          "required": false,
-          "validations": [
-            {
-              "linkMimetypeGroup": [
-                "image"
-              ]
-            }
-          ],
-          "disabled": false,
-          "omitted": false,
-          "linkType": "Asset"
-        },
-        {
           "id": "externalLink",
           "name": "External Link",
           "type": "Symbol",
@@ -1061,25 +1044,6 @@
             ],
             "linkType": "Entry"
           }
-        },
-        {
-          "id": "domainObject",
-          "name": "Associated Ministry or Conference",
-          "type": "Link",
-          "localized": false,
-          "required": false,
-          "validations": [
-            {
-              "linkContentType": [
-                "ministry",
-                "conference"
-              ],
-              "message": "This can be a Ministry or Conference."
-            }
-          ],
-          "disabled": false,
-          "omitted": false,
-          "linkType": "Entry"
         }
       ]
     },
