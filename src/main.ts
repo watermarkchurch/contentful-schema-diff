@@ -2,8 +2,8 @@
 import * as fs from 'fs-extra'
 import * as path from 'path'
 import { IContentType } from './model'
-import * as util from 'util'
 
+import { asyncWriter, indexById } from './utils';
 const { diff } = require('json-diff')
 const { colorize } = require('json-diff/lib/colorize')
 
@@ -25,7 +25,7 @@ export default async function Run(args: IArgs) {
 
   const fileName = `${new Date().toISOString().replace(/[^\d]/g, '').substring(0, 14)}_generated_from_diff.ts`
   const outputStream = fs.createWriteStream(path.join(args.outDir, fileName))
-  const write = asyncWrite(outputStream)
+  const write = asyncWriter(outputStream)
 
   await write(`import Migration from 'contentful-migration-cli'
 
@@ -65,41 +65,6 @@ export = function (migration: Migration) {
   outputStream.close();
 }
 
-function indexById(types: IContentType[]): { [id: string]: IContentType } {
-  const ret: any = {}
-  types.forEach(type => {
-    ret[type.sys.id] = type
-  })
-  return ret
-}
-
-function asyncWrite(stream: fs.WriteStream): (chunk: any) => Promise<void> {
-  let draining = true
-
-  function doWrite(chunk: any) {
-    return new Promise<void>((resolve, reject) => {
-      if (draining) {
-        draining = stream.write(chunk, (err: any) => {
-          if(err) {
-            reject(err)
-          } else {
-            resolve()
-          }
-        })
-      } else {
-        stream.on('drain', () => {
-          // await recursive
-          doWrite(chunk)
-            .then(resolve)
-            .catch(reject)
-        })
-      }
-    })
-  }
-
-  return doWrite
-}
-
 async function writeDelete(id: string): Promise<string> {
   return `
   migration.deleteContentType('${id}')
@@ -112,13 +77,13 @@ async function writeModify(from: IContentType, to: IContentType): Promise<string
     return
   }
 
-  const v = camelCase(from.sys.id)
+  const v = from.sys.id.camelCase()
   const typeDef = Object.assign({}, to)
   delete(typeDef.fields)
   delete(typeDef.sys)
 
   let str = `
-  var ${v} = migration.editContentType('${from.sys.id}', ${dump(typeDef)})
+  var ${v} = migration.editContentType('${from.sys.id}', ${typeDef.dump()})
 `
     str += `
   /* TODO: automatically generate edits from this diff
@@ -129,36 +94,22 @@ ${colorize(difference, { color: false } )} */
 }
 
 async function writeCreate(newType: IContentType): Promise<string> {
-  const v = camelCase(newType.sys.id)
+  const v = newType.sys.id.camelCase()
   const typeDef = Object.assign({}, newType)
   delete(typeDef.fields)
   delete(typeDef.sys)
 
   let str = `
-  var ${v} = migration.createContentType('${newType.sys.id}', ${dump(typeDef)})
+  var ${v} = migration.createContentType('${newType.sys.id}', ${typeDef.dump()})
 `
   newType.fields.forEach(field => {
     const fieldDef = Object.assign({}, field)
     delete(fieldDef.id)
 
     str += `
-  ${v}.createField('${field.id}', ${dump(fieldDef)})
+  ${v}.createField('${field.id}', ${fieldDef.dump()})
 `
   })
   
   return str;
-}
-
-function dump(obj: any): string {
-  return util.inspect(obj, {
-    depth: null,
-    maxArrayLength: null,
-    breakLength: 0
-  })
-}
-
-function camelCase(input: string) { 
-  return input.toLowerCase().replace(/-(.)/g, function(match, group1) {
-      return group1.toUpperCase();
-  });
 }
