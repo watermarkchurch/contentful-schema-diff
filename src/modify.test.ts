@@ -255,7 +255,7 @@ describe('writeModify', () => {
     await writeModify(fromType, toType, async (chunk) => chunks.push(chunk))
 
     const written = chunks.join('')
-    expect(written).to.include("migration.editContentType('menu")
+    expect(written).to.include("migration.editContentType('menu')")
   })
 
   it('dumps diff as comment', async () => {
