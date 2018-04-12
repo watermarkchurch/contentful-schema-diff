@@ -1,5 +1,6 @@
 
 import * as fs from 'fs-extra'
+import * as path from 'path'
 import { IContentType } from './model'
 import * as util from 'util'
 
@@ -8,7 +9,8 @@ const { colorize } = require('json-diff/lib/colorize')
 
 export interface IArgs {
   from: string,
-  to: string
+  to: string,
+  outDir: string
 }
 
 export default async function Run(args: IArgs) {
@@ -21,8 +23,8 @@ export default async function Run(args: IArgs) {
   const fromTypes = indexById(from.contentTypes)
   const toTypes = indexById(to.contentTypes)
 
-
-  const outputStream = fs.createWriteStream('test.ts')
+  const fileName = `${new Date().toISOString().replace(/[^\d]/g, '').substring(0, 14)}_generated_from_diff.ts`
+  const outputStream = fs.createWriteStream(path.join(args.outDir, fileName))
   const write = asyncWrite(outputStream)
 
   await write(`import Migration from 'contentful-migration-cli'
