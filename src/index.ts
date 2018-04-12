@@ -4,6 +4,21 @@ import * as fs from 'fs-extra'
 import Run from './main'
 
 const argv = yargs
+  .usage("$0 --from <export file> --to <export file>")
+  .option('from', {
+    alias: 'f',
+    demandOption: true,
+    description: 'A contentful export file from the space that needs to be migrated'
+  })
+  .option('to', {
+    alias: 't',
+    demandOption: true,
+    description: 'A contentful export file from the space containing the newest versions of the content types'
+  })
+  .option('out', {
+    alias: 'o',
+    description: 'The output directory in which to place the migration'
+  })
   .argv
 
 if (!argv.out) {
