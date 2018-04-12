@@ -19,13 +19,10 @@ export interface IArgs {
 
 export default async function Run(args: IArgs) {
 
-  const [from, to] = (await Promise.all([
-    fs.readFile(args.from),
-    fs.readFile(args.to)
-  ])).map(b => JSON.parse(b.toString()))
+  const [from, to] = await loadSources(args.from, args.to)
 
-  const fromTypes = indexById(from.contentTypes)
-  const toTypes = indexById(to.contentTypes)
+  const fromTypes = indexById(from)
+  const toTypes = indexById(to)
 
   const HEADER = `import Migration from 'contentful-migration-cli'
 
@@ -180,4 +177,20 @@ function formatFile(file: string): Promise<void> {
       }
     })
   })
+}
+
+function loadSources(from: string, to: string): Promise<IContentType[][]> {
+  return Promise.all([
+    loadSource(from),
+    loadSource(to)
+  ])
+}
+
+async function loadSource(source: string): Promise<IContentType[]> {
+  if (await fs.pathExists(source)) {
+    const contents = await fs.readFile(source)
+    return JSON.parse(contents.toString()).contentTypes
+  }
+
+  throw new Error(`${source} is not a file!`)
 }
