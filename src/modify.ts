@@ -23,7 +23,7 @@ export async function writeModify(from: IContentType, to: IContentType, write: (
 
   if (empty(typeDefDiff)) {
     await write(`
-    var ${v} = migration.editContentType('${from.sys.id}')
+  var ${v} = migration.editContentType('${from.sys.id}')
   `)
   } else {
     await write(`

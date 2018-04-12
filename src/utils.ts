@@ -1,6 +1,6 @@
 import * as util from 'util'
-import * as fs from 'fs'
 import { IContentType } from './model';
+import { Writable } from 'stream';
 
 declare global {
   interface String {
@@ -32,9 +32,8 @@ String.prototype.underscore = function(this: string) {
 	return this.replace(/([A-Z])/g, (m: string) => "_" + m.toLowerCase())
 };
 
-export function asyncWriter(stream: fs.WriteStream): (chunk: any) => Promise<void> {
+export function asyncWriter(stream: Writable): (chunk: string) => Promise<any> {
   let draining = true
-
   function doWrite(chunk: any) {
     return new Promise<void>((resolve, reject) => {
       if (draining) {
@@ -46,7 +45,7 @@ export function asyncWriter(stream: fs.WriteStream): (chunk: any) => Promise<voi
           }
         })
       } else {
-        stream.on('drain', () => {
+        stream.once('drain', () => {
           // await recursive
           doWrite(chunk)
             .then(resolve)
