@@ -7,25 +7,35 @@ between two Contentful spaces
 
 usage:
 ```bash
-contentful-schema-diff --from <export file> --to <export file>
+contentful-schema-diff --from <export file or space> --to <export file or space>
 
 Options:
-  --help      Show help                                                [boolean]
-  --version   Show version number                                      [boolean]
-  --from, -f  A contentful export file from the space that needs to be migrated
+  --help       Show help                                               [boolean]
+  --version    Show version number                                     [boolean]
+  --from, -f   A contentful export file from the space that needs to be migrated
                                                                       [required]
-  --to, -t    A contentful export file from the space containing the newest
-              versions of the content types                           [required]
-  --out, -o   The output directory in which to place the migration
+  --to, -t     A contentful export file from the space containing the newest
+               versions of the content types                          [required]
+  --out, -o    The output directory in which to place the migration
+  --token, -a  A Contentful management token to download content types from a
+               space
+  --one-file   Write all the migrations in a single file
 ```
-
-First, you must do a Contentful export of all your content types from each
-space, both the space containing the new content types, and the space
-in which you want to perform the generated migrations.
 
 Note: "from" indicates the space with the *old versions* of the content types.
 You will be generating a migration *from* the state of the current production space
 *to* the state of your dev space.  Thus 'from = production' and 'to = dev'.
+
+The tool works either on Contentful export files, or by directly downloading content
+from a space.
+
+## Method 1: download content types from the space directly
+
+```bash
+$ contentful-schema-diff --from <from space> --to <to space> --token <my contentful management token>
+```
+
+## Method 2: Export the files first
 
 ```bash
 $ contentful-export --space-id <from space> --management-token $CONTENTFUL_MANAGEMENT_TOKEN \
@@ -36,7 +46,7 @@ $ contentful-export --space-id <to space> --management-token $CONTENTFUL_MANAGEM
   --skip-content --skip-roles --skip-webhooks
 ```
 
-This could also be used to generate a migration between two environments
+Alternately this could also used to generate a migration between two environments
 
 ```bash
 $ contentful-export --space-id <space> --management-token $CONTENTFUL_MANAGEMENT_TOKEN \
@@ -54,7 +64,9 @@ $ contentful-schema-diff --from contentful-export-<from space>-<date>.json \
   --to contentful-export-<to space>-<date>.json
 ```
 
-A new typescript file will be created.  It will include many of the migrations
+## Results
+
+One or many new typescript file(s) will be created.  They will include many of the migrations
 necessary to transition the "from" space to have the same structure as the "to"
 space.  Where it couldn't figure out how to do the migration, it has left
 a code comment with the diff of the fields for that content type.
