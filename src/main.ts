@@ -1,7 +1,8 @@
 
 import * as fs from 'fs-extra'
 import {diff} from 'deep-diff'
-import { IContentType } from './model';
+import { IContentType } from './model'
+import * as util from 'util'
 
 export interface IArgs {
   from: string,
@@ -19,7 +20,7 @@ export default async function Run(args: IArgs) {
   const toTypes = indexById(to.contentTypes)
 
 
-  const outputStream = fs.createWriteStream('test.json')
+  const outputStream = fs.createWriteStream('test.ts')
   const write = asyncWrite(outputStream)
 
   const promises = Object.keys(toTypes).map(async (id) => {
@@ -96,7 +97,36 @@ async function writeModify(from: IContentType, to: IContentType): Promise<string
 }
 
 async function writeCreate(newType: IContentType): Promise<string> {
-  return `
-  // TODO: create ${newType.sys.id}  
+  const v = camelCase(newType.sys.id)
+  const typeDef = Object.assign({}, newType)
+  delete(typeDef.fields)
+  delete(typeDef.sys)
+
+  let str = `
+  var ${v} = migration.createContentType('${newType.sys.id}', ${dump(typeDef)})
 `
+  newType.fields.forEach(field => {
+    const fieldDef = Object.assign({}, field)
+    delete(fieldDef.id)
+
+    str += `
+  ${v}.createField('${field.id}', ${dump(fieldDef)})
+`
+  })
+  
+  return str;
+}
+
+function dump(obj: any): string {
+  return util.inspect(obj, {
+    depth: null,
+    maxArrayLength: null,
+    breakLength: 0
+  })
+}
+
+function camelCase(input: string) { 
+  return input.toLowerCase().replace(/-(.)/g, function(match, group1) {
+      return group1.toUpperCase();
+  });
 }

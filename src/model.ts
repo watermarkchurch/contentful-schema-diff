@@ -51,7 +51,13 @@ export interface IContentType {
       required: true,
       validations: IValidation[],
       disabled: false,
-      omitted: false
+      omitted: false,
+      linkType: "Entry" | "Asset",
+      items: {
+        type: FieldType,
+        validations: IValidation[],
+        linkType: "Entry" | "Asset"
+      }
     }
   ]
 }
