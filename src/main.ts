@@ -7,6 +7,7 @@ import { asyncWriter, indexById } from './utils';
 import { writeCreate } from './create';
 import { writeModify } from './modify';
 import { writeDelete } from './delete';
+import { Writable } from 'stream';
 
 export interface IArgs {
   from: string,
@@ -37,46 +38,69 @@ export = function (migration: Migration) {
 }
 `
 
-  const fileName = `${new Date().toISOString().replace(/[^\d]/g, '').substring(0, 14)}_generated_from_diff.ts`
-  const outputStream = fs.createWriteStream(path.join(args.outDir, fileName))
-  const write = asyncWriter(outputStream)
-  const runner = writeSingleFile
+  const runner = new WriteSingleFileRunner(args.outDir, HEADER, FOOTER)
 
-  await write(HEADER)
+  await runner.init()
 
-  const promises = Object.keys(toTypes).map(runner(write, async (id, chunkWriter) => {
+  const promises = runner.run(Object.keys(toTypes), async (id, chunkWriter) => {
     if (fromTypes[id]) {
       await writeModify(fromTypes[id], toTypes[id], chunkWriter)
     } else {
       await writeCreate(toTypes[id], chunkWriter)
     }
-  }))
-  promises.push(...Object.keys(fromTypes).map(runner(write, async (id, chunkWriter) => {
+  })
+  promises.push(...runner.run(Object.keys(fromTypes), async (id, chunkWriter) => {
     if (toTypes[id]) {
       // handled above in 'writeModify'
       return
     }
     
     writeDelete(id, chunkWriter)
-  })))
+  }))
 
   await Promise.all(promises)
 
-  await write(FOOTER)
-
-  outputStream.close();
+  await runner.close();
 }
 
 type AsyncWrite = (chunk: string) => Promise<any> 
 
-function writeSingleFile(fileWriter: AsyncWrite, run: (id: string, write: AsyncWrite) => Promise<void>): (id: string) => Promise<void> {
-  return async (id: string) => {
-    let chunks: string[] = []
+class WriteSingleFileRunner {
+  fileWriter: AsyncWrite
+  outputStream: fs.WriteStream
+  header: string
+  footer: string
 
-    await run(id, (chunk: string) => Promise.resolve(chunks.push(chunk)))
+  constructor(outDir: string, header: string, footer: string) {
+    const fileName = `${new Date().toISOString().replace(/[^\d]/g, '').substring(0, 14)}_generated_from_diff.ts`
+    this.outputStream = fs.createWriteStream(path.join(outDir, fileName))
+    this.fileWriter = asyncWriter(this.outputStream)
+    this.header = header
+    this.footer = footer
+  }  
 
-    if (chunks.length > 0) {
-      await fileWriter(chunks.join(''))
-    }
+  async init() {
+    await this.fileWriter(this.header)
+  }
+
+  run(keys: string[], run: (id: string, write: AsyncWrite) => Promise<void>): Promise<void>[] {
+    return keys.map(async (id: string) => {
+      let chunks: string[] = []
+
+      await run(id, (chunk: string) => Promise.resolve(chunks.push(chunk)))
+
+      if (chunks.length > 0) {
+        const header =`
+  /************  ${id}  ******************/
+`
+        await this.fileWriter(header + chunks.join(''))
+      }
+    })
+  }
+
+  async close() {
+    await this.fileWriter(this.footer)
+
+    this.outputStream.close();
   }
 }
