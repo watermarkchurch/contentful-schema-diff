@@ -65,3 +65,9 @@ export function indexById(types: IContentType[]): { [id: string]: IContentType }
   })
   return ret
 }
+
+export function wait(ms: number): Promise<void> {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => resolve(), ms)
+  })
+}

@@ -1,9 +1,10 @@
 
 import * as fs from 'fs-extra'
 import * as path from 'path'
-import { IContentType } from './model'
+import {exec} from 'child_process'
 
-import { asyncWriter, indexById } from './utils';
+import { IContentType } from './model'
+import { asyncWriter, indexById, wait } from './utils';
 import { writeCreate } from './create';
 import { writeModify } from './modify';
 import { writeDelete } from './delete';
@@ -68,14 +69,15 @@ export = function (migration: Migration) {
 type AsyncWrite = (chunk: string) => Promise<any> 
 
 class WriteSingleFileRunner {
+  fileName: string
   fileWriter: AsyncWrite
   outputStream: fs.WriteStream
   header: string
   footer: string
 
   constructor(outDir: string, header: string, footer: string) {
-    const fileName = `${new Date().toISOString().replace(/[^\d]/g, '').substring(0, 14)}_generated_from_diff.ts`
-    this.outputStream = fs.createWriteStream(path.join(outDir, fileName))
+    this.fileName = path.join(outDir, `${new Date().toISOString().replace(/[^\d]/g, '').substring(0, 14)}_generated_from_diff.ts`)
+    this.outputStream = fs.createWriteStream(this.fileName)
     this.fileWriter = asyncWriter(this.outputStream)
     this.header = header
     this.footer = footer
@@ -102,8 +104,10 @@ class WriteSingleFileRunner {
 
   async close() {
     await this.fileWriter(this.footer)
-
     this.outputStream.close();
+    await wait(1)
+    await formatFile(this.fileName)
+    console.log('wrote file', this.fileName)
   }
 }
 
@@ -112,7 +116,7 @@ class FilePerContentTypeRunner {
   header: string
   footer: string
 
-  streams: { stream: fs.WriteStream, writer: AsyncWrite }[] = []
+  streams: { stream: fs.WriteStream, writer: AsyncWrite, fileName: string }[] = []
 
   constructor(outDir: string, header: string, footer: string) {
     this.outDir = outDir
@@ -136,20 +140,24 @@ class FilePerContentTypeRunner {
     this.streams.map(async tuple => {
       await tuple.writer(this.footer)
       tuple.stream.close()
+      await wait(1)
+      await formatFile(tuple.fileName)
+      console.log('wrote file', tuple.fileName)
     })
   }
 
   private makeWriter(id: string): AsyncWrite {
     let stream: fs.WriteStream = undefined
     let writer: AsyncWrite
+    let fileName: string
 
     return async (chunk: string) => {
       // don't open the file stream until first write
       if (!stream) {
-        const fileName = `${new Date().toISOString().replace(/[^\d]/g, '').substring(0, 14)}_generated_diff_${id.underscore()}.ts`
-        stream = fs.createWriteStream(path.join(this.outDir, fileName))
+        fileName = path.join(this.outDir, `${new Date().toISOString().replace(/[^\d]/g, '').substring(0, 14)}_generated_diff_${id.underscore()}.ts`)
+        stream = fs.createWriteStream(fileName)
         writer = asyncWriter(stream)
-        this.streams.push({ stream, writer })
+        this.streams.push({ stream, writer, fileName })
 
         await writer(this.header)
       }
@@ -157,4 +165,19 @@ class FilePerContentTypeRunner {
       writer(chunk)
     }
   }
+}
+
+function formatFile(file: string): Promise<void> {
+  const tsFmtBinLocation = path.join(require.resolve('typescript-formatter'), '../../.bin/tsfmt')
+  const tsfmtConfigFile = path.relative(process.cwd(), path.join(__dirname, '../tsfmt.json'))
+
+  return new Promise((resolve, reject) => {
+    exec(`${tsFmtBinLocation} -r ${file} --useTsfmt ${tsfmtConfigFile}`, (err, stdout, stderr) => {
+      if(err) {
+        reject(err.message + '\n\t' + stderr)
+      } else {
+        resolve()
+      }
+    })
+  })
 }
