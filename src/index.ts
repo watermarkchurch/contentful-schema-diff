@@ -29,8 +29,8 @@ const argv = yargs
   .argv
 
 if (!argv.out) {
-  if (fs.existsSync('./data/db/')) {
-    argv.out = './data/db/'
+  if (fs.existsSync('./db/migrate/')) {
+    argv.out = './db/migrate/'
   } else {
     argv.out = './'
   }
