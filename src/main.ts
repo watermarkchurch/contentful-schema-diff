@@ -4,8 +4,9 @@ import * as path from 'path'
 import { IContentType } from './model'
 
 import { asyncWriter, indexById } from './utils';
-const { diff } = require('json-diff')
-const { colorize } = require('json-diff/lib/colorize')
+import { writeCreate } from './create';
+import { writeModify } from './modify';
+import { writeDelete } from './delete';
 
 export interface IArgs {
   from: string,
@@ -36,24 +37,29 @@ export = function (migration: Migration) {
 `)
 
   const promises = Object.keys(toTypes).map(async (id) => {
-    let chunk: string
+    let chunks: string[]
     if (fromTypes[id]) {
-      chunk = await writeModify(fromTypes[id], toTypes[id])
+      await writeModify(fromTypes[id], toTypes[id], async (chunk: string) => chunks.push(chunk))
     } else {
-      chunk = await writeCreate(toTypes[id])
+      await writeCreate(toTypes[id], async (chunk: string) => chunks.push(chunk))
     }
 
-    if (chunk && chunk.length > 0) {
-      await write(chunk)
+    if (chunks.length > 0) {
+      await write(chunks.join(''))
     }
   })
   promises.push(...Object.keys(fromTypes).map(async (id) => {
+    let chunks: string[]
     if (toTypes[id]) {
       // handled above in 'writeModify'
       return
     }
-    const chunk = await writeDelete(id)
-    await write(chunk)
+    
+    writeDelete(id, async (chunk: string) => chunks.push(chunk))
+    
+    if (chunks.length > 0) {
+      await write(chunks.join(''))
+    }
   }))
 
   await Promise.all(promises)
@@ -63,53 +69,4 @@ export = function (migration: Migration) {
 `)
 
   outputStream.close();
-}
-
-async function writeDelete(id: string): Promise<string> {
-  return `
-  migration.deleteContentType('${id}')
-`
-}
-
-async function writeModify(from: IContentType, to: IContentType): Promise<string> {
-  const difference = diff(from.fields, to.fields)
-  if (!difference || difference.length == 0) {
-    return
-  }
-
-  const v = from.sys.id.camelCase()
-  const typeDef = Object.assign({}, to)
-  delete(typeDef.fields)
-  delete(typeDef.sys)
-
-  let str = `
-  var ${v} = migration.editContentType('${from.sys.id}', ${typeDef.dump()})
-`
-    str += `
-  /* TODO: automatically generate edits from this diff
-${colorize(difference, { color: false } )} */
-  `
-
-  return str
-}
-
-async function writeCreate(newType: IContentType): Promise<string> {
-  const v = newType.sys.id.camelCase()
-  const typeDef = Object.assign({}, newType)
-  delete(typeDef.fields)
-  delete(typeDef.sys)
-
-  let str = `
-  var ${v} = migration.createContentType('${newType.sys.id}', ${typeDef.dump()})
-`
-  newType.fields.forEach(field => {
-    const fieldDef = Object.assign({}, field)
-    delete(fieldDef.id)
-
-    str += `
-  ${v}.createField('${field.id}', ${fieldDef.dump()})
-`
-  })
-  
-  return str;
 }

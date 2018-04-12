@@ -25,9 +25,16 @@ export interface IContentType {
         linkType: "User",
         id: string
       }
+    }
+    environment?: {
+      sys: {
+        id: string,
+        type: "Link",
+        linkType: "Environment"
+      }
     },
-    publishedCounter: 1,
-    version: 2,
+    publishedCounter: number,
+    version: number,
     publishedBy: {
       sys: {
         type: "Link",
@@ -35,31 +42,30 @@ export interface IContentType {
         id: string
       }
     },
-    publishedVersion: 1,
+    publishedVersion: number,
     firstPublishedAt: string,
     publishedAt: string
   },
   displayField: string,
   name: string,
   description: string,
-  fields: [
+  fields: 
     {
       id: string,
       name: string,
       type: FieldType,
-      localized: false,
-      required: true,
+      localized: boolean,
+      required: boolean,
       validations: IValidation[],
-      disabled: false,
-      omitted: false,
-      linkType: "Entry" | "Asset",
-      items: {
+      disabled: boolean,
+      omitted: boolean,
+      linkType?: "Entry" | "Asset",
+      items?: {
         type: FieldType,
         validations: IValidation[],
         linkType: "Entry" | "Asset"
       }
-    }
-  ]
+    }[]
 }
 
 
