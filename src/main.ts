@@ -38,7 +38,9 @@ export = function (migration: Migration) {
 }
 `
 
-  const runner = new WriteSingleFileRunner(args.outDir, HEADER, FOOTER)
+  const runner = args.oneFile ?
+    new WriteSingleFileRunner(args.outDir, HEADER, FOOTER) :
+    new FilePerContentTypeRunner(args.outDir, HEADER, FOOTER)
 
   await runner.init()
 
@@ -102,5 +104,57 @@ class WriteSingleFileRunner {
     await this.fileWriter(this.footer)
 
     this.outputStream.close();
+  }
+}
+
+class FilePerContentTypeRunner {
+  outDir: string
+  header: string
+  footer: string
+
+  streams: { stream: fs.WriteStream, writer: AsyncWrite }[] = []
+
+  constructor(outDir: string, header: string, footer: string) {
+    this.outDir = outDir
+    this.header = header
+    this.footer = footer
+  }
+
+  async init() {
+
+  }
+
+  run(keys: string[], run: (id: string, write: AsyncWrite) => Promise<void>): Promise<void>[] {
+    return keys.map(async (id: string) => {
+      const writer = this.makeWriter(id)
+
+      await run(id, writer)
+    })
+  }
+
+  async close() {
+    this.streams.map(async tuple => {
+      await tuple.writer(this.footer)
+      tuple.stream.close()
+    })
+  }
+
+  private makeWriter(id: string): AsyncWrite {
+    let stream: fs.WriteStream = undefined
+    let writer: AsyncWrite
+
+    return async (chunk: string) => {
+      // don't open the file stream until first write
+      if (!stream) {
+        const fileName = `${new Date().toISOString().replace(/[^\d]/g, '').substring(0, 14)}_diff_${id.underscore()}.ts`
+        stream = fs.createWriteStream(path.join(this.outDir, fileName))
+        writer = asyncWriter(stream)
+        this.streams.push({ stream, writer })
+
+        await writer(this.header)
+      }
+
+      writer(chunk)
+    }
   }
 }
