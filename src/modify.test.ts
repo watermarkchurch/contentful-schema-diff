@@ -85,6 +85,17 @@ describe('writeModify', () => {
         "linkType": "Entry"
       },
       {
+        "id": "movedField",
+        "name": "Moved Field",
+        "type": "number",
+        "localized": false,
+        "required": true,
+        "validations": [
+        ],
+        "disabled": false,
+        "omitted": false
+      },
+      {
         "id": "items",
         "name": "Items",
         "type": "Array",
@@ -192,6 +203,17 @@ describe('writeModify', () => {
         "omitted": false
       },
       {
+        "id": "movedField",
+        "name": "Moved Field",
+        "type": "number",
+        "localized": false,
+        "required": true,
+        "validations": [
+        ],
+        "disabled": false,
+        "omitted": false
+      },
+      {
         "id": "newField",
         "name": "New Field",
         "type": "Symbol",
@@ -267,5 +289,35 @@ describe('writeModify', () => {
     const written = chunks.join('')
     expect(written).to.match(/\-\s+type\: \"Symbol\"/)
     expect(written).to.match(/\+\s+type\: \"Text\"/)
+  })
+
+  it('writes created fields', async () => {
+
+    const chunks: string[] = []
+
+    await writeModify(fromType, toType, async (chunk) => chunks.push(chunk))
+
+    const written = chunks.join('')
+    expect(written).to.include("menu.createField('newField', { name: 'New Field',")
+  })
+
+  it('writes deleted fields', async () => {
+
+    const chunks: string[] = []
+
+    await writeModify(fromType, toType, async (chunk) => chunks.push(chunk))
+
+    const written = chunks.join('')
+    expect(written).to.include("menu.deleteField('sideMenu')")
+  })
+
+  it('writes moved fields', async () => {
+
+    const chunks: string[] = []
+
+    await writeModify(fromType, toType, async (chunk) => chunks.push(chunk))
+
+    const written = chunks.join('')
+    expect(written).to.include("menu.moveField('movedField')\n      .afterField( ?where? )")
   })
 })

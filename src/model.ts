@@ -49,25 +49,25 @@ export interface IContentType {
   displayField: string,
   name: string,
   description: string,
-  fields: 
-    {
-      id: string,
-      name: string,
-      type: FieldType,
-      localized: boolean,
-      required: boolean,
-      validations: IValidation[],
-      disabled: boolean,
-      omitted: boolean,
-      linkType?: "Entry" | "Asset",
-      items?: {
-        type: FieldType,
-        validations: IValidation[],
-        linkType: "Entry" | "Asset"
-      }
-    }[]
+  fields: IField[]
 }
 
+export interface IField {
+  id: string,
+  name: string,
+  type: FieldType,
+  localized: boolean,
+  required: boolean,
+  validations: IValidation[],
+  disabled: boolean,
+  omitted: boolean,
+  linkType?: "Entry" | "Asset",
+  items?: {
+    type: FieldType,
+    validations: IValidation[],
+    linkType: "Entry" | "Asset"
+  }
+}
 
 export type FieldType = 'Symbol' | 'Text' | 'Integer' | 'Number' | 'Date' | 'Boolean' | 'Object' | 'Location' | 'Array' | 'Link'
 
