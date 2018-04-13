@@ -12,10 +12,9 @@ contentful-schema-diff --from <export file or space> --to <export file or space>
 Options:
   --help       Show help                                               [boolean]
   --version    Show version number                                     [boolean]
-  --from, -f   A contentful export file from the space that needs to be migrated
-                                                                      [required]
-  --to, -t     A contentful export file from the space containing the newest
-               versions of the content types                          [required]
+  --from, -f   A contentful export file, or Contentful Space ID       [required]
+  --to, -t     A contentful export file, space ID, or environment within the
+               "from" space                                           [required]
   --out, -o    The output directory in which to place the migration
   --token, -a  A Contentful management token to download content types from a
                space
@@ -35,6 +34,14 @@ from a space.
 $ contentful-schema-diff --from <from space> --to <to space> --token <my contentful management token>
 ```
 
+Or you can compare any environment to master, for example to generate a migration
+that will fast-forward your master environment to match the dev environment in 
+that space:
+
+```bash
+$ contentful-schema-diff --from <from space> --to dev --token <my contentful management token>
+```
+
 ## Method 2: Export the files first
 
 ```bash
@@ -50,7 +57,7 @@ Alternately this could also used to generate a migration between two environment
 
 ```bash
 $ contentful-export --space-id <space> --management-token $CONTENTFUL_MANAGEMENT_TOKEN \
-  --skip-content --skip-roles --skip-webhooks
+  --skip-content --skip-roles --skip-webhooks --environment-id=gburgett
 
 
 $ contentful-export --space-id <space> --management-token $CONTENTFUL_MANAGEMENT_TOKEN \

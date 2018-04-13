@@ -2,16 +2,15 @@
 import * as fs from 'fs-extra'
 import * as path from 'path'
 import {exec} from 'child_process'
+import { Writable } from 'stream';
+import { create } from 'domain';
 
 import { IContentType } from './model'
 import { asyncWriter, indexById, wait } from './utils';
 import { writeCreate } from './create';
 import { writeModify } from './modify';
 import { writeDelete } from './delete';
-import { Writable } from 'stream';
-import { create } from 'domain';
-
-const {createClient} = require('contentful-management')
+import { loadSources } from './source';
 
 export interface IArgs {
   from: string,
@@ -183,29 +182,3 @@ function formatFile(file: string): Promise<void> {
   })
 }
 
-function loadSources(args: IArgs): Promise<IContentType[][]> {
-  return Promise.all([
-    loadSource(args.from, args),
-    loadSource(args.to, args)
-  ])
-}
-
-async function loadSource(source: string, args: IArgs): Promise<IContentType[]> {
-  if (await fs.pathExists(source)) {
-    const contents = await fs.readFile(source)
-    return JSON.parse(contents.toString()).contentTypes
-  }
-
-  // get from space
-  if (!args.managementToken) {
-    throw new Error(`${source} is not a file and I don't have a management token to talk to contentful.`)
-  }
-
-  const client = createClient({
-    accessToken: args.managementToken
-  })
-
-  const space = await client.getSpace(source)
-  const types = await space.getContentTypes()
-  return types.toPlainObject().items
-}
