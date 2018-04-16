@@ -78,7 +78,7 @@ export interface IValidation {
   /** Takes an array of content type ids and validates that the link points to an entry of that content type. */
   linkContentType?: string[],
   /** Takes an array of values and validates that the field value is in this array. */
-  in?: string[],
+  in?: any[],
   /** Takes a MIME type group name and validates that the link points to an asset of this group. */
   linkMimetypeGroup?: LinkMimetype[],
   /** Takes min and/or max parameters and validates the size of the array (number of objects in it). */

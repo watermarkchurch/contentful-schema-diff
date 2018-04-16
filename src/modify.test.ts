@@ -210,8 +210,9 @@ describe('writeModify', () => {
         "name": "Moved Field",
         "type": "Number",
         "localized": false,
-        "required": true,
+        "required": false,
         "validations": [
+          { in: [0, 1, 2] }
         ],
         "disabled": false,
         "omitted": false
@@ -356,5 +357,17 @@ describe('writeModify', () => {
           'menuButton' ],
         message: 'The items must be either buttons or drop-down menus' } ],
   linkType: 'Entry' }`.replace(/\s+/g, ''))
+  })
+
+  it('writes change to moved field', async () => {
+
+    const chunks: string[] = []
+
+    await writeModify(fromType, toType, async (chunk) => chunks.push(chunk))
+
+    const written = chunks.join('')
+    expect(written).to.match(/menu.editField\('movedField'\)\s+.required\(false\)/)
+    expect(written.replace(/\s+/g, '')).to.include(`
+  .validations([ { in: [0, 1, 2] } ])`.replace(/\s+/g, ''))
   })
 })

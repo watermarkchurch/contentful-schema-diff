@@ -38,7 +38,7 @@ ${colorize(fieldsDiff, { color: false } )} */
 
   const created = new Map<string, IField>()
   const deleted = new Map<string, IField>()
-  const modified = new Map<string, { field: IField, diff: DiffObj }>()
+  const modified = new Map<string, { field: IField, diff: DiffObj<IField> }>()
 
   let fromFieldIndex = 0;
   let toFieldIndex = 0;
@@ -127,17 +127,14 @@ ${colorize(fieldsDiff, { color: false } )} */
         .afterField('${to.fields[newIndex - 1].id}')`
     }
 
-    const changes = <Diff>diff(oldField, field)
+    const changes = <DiffObj<IField>>diff(oldField, field)
     if(changes) {
-      move += `
-      /** TODO: also change the field
-${colorize(fieldsDiff, { color: false } )} */
-`
+      move += modifyField(field, changes)
     }
     return move
   }
 
-  function modifyField(toField: IField, diff: DiffObj): string {
+  function modifyField(toField: IField, diff: DiffObj<IField>): string {
     let base = `
     ${v}.editField('${toField.id}')`
     Object.keys(diff).forEach(key => {

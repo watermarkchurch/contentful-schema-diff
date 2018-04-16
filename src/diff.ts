@@ -1,16 +1,41 @@
 
+/**
+ * A Diff can be either an object or array, depending on what you diffed.
+ * If you diffed two arrays, you can expect it to be a DiffArray<TItem> type.
+ */
+export type Diff = DiffArray<any> | DiffObj<any>
 
-// modeling the Diff type
-export type Diff = DiffArray<any> | DiffObj
-
+/**
+ * A DiffArray is a Diff of two arrays.  It contains a set of DiffItems.
+ */
 export type DiffArray<T> = DiffItem<T>[]
 
-export type DiffItem<T> = ["-" | "+", T]  | ["~", DiffObj] | [" ", undefined]
+/**
+ * A DiffItem is an array with two values - the first is the operation:  
+ * "+" indicates the value was added to the array  
+ * "-" indicates the value was removed from the array  
+ * "~" indicates the value is still in the array but has changed  
+ * " " indicates the value did not change.
+ * 
+ * The second value is either a whole object in the case of "+" or "-",
+ * or a diff of an object.
+ * 
+ * In the case of an array of arrays, the "~" value would be a DiffArray,
+ * but we can't model that in typescript because it's a circluar reference.
+ * Maybe if we defined the interface better...
+ */
+export type DiffItem<T> = ["-" | "+", T]  | ["~", DiffObj<T>] | [" ", undefined]
 
+/**
+ * Represents a change in a primitive field value
+ */
 export type SimpleDiff<T> = { "__old": T, "__new": T}
 
-export type DiffObj = {
-  [field: string]: Diff | SimpleDiff<any>
+/**
+ * A diff of two objects.  Every key that changes is represented
+ */
+export type DiffObj<T> = {
+  [field in keyof T]: Diff | SimpleDiff<any>
 }
 
 
@@ -18,7 +43,7 @@ export function isDiff(obj: any | Diff): obj is Diff {
   return isDiffArray(obj) || isDiffObj(obj)
 }
 
-export function isDiffObj(obj: any | DiffObj): obj is DiffObj {
+export function isDiffObj<T>(obj: T | DiffObj<T>): obj is DiffObj<T> {
   if (typeof obj != "object" || Object.keys(obj).length == 0) {
     return false;
   }
