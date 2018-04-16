@@ -90,7 +90,7 @@ ${colorize(fieldsDiff, { color: false } )} */
     }
   })
   moved.forEach((val, key) => {
-    write(moveField(val, deleted.get(key)))
+    write(moveField(val, to, deleted.get(key)))
     deleted.delete(key)
   })
   deleted.forEach((val) => write(deleteField(val)))
@@ -114,11 +114,19 @@ ${colorize(fieldsDiff, { color: false } )} */
   `
   }
   
-  function moveField(field: IField, oldField: IField): string {
+  function moveField(field: IField, to: IContentType, oldField: IField): string {
     let move = `
-    ${v}.moveField('${field.id}')
-      .afterField( ?where? )
-`
+    ${v}.moveField('${field.id}')`
+
+    const newIndex = to.fields.map(f => f.id).indexOf(field.id)
+    if (newIndex == 0) {
+      move += `
+        .toTheTop()`
+    } else {
+      move += `
+        .afterField('${to.fields[newIndex - 1].id}')`
+    }
+
     const changes = <Diff>diff(oldField, field)
     if(changes) {
       move += `

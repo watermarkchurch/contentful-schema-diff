@@ -324,7 +324,7 @@ describe('writeModify', () => {
     await writeModify(fromType, toType, async (chunk) => chunks.push(chunk))
 
     const written = chunks.join('')
-    expect(written).to.include("menu.moveField('movedField')\n      .afterField( ?where? )")
+    expect(written).to.include("menu.moveField('movedField')\n        .afterField('name')")
   })
 
   it('writes change to top-level field details', async () => {
