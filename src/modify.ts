@@ -1,4 +1,5 @@
 import { IContentType, IField } from "./model";
+import { DiffArray, Diff, DiffObj, isDiff, isDiffItem, isDiffObj } from "./diff";
 
 const { diff } = require('json-diff')
 const { colorize } = require('json-diff/lib/colorize')
@@ -13,8 +14,8 @@ export async function writeModify(from: IContentType, to: IContentType, write: (
   delete(toTypeDef.fields)
   delete(toTypeDef.sys)
 
-  const typeDefDiff: Diff<IField> = diff(fromTypeDef, toTypeDef)
-  const fieldsDiff: Diff<IField> = diff(from.fields, to.fields)
+  const typeDefDiff: DiffArray<IField> = diff(fromTypeDef, toTypeDef)
+  const fieldsDiff: DiffArray<IField> = diff(from.fields, to.fields)
 
   if (empty(typeDefDiff) && empty(fieldsDiff)) {
     return
@@ -31,27 +32,51 @@ export async function writeModify(from: IContentType, to: IContentType, write: (
   }
   
   await write(`
-  /* TODO: automatically generate edits from this diff
+  /*
 ${colorize(fieldsDiff, { color: false } )} */
   `)
 
   const created = new Map<string, IField>()
   const deleted = new Map<string, IField>()
+  const modified = new Map<string, { field: IField, diff: DiffObj }>()
+
+  let fromFieldIndex = 0;
+  let toFieldIndex = 0;
 
   fieldsDiff.forEach(item => {
     const val = item[1]
     switch(item[0]) {
       case "+":
-        if (!isDiff(val)) {
+        if (!isDiffObj(val)) {
           created.set(val.id, val)
+        } else {
+          throw new Error('Diff produced a "+" with a diff obj:\n' + JSON.stringify(item))
         }
+        toFieldIndex++;
         break;
       case "-":
-        if (!isDiff(val)) {
+        if (!isDiffObj(val)) {
           deleted.set(val.id, val)
+        } else {
+          throw new Error('Diff produced a "-" with a diff obj:\n' + JSON.stringify(item))
         }
+        fromFieldIndex++;
         break;
-      // Don't know how to handle other diffs yet
+      case "~":
+        if (isDiffObj(val)) {
+          modified.set(to.fields[toFieldIndex].id, 
+            { field: to.fields[toFieldIndex], diff: val })
+        } else {
+          throw new Error('Diff produced a "~" with a non-diff obj:\n' + JSON.stringify(item))
+        }
+        fromFieldIndex++;
+        toFieldIndex++;
+        break;
+      default:
+        fromFieldIndex++;
+        toFieldIndex++;
+        
+        break;
     }
   })
 
@@ -59,16 +84,19 @@ ${colorize(fieldsDiff, { color: false } )} */
   created.forEach((val, key) => {
     if (deleted.has(key)) {
       moved.set(key, val)
+      created.delete(key)
     } else {
       write(createField(val))
     }
   })
   moved.forEach((val, key) => {
-    created.delete(key)
+    write(moveField(val, deleted.get(key)))
     deleted.delete(key)
-    write(moveField(val))
   })
   deleted.forEach((val) => write(deleteField(val)))
+  modified.forEach((val) => {
+    write(modifyField(val.field, val.diff))
+  })
 
   // writer functions
   function createField(field: IField): string {
@@ -86,45 +114,35 @@ ${colorize(fieldsDiff, { color: false } )} */
   `
   }
   
-  function moveField(field: IField): string {
-    return `
+  function moveField(field: IField, oldField: IField): string {
+    let move = `
     ${v}.moveField('${field.id}')
       .afterField( ?where? )
-  `
+`
+    const changes = <Diff>diff(oldField, field)
+    if(changes) {
+      move += `
+      /** TODO: also change the field
+${colorize(fieldsDiff, { color: false } )} */
+`
+    }
+    return move
+  }
+
+  function modifyField(toField: IField, diff: DiffObj): string {
+    let base = `
+    ${v}.editField('${toField.id}')`
+    Object.keys(diff).forEach(key => {
+      const newValue = (toField as any)[key]
+      base += `
+        .${key}(${newValue.dump()})`
+    })
+
+    return base + '\n';
   }
 }
 
 // utilities
 function empty(arr: Array<any>): boolean {
   return !arr || arr.length == 0
-}
-
-function isDiff<T>(obj: T | IDiffObj): obj is IDiffObj {
-  if (typeof obj != "object" || Object.keys(obj).length == 0) {
-    return false;
-  }
-  
-  return Object.keys(obj).every((key) => {
-    const val = (obj as any)[key]
-
-    if (!Array.isArray(val) || val.length == 0 || val.length > 2) {
-      return false
-    }
-    return val[0] == " " ||
-      val[0] == "~" ||
-      val[0] == "+" ||
-      val[0] == "-"
-  })
-}
-
-// modeling the Diff type
-type Diff<T> = DiffItem<T>[]
-
-type DiffItem<T> = [
-  " " | "~" | "+" | "-",
-  T | IDiffObj
-]
-
-interface IDiffObj {
-  [field: string]: Diff<any>
 }

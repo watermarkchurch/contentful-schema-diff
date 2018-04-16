@@ -1,5 +1,6 @@
 import {expect} from 'chai'
 
+import * as utils from './utils'
 import {IContentType} from './model'
 import {writeModify} from './modify'
 
@@ -87,7 +88,7 @@ describe('writeModify', () => {
       {
         "id": "movedField",
         "name": "Moved Field",
-        "type": "number",
+        "type": "Number",
         "localized": false,
         "required": true,
         "validations": [
@@ -101,13 +102,15 @@ describe('writeModify', () => {
         "type": "Array",
         "localized": false,
         "required": false,
-        "validations": [
-        ],
+        "validations": [],
         "disabled": false,
         "omitted": false,
         "items": {
           "type": "Link",
           "validations": [
+            {
+              range: { min: 1, max: 4 }
+            },
             {
               "linkContentType": [
                 "menu",
@@ -205,7 +208,7 @@ describe('writeModify', () => {
       {
         "id": "movedField",
         "name": "Moved Field",
-        "type": "number",
+        "type": "Number",
         "localized": false,
         "required": true,
         "validations": [
@@ -255,6 +258,9 @@ describe('writeModify', () => {
         "items": {
           "type": "Link",
           "validations": [
+            {
+              range: { min: 1, max: 5 }
+            },
             {
               "linkContentType": [
                 "menu",
@@ -319,5 +325,36 @@ describe('writeModify', () => {
 
     const written = chunks.join('')
     expect(written).to.include("menu.moveField('movedField')\n      .afterField( ?where? )")
+  })
+
+  it('writes change to top-level field details', async () => {
+
+    const chunks: string[] = []
+
+    await writeModify(fromType, toType, async (chunk) => chunks.push(chunk))
+
+    const written = chunks.join('')
+    expect(written).to.match(/menu.editField\('name'\)\s+.type\('Text'\)/)
+    expect(written).to.match(/menu.editField\('items'\)\s+.disabled\(true\)/)
+  })
+
+  it('writes change to items', async () => {
+
+    const chunks: string[] = []
+
+    await writeModify(fromType, toType, async (chunk) => chunks.push(chunk))
+
+    const written = chunks.join('').replace(/\s+/g, '')
+    expect(written).to.include(`
+    .items({ type: 'Link',
+  validations:
+    [ { range:
+        { min: 1,
+          max: 5 } },
+      { linkContentType:
+        [ 'menu',
+          'menuButton' ],
+        message: 'The items must be either buttons or drop-down menus' } ],
+  linkType: 'Entry' }`.replace(/\s+/g, ''))
   })
 })
