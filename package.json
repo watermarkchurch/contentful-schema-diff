@@ -14,7 +14,7 @@
   },
   "author": "Gordon Burgett (gordon@gordonburgett.net)",
   "license": "MIT",
-  "repository": "https://github.com/gburgett/contentful-schema-diff",
+  "repository": "https://github.com/watermarkchurch/contentful-schema-diff",
   "devDependencies": {
     "@types/chai": "^4.1.2",
     "@types/fs-extra": "^5.0.2",
