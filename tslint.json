@@ -1,0 +1,10 @@
+{
+  "extends": [
+    "tslint:recommended",
+    "tslint-eslint-rules"
+  ],
+  "rules": {
+    "semicolon": [true, "never"],
+    "no-var-requires": false
+  }
+}
