@@ -1,6 +1,6 @@
-import { Writable } from "stream"
-import * as util from "util"
-import { IContentType } from "./model"
+import { Writable } from 'stream'
+import * as util from 'util'
+import { IContentType } from './model'
 
 declare global {
   interface String {
@@ -29,7 +29,7 @@ String.prototype.camelCase = function(this: string) {
 }
 
 String.prototype.underscore = function(this: string) {
-	return this.replace(/([A-Z])/g, (m: string) => "_" + m.toLowerCase())
+	return this.replace(/([A-Z])/g, (m: string) => '_' + m.toLowerCase())
 }
 
 export function asyncWriter(stream: Writable): (chunk: string) => Promise<any> {
@@ -45,7 +45,7 @@ export function asyncWriter(stream: Writable): (chunk: string) => Promise<any> {
           }
         })
       } else {
-        stream.once("drain", () => {
+        stream.once('drain', () => {
           // await recursive
           doWrite(chunk)
             .then(resolve)

@@ -3,42 +3,42 @@ export interface IContentType {
   sys: {
     space: {
       sys: {
-        type: "Link",
-        linkType: "Space",
+        type: 'Link',
+        linkType: 'Space',
         id: string,
       },
     },
     id: string,
-    type: "ContentType",
+    type: 'ContentType',
     createdAt: string,
     updatedAt: string,
     createdBy: {
       sys: {
-        type: "Link",
-        linkType: "User",
+        type: 'Link',
+        linkType: 'User',
         id: string,
       },
     },
     updatedBy: {
       sys: {
-        type: "Link",
-        linkType: "User",
+        type: 'Link',
+        linkType: 'User',
         id: string,
       },
     }
     environment?: {
       sys: {
         id: string,
-        type: "Link",
-        linkType: "Environment",
+        type: 'Link',
+        linkType: 'Environment',
       },
     },
     publishedCounter: number,
     version: number,
     publishedBy: {
       sys: {
-        type: "Link",
-        linkType: "User",
+        type: 'Link',
+        linkType: 'User',
         id: string,
       },
     },
@@ -61,18 +61,18 @@ export interface IField {
   validations: IValidation[],
   disabled: boolean,
   omitted: boolean,
-  linkType?: "Entry" | "Asset",
+  linkType?: 'Entry' | 'Asset',
   items?: {
     type: FieldType,
     validations: IValidation[],
-    linkType: "Entry" | "Asset",
+    linkType: 'Entry' | 'Asset',
   }
 }
 
-export type FieldType = "Symbol" | "Text" | "Integer" | "Number" | "Date" | "Boolean" | "Object" | "Location" | "Array" | "Link"
+export type FieldType = 'Symbol' | 'Text' | 'Integer' | 'Number' | 'Date' | 'Boolean' | 'Object' | 'Location' | 'Array' | 'Link'
 
-export type LinkMimetype = "attachment" | "plaintext" | "image" | "audio" | "video" | "richtext" |
-  "presentation" | "spreadsheet" | "pdfdocument" | "archive" | "code" | "markup"
+export type LinkMimetype = 'attachment' | 'plaintext' | 'image' | 'audio' | 'video' | 'richtext' |
+  'presentation' | 'spreadsheet' | 'pdfdocument' | 'archive' | 'code' | 'markup'
 
 export interface IValidation {
   /** Takes an array of content type ids and validates that the link points to an entry of that content type. */

@@ -1,8 +1,8 @@
-import { Diff, DiffArray, DiffObj, isDiff, isDiffItem, isDiffObj } from "./diff"
-import { IContentType, IField } from "./model"
+import { Diff, DiffArray, DiffObj, isDiff, isDiffItem, isDiffObj } from './diff'
+import { IContentType, IField } from './model'
 
-const { diff } = require("json-diff")
-const { colorize } = require("json-diff/lib/colorize")
+const { diff } = require('json-diff')
+const { colorize } = require('json-diff/lib/colorize')
 
 export async function writeModify(from: IContentType, to: IContentType, write: (chunk: string) => Promise<any>): Promise<void> {
 
@@ -46,7 +46,7 @@ ${colorize(fieldsDiff, { color: false } )} */
   fieldsDiff.forEach((item) => {
     const val = item[1]
     switch (item[0]) {
-      case "+":
+      case '+':
         if (!isDiffObj(val)) {
           created.set(val.id, val)
         } else {
@@ -54,7 +54,7 @@ ${colorize(fieldsDiff, { color: false } )} */
         }
         toFieldIndex++
         break
-      case "-":
+      case '-':
         if (!isDiffObj(val)) {
           deleted.set(val.id, val)
         } else {
@@ -62,7 +62,7 @@ ${colorize(fieldsDiff, { color: false } )} */
         }
         fromFieldIndex++
         break
-      case "~":
+      case '~':
         if (isDiffObj(val)) {
           modified.set(to.fields[toFieldIndex].id,
             { field: to.fields[toFieldIndex], diff: val })
@@ -143,7 +143,7 @@ ${colorize(fieldsDiff, { color: false } )} */
         .${key}(${newValue.dump()})`
     })
 
-    return base + "\n"
+    return base + '\n'
   }
 }
 

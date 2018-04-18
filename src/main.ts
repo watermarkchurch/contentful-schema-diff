@@ -1,16 +1,16 @@
 
-import {exec} from "child_process"
-import { create } from "domain"
-import * as fs from "fs-extra"
-import * as path from "path"
-import { Writable } from "stream"
+import {exec} from 'child_process'
+import { create } from 'domain'
+import * as fs from 'fs-extra'
+import * as path from 'path'
+import { Writable } from 'stream'
 
-import { writeCreate } from "./create"
-import { writeDelete } from "./delete"
-import { IContentType } from "./model"
-import { writeModify } from "./modify"
-import { loadSources } from "./source"
-import { asyncWriter, indexById, wait } from "./utils"
+import { writeCreate } from './create'
+import { writeDelete } from './delete'
+import { IContentType } from './model'
+import { writeModify } from './modify'
+import { loadSources } from './source'
+import { asyncWriter, indexById, wait } from './utils'
 
 export interface IArgs {
   from: string,
@@ -76,7 +76,7 @@ class WriteSingleFileRunner {
   public footer: string
 
   constructor(outDir: string, header: string, footer: string) {
-    this.fileName = path.join(outDir, `${new Date().toISOString().replace(/[^\d]/g, "").substring(0, 14)}_generated_from_diff.ts`)
+    this.fileName = path.join(outDir, `${new Date().toISOString().replace(/[^\d]/g, '').substring(0, 14)}_generated_from_diff.ts`)
     this.outputStream = fs.createWriteStream(this.fileName)
     this.fileWriter = asyncWriter(this.outputStream)
     this.header = header
@@ -97,7 +97,7 @@ class WriteSingleFileRunner {
         const header = `
   /************  ${id}  ******************/
 `
-        await this.fileWriter(header + chunks.join(""))
+        await this.fileWriter(header + chunks.join(''))
       }
     })
   }
@@ -107,7 +107,7 @@ class WriteSingleFileRunner {
     this.outputStream.close()
     await wait(1)
     await formatFile(this.fileName)
-    console.log("wrote file", this.fileName)
+    console.log('wrote file', this.fileName)
   }
 }
 
@@ -142,7 +142,7 @@ class FilePerContentTypeRunner {
       tuple.stream.close()
       await wait(1)
       await formatFile(tuple.fileName)
-      console.log("wrote file", tuple.fileName)
+      console.log('wrote file', tuple.fileName)
     })
   }
 
@@ -154,7 +154,7 @@ class FilePerContentTypeRunner {
     return async (chunk: string) => {
       // don't open the file stream until first write
       if (!stream) {
-        fileName = path.join(this.outDir, `${new Date().toISOString().replace(/[^\d]/g, "").substring(0, 14)}_generated_diff_${id.underscore()}.ts`)
+        fileName = path.join(this.outDir, `${new Date().toISOString().replace(/[^\d]/g, '').substring(0, 14)}_generated_diff_${id.underscore()}.ts`)
         stream = fs.createWriteStream(fileName)
         writer = asyncWriter(stream)
         this.streams.push({ stream, writer, fileName })
@@ -168,13 +168,13 @@ class FilePerContentTypeRunner {
 }
 
 function formatFile(file: string): Promise<void> {
-  const tsFmtBinLocation = path.join(require.resolve("typescript-formatter"), "../../.bin/tsfmt")
-  const tsfmtConfigFile = path.relative(process.cwd(), path.join(__dirname, "../tsfmt.json"))
+  const tsFmtBinLocation = path.join(require.resolve('typescript-formatter'), '../../.bin/tsfmt')
+  const tsfmtConfigFile = path.relative(process.cwd(), path.join(__dirname, '../tsfmt.json'))
 
   return new Promise((resolve, reject) => {
     exec(`${tsFmtBinLocation} -r ${file} --useTsfmt ${tsfmtConfigFile}`, (err, stdout, stderr) => {
       if (err) {
-        reject(err.message + "\n\t" + stderr)
+        reject(err.message + '\n\t' + stderr)
       } else {
         resolve()
       }

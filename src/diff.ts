@@ -24,12 +24,12 @@ export type DiffArray<T> = Array<DiffItem<T>>
  * but we can't model that in typescript because it's a circluar reference.
  * Maybe if we defined the interface better...
  */
-export type DiffItem<T> = ["-" | "+", T]  | ["~", DiffObj<T>] | [" ", undefined]
+export type DiffItem<T> = ['-' | '+', T]  | ['~', DiffObj<T>] | [' ', undefined]
 
 /**
  * Represents a change in a primitive field value
  */
-export interface SimpleDiff<T> { "__old": T, "__new": T}
+export interface SimpleDiff<T> { '__old': T, '__new': T}
 
 /**
  * A diff of two objects.  Every key that changes is represented
@@ -43,7 +43,7 @@ export function isDiff(obj: any | Diff): obj is Diff {
 }
 
 export function isDiffObj<T>(obj: T | DiffObj<T>): obj is DiffObj<T> {
-  if (typeof obj != "object" || Object.keys(obj).length == 0) {
+  if (typeof obj != 'object' || Object.keys(obj).length == 0) {
     return false
   }
 
@@ -68,10 +68,10 @@ export function isDiffItem<T>(val: T | DiffItem<T>): boolean {
   if (val.length <= 0 || val.length > 2) {
     return false
   }
-  return val[0] == " " ||
-    val[0] == "~" ||
-    val[0] == "+" ||
-    val[0] == "-"
+  return val[0] == ' ' ||
+    val[0] == '~' ||
+    val[0] == '+' ||
+    val[0] == '-'
 }
 
 export function isSimpleDiff<T>(diff: Diff | SimpleDiff<T>): diff is SimpleDiff<T> {
