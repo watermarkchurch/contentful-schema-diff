@@ -3,6 +3,7 @@ import * as util from 'util'
 import { IContentType } from './model'
 
 declare global {
+  // tslint:disable interface-name
   interface String {
     camelCase(): string
     underscore(): string
@@ -11,6 +12,7 @@ declare global {
   interface Object {
     dump(): string
   }
+  // tslint:enable interface-name
 }
 
 Object.prototype.dump = function(this: any): string {

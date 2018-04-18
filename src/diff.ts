@@ -29,13 +29,13 @@ export type DiffItem<T> = ['-' | '+', T]  | ['~', DiffObj<T>] | [' ', undefined]
 /**
  * Represents a change in a primitive field value
  */
-export interface SimpleDiff<T> { '__old': T, '__new': T}
+export interface ISimpleDiff<T> { '__old': T, '__new': T}
 
 /**
  * A diff of two objects.  Every key that changes is represented
  */
 export type DiffObj<T> = {
-  [field in keyof T]: Diff | SimpleDiff<any>
+  [field in keyof T]: Diff | ISimpleDiff<any>
 }
 
 export function isDiff(obj: any | Diff): obj is Diff {
@@ -74,7 +74,7 @@ export function isDiffItem<T>(val: T | DiffItem<T>): boolean {
     val[0] == '-'
 }
 
-export function isSimpleDiff<T>(diff: Diff | SimpleDiff<T>): diff is SimpleDiff<T> {
+export function isSimpleDiff<T>(diff: Diff | ISimpleDiff<T>): diff is ISimpleDiff<T> {
   const obj = (diff as any)
   return obj.__old !== undefined || obj.__new !== undefined
 }
