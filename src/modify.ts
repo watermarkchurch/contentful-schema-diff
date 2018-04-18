@@ -94,7 +94,7 @@ ${colorize(fieldsDiff, { color: false } )} */
     }
   })
   moved.forEach((val, key) => {
-    write(moveField(val, to, deleted.get(key)))
+    write(moveField(val, deleted.get(key)))
     deleted.delete(key)
   })
   deleted.forEach((val) => write(deleteField(val)))
@@ -118,7 +118,7 @@ ${colorize(fieldsDiff, { color: false } )} */
   `
   }
 
-  function moveField(field: IField, to: IContentType, oldField: IField): string {
+  function moveField(field: IField, oldField: IField): string {
     let move = `
     ${v}.moveField('${field.id}')`
 
@@ -138,10 +138,10 @@ ${colorize(fieldsDiff, { color: false } )} */
     return move
   }
 
-  function modifyField(toField: IField, diff: DiffObj<IField>): string {
+  function modifyField(toField: IField, fieldDiff: DiffObj<IField>): string {
     let base = `
     ${v}.editField('${toField.id}')`
-    Object.keys(diff).forEach((key) => {
+    Object.keys(fieldDiff).forEach((key) => {
       const newValue = (toField as any)[key]
       base += `
         .${key}(${newValue.dump()})`
