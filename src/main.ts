@@ -1,16 +1,16 @@
 
-import * as fs from 'fs-extra'
-import * as path from 'path'
-import {exec} from 'child_process'
-import { Writable } from 'stream';
-import { create } from 'domain';
+import {exec} from "child_process"
+import { create } from "domain"
+import * as fs from "fs-extra"
+import * as path from "path"
+import { Writable } from "stream"
 
-import { IContentType } from './model'
-import { asyncWriter, indexById, wait } from './utils';
-import { writeCreate } from './create';
-import { writeModify } from './modify';
-import { writeDelete } from './delete';
-import { loadSources } from './source';
+import { writeCreate } from "./create"
+import { writeDelete } from "./delete"
+import { IContentType } from "./model"
+import { writeModify } from "./modify"
+import { loadSources } from "./source"
+import { asyncWriter, indexById, wait } from "./utils"
 
 export interface IArgs {
   from: string,
@@ -35,7 +35,7 @@ export default async function Run(args: IArgs) {
 export = function (migration: Migration) {
 `
 
-  const FOOTER =`
+  const FOOTER = `
 }
 `
 
@@ -57,66 +57,66 @@ export = function (migration: Migration) {
       // handled above in 'writeModify'
       return
     }
-    
+
     return writeDelete(id, chunkWriter)
   }))
 
   await Promise.all(promises)
 
-  await runner.close();
+  await runner.close()
 }
 
-type AsyncWrite = (chunk: string) => Promise<any> 
+type AsyncWrite = (chunk: string) => Promise<any>
 
 class WriteSingleFileRunner {
-  fileName: string
-  fileWriter: AsyncWrite
-  outputStream: fs.WriteStream
-  header: string
-  footer: string
+  public fileName: string
+  public fileWriter: AsyncWrite
+  public outputStream: fs.WriteStream
+  public header: string
+  public footer: string
 
   constructor(outDir: string, header: string, footer: string) {
-    this.fileName = path.join(outDir, `${new Date().toISOString().replace(/[^\d]/g, '').substring(0, 14)}_generated_from_diff.ts`)
+    this.fileName = path.join(outDir, `${new Date().toISOString().replace(/[^\d]/g, "").substring(0, 14)}_generated_from_diff.ts`)
     this.outputStream = fs.createWriteStream(this.fileName)
     this.fileWriter = asyncWriter(this.outputStream)
     this.header = header
     this.footer = footer
-  }  
+  }
 
-  async init() {
+  public async init() {
     await this.fileWriter(this.header)
   }
 
-  run(keys: string[], run: (id: string, write: AsyncWrite) => Promise<void>): Promise<void>[] {
+  public run(keys: string[], run: (id: string, write: AsyncWrite) => Promise<void>): Array<Promise<void>> {
     return keys.map(async (id: string) => {
-      let chunks: string[] = []
+      const chunks: string[] = []
 
       await run(id, (chunk: string) => Promise.resolve(chunks.push(chunk)))
 
       if (chunks.length > 0) {
-        const header =`
+        const header = `
   /************  ${id}  ******************/
 `
-        await this.fileWriter(header + chunks.join(''))
+        await this.fileWriter(header + chunks.join(""))
       }
     })
   }
 
-  async close() {
+  public async close() {
     await this.fileWriter(this.footer)
-    this.outputStream.close();
+    this.outputStream.close()
     await wait(1)
     await formatFile(this.fileName)
-    console.log('wrote file', this.fileName)
+    console.log("wrote file", this.fileName)
   }
 }
 
 class FilePerContentTypeRunner {
-  outDir: string
-  header: string
-  footer: string
+  public outDir: string
+  public header: string
+  public footer: string
 
-  streams: { stream: fs.WriteStream, writer: AsyncWrite, fileName: string }[] = []
+  public streams: Array<{ stream: fs.WriteStream, writer: AsyncWrite, fileName: string }> = []
 
   constructor(outDir: string, header: string, footer: string) {
     this.outDir = outDir
@@ -124,11 +124,11 @@ class FilePerContentTypeRunner {
     this.footer = footer
   }
 
-  async init() {
+  public async init() {
 
   }
 
-  run(keys: string[], run: (id: string, write: AsyncWrite) => Promise<void>): Promise<void>[] {
+  public run(keys: string[], run: (id: string, write: AsyncWrite) => Promise<void>): Array<Promise<void>> {
     return keys.map(async (id: string) => {
       const writer = this.makeWriter(id)
 
@@ -136,25 +136,25 @@ class FilePerContentTypeRunner {
     })
   }
 
-  async close() {
-    this.streams.map(async tuple => {
+  public async close() {
+    this.streams.map(async (tuple) => {
       await tuple.writer(this.footer)
       tuple.stream.close()
       await wait(1)
       await formatFile(tuple.fileName)
-      console.log('wrote file', tuple.fileName)
+      console.log("wrote file", tuple.fileName)
     })
   }
 
   private makeWriter(id: string): AsyncWrite {
-    let stream: fs.WriteStream = undefined
+    let stream: fs.WriteStream
     let writer: AsyncWrite
     let fileName: string
 
     return async (chunk: string) => {
       // don't open the file stream until first write
       if (!stream) {
-        fileName = path.join(this.outDir, `${new Date().toISOString().replace(/[^\d]/g, '').substring(0, 14)}_generated_diff_${id.underscore()}.ts`)
+        fileName = path.join(this.outDir, `${new Date().toISOString().replace(/[^\d]/g, "").substring(0, 14)}_generated_diff_${id.underscore()}.ts`)
         stream = fs.createWriteStream(fileName)
         writer = asyncWriter(stream)
         this.streams.push({ stream, writer, fileName })
@@ -168,17 +168,16 @@ class FilePerContentTypeRunner {
 }
 
 function formatFile(file: string): Promise<void> {
-  const tsFmtBinLocation = path.join(require.resolve('typescript-formatter'), '../../.bin/tsfmt')
-  const tsfmtConfigFile = path.relative(process.cwd(), path.join(__dirname, '../tsfmt.json'))
+  const tsFmtBinLocation = path.join(require.resolve("typescript-formatter"), "../../.bin/tsfmt")
+  const tsfmtConfigFile = path.relative(process.cwd(), path.join(__dirname, "../tsfmt.json"))
 
   return new Promise((resolve, reject) => {
     exec(`${tsFmtBinLocation} -r ${file} --useTsfmt ${tsfmtConfigFile}`, (err, stdout, stderr) => {
-      if(err) {
-        reject(err.message + '\n\t' + stderr)
+      if (err) {
+        reject(err.message + "\n\t" + stderr)
       } else {
         resolve()
       }
     })
   })
 }
-

@@ -5,8 +5,8 @@ export interface IContentType {
       sys: {
         type: "Link",
         linkType: "Space",
-        id: string
-      }
+        id: string,
+      },
     },
     id: string,
     type: "ContentType",
@@ -16,22 +16,22 @@ export interface IContentType {
       sys: {
         type: "Link",
         linkType: "User",
-        id: string
-      }
+        id: string,
+      },
     },
     updatedBy: {
       sys: {
         type: "Link",
         linkType: "User",
-        id: string
-      }
+        id: string,
+      },
     }
     environment?: {
       sys: {
         id: string,
         type: "Link",
-        linkType: "Environment"
-      }
+        linkType: "Environment",
+      },
     },
     publishedCounter: number,
     version: number,
@@ -39,12 +39,12 @@ export interface IContentType {
       sys: {
         type: "Link",
         linkType: "User",
-        id: string
-      }
+        id: string,
+      },
     },
     publishedVersion: number,
     firstPublishedAt: string,
-    publishedAt: string
+    publishedAt: string,
   },
   displayField: string,
   name: string,
@@ -65,14 +65,14 @@ export interface IField {
   items?: {
     type: FieldType,
     validations: IValidation[],
-    linkType: "Entry" | "Asset"
+    linkType: "Entry" | "Asset",
   }
 }
 
-export type FieldType = 'Symbol' | 'Text' | 'Integer' | 'Number' | 'Date' | 'Boolean' | 'Object' | 'Location' | 'Array' | 'Link'
+export type FieldType = "Symbol" | "Text" | "Integer" | "Number" | "Date" | "Boolean" | "Object" | "Location" | "Array" | "Link"
 
-export type LinkMimetype = 'attachment' | 'plaintext' | 'image' | 'audio' | 'video' | 'richtext' | 
-  'presentation' | 'spreadsheet' | 'pdfdocument' | 'archive' | 'code' | 'markup'
+export type LinkMimetype = "attachment" | "plaintext" | "image" | "audio" | "video" | "richtext" |
+  "presentation" | "spreadsheet" | "pdfdocument" | "archive" | "code" | "markup"
 
 export interface IValidation {
   /** Takes an array of content type ids and validates that the link points to an entry of that content type. */

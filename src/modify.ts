@@ -1,8 +1,8 @@
-import { IContentType, IField } from "./model";
-import { DiffArray, Diff, DiffObj, isDiff, isDiffItem, isDiffObj } from "./diff";
+import { Diff, DiffArray, DiffObj, isDiff, isDiffItem, isDiffObj } from "./diff"
+import { IContentType, IField } from "./model"
 
-const { diff } = require('json-diff')
-const { colorize } = require('json-diff/lib/colorize')
+const { diff } = require("json-diff")
+const { colorize } = require("json-diff/lib/colorize")
 
 export async function writeModify(from: IContentType, to: IContentType, write: (chunk: string) => Promise<any>): Promise<void> {
 
@@ -30,7 +30,7 @@ export async function writeModify(from: IContentType, to: IContentType, write: (
   var ${v} = migration.editContentType('${from.sys.id}', ${toTypeDef.dump()})
 `)
   }
-  
+
   await write(`
   /*
 ${colorize(fieldsDiff, { color: false } )} */
@@ -40,43 +40,43 @@ ${colorize(fieldsDiff, { color: false } )} */
   const deleted = new Map<string, IField>()
   const modified = new Map<string, { field: IField, diff: DiffObj<IField> }>()
 
-  let fromFieldIndex = 0;
-  let toFieldIndex = 0;
+  let fromFieldIndex = 0
+  let toFieldIndex = 0
 
-  fieldsDiff.forEach(item => {
+  fieldsDiff.forEach((item) => {
     const val = item[1]
-    switch(item[0]) {
+    switch (item[0]) {
       case "+":
         if (!isDiffObj(val)) {
           created.set(val.id, val)
         } else {
           throw new Error('Diff produced a "+" with a diff obj:\n' + JSON.stringify(item))
         }
-        toFieldIndex++;
-        break;
+        toFieldIndex++
+        break
       case "-":
         if (!isDiffObj(val)) {
           deleted.set(val.id, val)
         } else {
           throw new Error('Diff produced a "-" with a diff obj:\n' + JSON.stringify(item))
         }
-        fromFieldIndex++;
-        break;
+        fromFieldIndex++
+        break
       case "~":
         if (isDiffObj(val)) {
-          modified.set(to.fields[toFieldIndex].id, 
+          modified.set(to.fields[toFieldIndex].id,
             { field: to.fields[toFieldIndex], diff: val })
         } else {
           throw new Error('Diff produced a "~" with a non-diff obj:\n' + JSON.stringify(item))
         }
-        fromFieldIndex++;
-        toFieldIndex++;
-        break;
+        fromFieldIndex++
+        toFieldIndex++
+        break
       default:
-        fromFieldIndex++;
-        toFieldIndex++;
-        
-        break;
+        fromFieldIndex++
+        toFieldIndex++
+
+        break
     }
   })
 
@@ -102,24 +102,24 @@ ${colorize(fieldsDiff, { color: false } )} */
   function createField(field: IField): string {
     const fieldDef = Object.assign({}, field)
     delete(fieldDef.id)
-  
+
     return `
     ${v}.createField('${field.id}', ${fieldDef.dump()})
   `
   }
-  
+
   function deleteField(field: IField): string {
     return `
     ${v}.deleteField('${field.id}')
   `
   }
-  
+
   function moveField(field: IField, to: IContentType, oldField: IField): string {
     let move = `
     ${v}.moveField('${field.id}')`
 
-    const newIndex = to.fields.map(f => f.id).indexOf(field.id)
-    if (newIndex == 0) {
+    const newIndex = to.fields.map((f) => f.id).indexOf(field.id)
+    if (newIndex === 0) {
       move += `
         .toTheTop()`
     } else {
@@ -127,8 +127,8 @@ ${colorize(fieldsDiff, { color: false } )} */
         .afterField('${to.fields[newIndex - 1].id}')`
     }
 
-    const changes = <DiffObj<IField>>diff(oldField, field)
-    if(changes) {
+    const changes = diff(oldField, field) as DiffObj<IField>
+    if (changes) {
       move += modifyField(field, changes)
     }
     return move
@@ -137,17 +137,17 @@ ${colorize(fieldsDiff, { color: false } )} */
   function modifyField(toField: IField, diff: DiffObj<IField>): string {
     let base = `
     ${v}.editField('${toField.id}')`
-    Object.keys(diff).forEach(key => {
+    Object.keys(diff).forEach((key) => {
       const newValue = (toField as any)[key]
       base += `
         .${key}(${newValue.dump()})`
     })
 
-    return base + '\n';
+    return base + "\n"
   }
 }
 
 // utilities
-function empty(arr: Array<any>): boolean {
-  return !arr || arr.length == 0
+function empty(arr: any[]): boolean {
+  return !arr || arr.length === 0
 }

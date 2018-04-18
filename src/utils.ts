@@ -1,13 +1,13 @@
-import * as util from 'util'
-import { IContentType } from './model';
-import { Writable } from 'stream';
+import { Writable } from "stream"
+import * as util from "util"
+import { IContentType } from "./model"
 
 declare global {
   interface String {
     camelCase(): string
     underscore(): string
   }
-  
+
   interface Object {
     dump(): string
   }
@@ -17,20 +17,20 @@ Object.prototype.dump = function(this: any): string {
   return util.inspect(this, {
     depth: null,
     maxArrayLength: null,
-    breakLength: 0
+    breakLength: 0,
   })
 }
 
-String.prototype.camelCase = function(this: string) { 
+String.prototype.camelCase = function(this: string) {
   return this.toLowerCase()
     .replace(/-(.)/g, (match, group1) =>
-      group1.toUpperCase()
-    );
+      group1.toUpperCase(),
+    )
 }
 
 String.prototype.underscore = function(this: string) {
 	return this.replace(/([A-Z])/g, (m: string) => "_" + m.toLowerCase())
-};
+}
 
 export function asyncWriter(stream: Writable): (chunk: string) => Promise<any> {
   let draining = true
@@ -38,14 +38,14 @@ export function asyncWriter(stream: Writable): (chunk: string) => Promise<any> {
     return new Promise<void>((resolve, reject) => {
       if (draining) {
         draining = stream.write(chunk, (err: any) => {
-          if(err) {
+          if (err) {
             reject(err)
           } else {
             resolve()
           }
         })
       } else {
-        stream.once('drain', () => {
+        stream.once("drain", () => {
           // await recursive
           doWrite(chunk)
             .then(resolve)
@@ -60,7 +60,7 @@ export function asyncWriter(stream: Writable): (chunk: string) => Promise<any> {
 
 export function indexById(types: IContentType[]): { [id: string]: IContentType } {
   const ret: any = {}
-  types.forEach(type => {
+  types.forEach((type) => {
     ret[type.sys.id] = type
   })
   return ret

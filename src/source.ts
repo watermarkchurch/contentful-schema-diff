@@ -1,14 +1,14 @@
-import * as fs from 'fs-extra'
+import * as fs from "fs-extra"
 
-import { IArgs } from "./main";
-import { IContentType } from "./model";
+import { IArgs } from "./main"
+import { IContentType } from "./model"
 
-const {createClient} = require('contentful-management')
+const {createClient} = require("contentful-management")
 
 export function loadSources(args: IArgs): Promise<IContentType[][]> {
   return Promise.all([
     loadSource(args.from, args),
-    loadSource(args.to, args)
+    loadSource(args.to, args),
   ])
 }
 
@@ -24,14 +24,14 @@ async function loadSource(source: string, args: IArgs): Promise<IContentType[]> 
   }
 
   const client = createClient({
-    accessToken: args.managementToken
+    accessToken: args.managementToken,
   })
 
-  let env: any = undefined
+  let env: any
   try {
     const space = await client.getSpace(source)
-    env = await space.getEnvironment('master')
-  } catch(e) {
+    env = await space.getEnvironment("master")
+  } catch (e) {
     // the source may not be a space - it might be an environment on the '--from' space
     if (args.from == source) {
       throw(e)

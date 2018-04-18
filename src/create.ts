@@ -1,7 +1,7 @@
-import { IContentType } from "./model";
-import { Writable } from "stream";
+import { Writable } from "stream"
+import { IContentType } from "./model"
 
-import './utils'
+import "./utils"
 
 export async function writeCreate(newType: IContentType, write: (chunk: string) => Promise<any>): Promise<void> {
   const v = newType.sys.id.camelCase()
@@ -13,7 +13,7 @@ export async function writeCreate(newType: IContentType, write: (chunk: string) 
   var ${v} = migration.createContentType('${newType.sys.id}', ${typeDef.dump()})
 `)
 
-  for (var field of newType.fields) {
+  for (const field of newType.fields) {
     const fieldDef = Object.assign({}, field)
     delete(fieldDef.id)
 

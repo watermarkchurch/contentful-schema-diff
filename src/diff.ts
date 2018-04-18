@@ -8,18 +8,18 @@ export type Diff = DiffArray<any> | DiffObj<any>
 /**
  * A DiffArray is a Diff of two arrays.  It contains a set of DiffItems.
  */
-export type DiffArray<T> = DiffItem<T>[]
+export type DiffArray<T> = Array<DiffItem<T>>
 
 /**
- * A DiffItem is an array with two values - the first is the operation:  
- * "+" indicates the value was added to the array  
- * "-" indicates the value was removed from the array  
- * "~" indicates the value is still in the array but has changed  
+ * A DiffItem is an array with two values - the first is the operation:
+ * "+" indicates the value was added to the array
+ * "-" indicates the value was removed from the array
+ * "~" indicates the value is still in the array but has changed
  * " " indicates the value did not change.
- * 
+ *
  * The second value is either a whole object in the case of "+" or "-",
  * or a diff of an object.
- * 
+ *
  * In the case of an array of arrays, the "~" value would be a DiffArray,
  * but we can't model that in typescript because it's a circluar reference.
  * Maybe if we defined the interface better...
@@ -29,7 +29,7 @@ export type DiffItem<T> = ["-" | "+", T]  | ["~", DiffObj<T>] | [" ", undefined]
 /**
  * Represents a change in a primitive field value
  */
-export type SimpleDiff<T> = { "__old": T, "__new": T}
+export interface SimpleDiff<T> { "__old": T, "__new": T}
 
 /**
  * A diff of two objects.  Every key that changes is represented
@@ -38,27 +38,26 @@ export type DiffObj<T> = {
   [field in keyof T]: Diff | SimpleDiff<any>
 }
 
-
 export function isDiff(obj: any | Diff): obj is Diff {
   return isDiffArray(obj) || isDiffObj(obj)
 }
 
 export function isDiffObj<T>(obj: T | DiffObj<T>): obj is DiffObj<T> {
   if (typeof obj != "object" || Object.keys(obj).length == 0) {
-    return false;
+    return false
   }
-  
+
   return Object.keys(obj).every((key) => {
     const val = (obj as any)[key]
-    return isSimpleDiff(val) || isDiff(val)    
+    return isSimpleDiff(val) || isDiff(val)
   })
 }
 
-export function isDiffArray<T>(arr: T[] | DiffArray<T>[]): arr is DiffArray<T>[] {
+export function isDiffArray<T>(arr: T[] | Array<DiffArray<T>>): arr is Array<DiffArray<T>> {
   if (!Array.isArray(arr)) {
     return false
   }
-  
+
   return (arr as any).every(isDiffItem)
 }
 
@@ -77,5 +76,5 @@ export function isDiffItem<T>(val: T | DiffItem<T>): boolean {
 
 export function isSimpleDiff<T>(diff: Diff | SimpleDiff<T>): diff is SimpleDiff<T> {
   const obj = (diff as any)
-  return obj["__old"] !== undefined || obj["__new"] !== undefined
+  return obj.__old !== undefined || obj.__new !== undefined
 }
