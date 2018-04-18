@@ -4,10 +4,10 @@
 #
 version: 2
 jobs:
-  build:
+  asdf:
     docker:
       # specify the version you desire here
-      - image: circleci/node:7.10
+      - image: circleci/node:8
       
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
@@ -39,9 +39,9 @@ jobs:
       - run: npm run test
 
       - run: npm run lint
-  publish:
+  build:
     docker:
-      - image: circleci/node:7.10
+      - image: circleci/node:8
     steps:
       - checkout
       # Download and cache dependencies
@@ -53,7 +53,7 @@ jobs:
 
       - run: npm install
       - run: npm run build
-      - run: '[[ ! -f "dist/index.js" ]] && echo "Error building!" && ls dist && exit -1'
+      - run: '[[ -f "dist/index.js" ]] || (echo "Error building!" && >2 ls dist && exit -1)'
       - run: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
       - run: npm publish
 
