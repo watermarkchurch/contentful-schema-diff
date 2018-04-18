@@ -63,7 +63,7 @@ export = function (migration: Migration) {
 
   await Promise.all(promises)
 
-  await runner.close()
+  return await runner.close()
 }
 
 type AsyncWrite = (chunk: string) => Promise<any>
@@ -108,7 +108,7 @@ class WriteSingleFileRunner {
     this.outputStream.close()
     await wait(1)
     await formatFile(this.fileName)
-    console.log('wrote file', this.fileName)
+    return [this.fileName]
   }
 }
 
@@ -138,13 +138,13 @@ class FilePerContentTypeRunner {
   }
 
   public async close() {
-    this.streams.map(async (tuple) => {
+    return Promise.all(this.streams.map(async (tuple) => {
       await tuple.writer(this.footer)
       tuple.stream.close()
       await wait(1)
       await formatFile(tuple.fileName)
-      console.log('wrote file', tuple.fileName)
-    })
+      return tuple.fileName
+    }))
   }
 
   private makeWriter(id: string): AsyncWrite {

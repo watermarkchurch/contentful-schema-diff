@@ -1,3 +1,5 @@
+// tslint:disable no-console
+
 import * as fs from 'fs-extra'
 import * as yargs from 'yargs'
 
@@ -44,6 +46,9 @@ Run({
   managementToken: argv.token || process.env.CONTENTFUL_MANAGEMENT_TOKEN,
   oneFile: argv.oneFile,
 })
+  .then((files) => {
+    files.forEach((file) => console.log(file))
+  })
   .catch((err) => {
     console.error(err)
   })
