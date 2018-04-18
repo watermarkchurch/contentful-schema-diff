@@ -6,6 +6,8 @@
   "rules": {
     "semicolon": [true, "never"],
     "quotemark": [true, "single"],
-    "no-var-requires": false
+    "triple-equals": false,
+    "no-var-requires": false,
+    "object-literal-sort-keys": false
   }
 }
