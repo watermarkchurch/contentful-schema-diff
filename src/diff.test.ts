@@ -11,7 +11,7 @@ describe('isDiff', () => {
     const d = diff(a, b)
 
     // act
-    expect(isDiff(d)).to.be.true
+    expect(isDiff(d)).to.equal(true)
   })
 
   it('returns false for empty diff', () => {
@@ -20,12 +20,12 @@ describe('isDiff', () => {
     const d = diff(a, b)
 
     // act
-    expect(isDiff(d)).to.be.false
+    expect(isDiff(d)).to.equal(false)
   })
 
   it('returns false for non-diff', () => {
     // act
-    expect(isDiff({ test: 'data' })).to.be.false
+    expect(isDiff({ test: 'data' })).to.equal(false)
   })
 
   it('handles complex diff', () => {
@@ -124,7 +124,7 @@ describe('isDiff', () => {
       }]]
 
     // act
-    expect(isDiff(d)).to.be.true
+    expect(isDiff(d)).to.equal(true)
   })
 
 })
@@ -133,29 +133,29 @@ describe('isDiffItem', () => {
   it('returns false for empty array', () => {
     const d = []
 
-    //act
-    expect(isDiffItem(d)).to.be.false
+    // act
+    expect(isDiffItem(d)).to.equal(false)
   })
 
   it('returns false for array with wrong length', () => {
     const d = ['-', 'a', 'B']
 
-    //act
-    expect(isDiffItem(d)).to.be.false
+    // act
+    expect(isDiffItem(d)).to.equal(false)
   })
 
   it('returns false for array with wrong key', () => {
     const d = ['a', 'B']
 
-    //act
-    expect(isDiffItem(d)).to.be.false
+    // act
+    expect(isDiffItem(d)).to.equal(false)
   })
 
   it('handles corner case', () => {
     const d = ['~', {disabled: {__old: false, __new: true}, items: {validations: [['-', {range: {min: 1, max: 4}}], [' ']]}}]
 
-    //act
-    expect(isDiffItem(d)).to.be.true
+    // act
+    expect(isDiffItem(d)).to.equal(true)
   })
 })
 
@@ -164,14 +164,14 @@ describe('isDiffObj', () => {
     const d = {}
 
     // act
-    expect(isDiffObj(d)).to.be.false
+    expect(isDiffObj(d)).to.equal(false)
   })
 
   it('returns false for non-obj', () => {
     const d = ['+', {test: 'data'}]
 
     // act
-    expect(isDiffObj(d)).to.be.false
+    expect(isDiffObj(d)).to.equal(false)
   })
 
   it('returns true for simple diff', () => {
@@ -180,7 +180,7 @@ describe('isDiffObj', () => {
     const d = diff(a, b)
 
     // act
-    expect(isDiffObj(d)).to.be.true
+    expect(isDiffObj(d)).to.equal(true)
   })
 
   it('returns true for diff with sub-diffs', () => {
@@ -191,13 +191,13 @@ describe('isDiffObj', () => {
                __new: 'A new message' } } ] ] }
 
     // act
-    expect(isDiffObj(d)).to.be.true
+    expect(isDiffObj(d)).to.equal(true)
   })
 
   it('returns true for complex diff', () => {
     const d = {disabled: {__old: false, __new: true}, items: {validations: [['-', {range: {min: 1, max: 4}}], [' ']]}}
 
     // act
-    expect(isDiffObj(d)).to.be.true
+    expect(isDiffObj(d)).to.equal(true)
   })
 })
