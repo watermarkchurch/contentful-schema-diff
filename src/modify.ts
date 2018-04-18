@@ -4,7 +4,11 @@ import { IContentType, IField } from './model'
 const { diff } = require('json-diff')
 const { colorize } = require('json-diff/lib/colorize')
 
-export async function writeModify(from: IContentType, to: IContentType, write: (chunk: string) => Promise<any>): Promise<void> {
+export async function writeModify(
+    from: IContentType,
+    to: IContentType,
+    write: (chunk: string) => Promise<any>,
+  ): Promise<void> {
 
   const v = from.sys.id.camelCase()
   const fromTypeDef = Object.assign({}, to)

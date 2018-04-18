@@ -76,7 +76,8 @@ class WriteSingleFileRunner {
   public footer: string
 
   constructor(outDir: string, header: string, footer: string) {
-    this.fileName = path.join(outDir, `${new Date().toISOString().replace(/[^\d]/g, '').substring(0, 14)}_generated_from_diff.ts`)
+    const timestamp = new Date().toISOString().replace(/[^\d]/g, '').substring(0, 14)
+    this.fileName = path.join(outDir, `${timestamp}_generated_from_diff.ts`)
     this.outputStream = fs.createWriteStream(this.fileName)
     this.fileWriter = asyncWriter(this.outputStream)
     this.header = header
@@ -154,7 +155,8 @@ class FilePerContentTypeRunner {
     return async (chunk: string) => {
       // don't open the file stream until first write
       if (!stream) {
-        fileName = path.join(this.outDir, `${new Date().toISOString().replace(/[^\d]/g, '').substring(0, 14)}_generated_diff_${id.underscore()}.ts`)
+        const timestamp = new Date().toISOString().replace(/[^\d]/g, '').substring(0, 14)
+        fileName = path.join(this.outDir, `${timestamp}_generated_diff_${id.underscore()}.ts`)
         stream = fs.createWriteStream(fileName)
         writer = asyncWriter(stream)
         this.streams.push({ stream, writer, fileName })

@@ -62,7 +62,7 @@ describe('isDiff', () => {
             {
               message:
                 {
-                  __old: 'The Top Button must be a button linking to a URL or page.  If the menu is a dropdown, this button is visible when it is collapsed.',
+                  __old: 'The Top Button must be a ...',
                   __new: 'A new message',
                 },
             }]],
@@ -152,7 +152,11 @@ describe('isDiffItem', () => {
   })
 
   it('handles corner case', () => {
-    const d = ['~', {disabled: {__old: false, __new: true}, items: {validations: [['-', {range: {min: 1, max: 4}}], [' ']]}}]
+    const d = ['~',
+      {
+        disabled: {__old: false, __new: true},
+        items: { validations: [['-', {range: {min: 1, max: 4}}], [' ']] },
+      }]
 
     // act
     expect(isDiffItem(d)).to.equal(true)
@@ -187,7 +191,7 @@ describe('isDiffObj', () => {
     const d = { validations:
       [ [ '~',
           { message:
-             { __old: 'The Top Button must be a button linking to a URL or page.  If the menu is a dropdown, this button is visible when it is collapsed.',
+             { __old: 'The Top Button must be a...',
                __new: 'A new message' } } ] ] }
 
     // act

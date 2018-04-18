@@ -69,7 +69,8 @@ export interface IField {
   }
 }
 
-export type FieldType = 'Symbol' | 'Text' | 'Integer' | 'Number' | 'Date' | 'Boolean' | 'Object' | 'Location' | 'Array' | 'Link'
+export type FieldType = 'Symbol' | 'Text' | 'Integer' | 'Number' | 'Date' | 'Boolean' |
+  'Object' | 'Location' | 'Array' | 'Link'
 
 export type LinkMimetype = 'attachment' | 'plaintext' | 'image' | 'audio' | 'video' | 'richtext' |
   'presentation' | 'spreadsheet' | 'pdfdocument' | 'archive' | 'code' | 'markup'
@@ -85,7 +86,9 @@ export interface IValidation {
   size?: { max?: number, min?: number },
   /** Takes min and/or max parameters and validates the range of a value. */
   range?: { max?: number, min?: number},
-  /** Takes a string that reflects a JS regex and flags, validates against a string. See JS reference for the parameters. */
+  /** Takes a string that reflects a JS regex and flags, validates against a string.
+   * See JS reference for the parameters.
+   */
   regexp?: { pattern: string, flags?: string },
   /** Validates that there are no other entries that have the same field value at the time of publication. */
   unique?: true,

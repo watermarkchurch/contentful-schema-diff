@@ -77,7 +77,7 @@ describe('writeCreate', () => {
             linkContentType: [
               'menuButton',
             ],
-            message: 'The Top Button must be a button linking to a URL or page.  If the menu is a dropdown, this button is visible when it is collapsed.',
+            message: 'The Top Button must be a button linking to a...',
           },
         ],
         disabled: false,
