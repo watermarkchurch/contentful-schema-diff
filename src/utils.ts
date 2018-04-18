@@ -1,3 +1,5 @@
+import { exec } from 'child_process'
+import * as path from 'path'
 import { Writable } from 'stream'
 import * as util from 'util'
 import { IContentType } from './model'
@@ -31,7 +33,7 @@ String.prototype.camelCase = function(this: string) {
 }
 
 String.prototype.underscore = function(this: string) {
-	return this.replace(/([A-Z])/g, (m: string) => '_' + m.toLowerCase())
+  return this.replace(/([A-Z])/g, (m: string) => '_' + m.toLowerCase())
 }
 
 export function asyncWriter(stream: Writable): (chunk: string) => Promise<any> {
@@ -71,5 +73,20 @@ export function indexById(types: IContentType[]): { [id: string]: IContentType }
 export function wait(ms: number): Promise<void> {
   return new Promise((resolve, reject) => {
     setTimeout(() => resolve(), ms)
+  })
+}
+
+export function formatFile(file: string): Promise<void> {
+  const tsFmtBinLocation = path.join(require.resolve('typescript-formatter'), '../../.bin/tsfmt')
+  const tsfmtConfigFile = path.relative(process.cwd(), path.join(__dirname, '../tsfmt.json'))
+
+  return new Promise((resolve, reject) => {
+    exec(`${tsFmtBinLocation} -r ${file} --useTsfmt ${tsfmtConfigFile}`, (err, stdout, stderr) => {
+      if (err) {
+        reject(err.message + '\n\t' + stderr)
+      } else {
+        resolve()
+      }
+    })
   })
 }

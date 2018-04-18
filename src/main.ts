@@ -9,6 +9,8 @@ import { writeCreate } from './create'
 import { writeDelete } from './delete'
 import { IContentType } from './model'
 import { writeModify } from './modify'
+import { FilePerContentTypeRunner } from './runners/file_per_content_type'
+import { WriteSingleFileRunner } from './runners/write_single_file'
 import { loadSources } from './source'
 import { asyncWriter, indexById, wait } from './utils'
 
@@ -64,122 +66,4 @@ export = function (migration: Migration) {
   await Promise.all(promises)
 
   return await runner.close()
-}
-
-type AsyncWrite = (chunk: string) => Promise<any>
-
-class WriteSingleFileRunner {
-  public fileName: string
-  public fileWriter: AsyncWrite
-  public outputStream: fs.WriteStream
-  public header: string
-  public footer: string
-
-  constructor(outDir: string, header: string, footer: string) {
-    const timestamp = new Date().toISOString().replace(/[^\d]/g, '').substring(0, 14)
-    this.fileName = path.join(outDir, `${timestamp}_generated_from_diff.ts`)
-    this.outputStream = fs.createWriteStream(this.fileName)
-    this.fileWriter = asyncWriter(this.outputStream)
-    this.header = header
-    this.footer = footer
-  }
-
-  public async init() {
-    await this.fileWriter(this.header)
-  }
-
-  public run(keys: string[], run: (id: string, write: AsyncWrite) => Promise<void>): Array<Promise<void>> {
-    return keys.map(async (id: string) => {
-      const chunks: string[] = []
-
-      await run(id, (chunk: string) => Promise.resolve(chunks.push(chunk)))
-
-      if (chunks.length > 0) {
-        const header = `
-  /************  ${id}  ******************/
-`
-        await this.fileWriter(header + chunks.join(''))
-      }
-    })
-  }
-
-  public async close() {
-    await this.fileWriter(this.footer)
-    this.outputStream.close()
-    await wait(1)
-    await formatFile(this.fileName)
-    return [this.fileName]
-  }
-}
-
-class FilePerContentTypeRunner {
-  public outDir: string
-  public header: string
-  public footer: string
-
-  public streams: Array<{ stream: fs.WriteStream, writer: AsyncWrite, fileName: string }> = []
-
-  constructor(outDir: string, header: string, footer: string) {
-    this.outDir = outDir
-    this.header = header
-    this.footer = footer
-  }
-
-  public async init() {
-
-  }
-
-  public run(keys: string[], run: (id: string, write: AsyncWrite) => Promise<void>): Array<Promise<void>> {
-    return keys.map(async (id: string) => {
-      const writer = this.makeWriter(id)
-
-      await run(id, writer)
-    })
-  }
-
-  public async close() {
-    return Promise.all(this.streams.map(async (tuple) => {
-      await tuple.writer(this.footer)
-      tuple.stream.close()
-      await wait(1)
-      await formatFile(tuple.fileName)
-      return tuple.fileName
-    }))
-  }
-
-  private makeWriter(id: string): AsyncWrite {
-    let stream: fs.WriteStream
-    let writer: AsyncWrite
-    let fileName: string
-
-    return async (chunk: string) => {
-      // don't open the file stream until first write
-      if (!stream) {
-        const timestamp = new Date().toISOString().replace(/[^\d]/g, '').substring(0, 14)
-        fileName = path.join(this.outDir, `${timestamp}_generated_diff_${id.underscore()}.ts`)
-        stream = fs.createWriteStream(fileName)
-        writer = asyncWriter(stream)
-        this.streams.push({ stream, writer, fileName })
-
-        await writer(this.header)
-      }
-
-      writer(chunk)
-    }
-  }
-}
-
-function formatFile(file: string): Promise<void> {
-  const tsFmtBinLocation = path.join(require.resolve('typescript-formatter'), '../../.bin/tsfmt')
-  const tsfmtConfigFile = path.relative(process.cwd(), path.join(__dirname, '../tsfmt.json'))
-
-  return new Promise((resolve, reject) => {
-    exec(`${tsFmtBinLocation} -r ${file} --useTsfmt ${tsfmtConfigFile}`, (err, stdout, stderr) => {
-      if (err) {
-        reject(err.message + '\n\t' + stderr)
-      } else {
-        resolve()
-      }
-    })
-  })
 }
