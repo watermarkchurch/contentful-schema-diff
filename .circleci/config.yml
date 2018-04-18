@@ -4,7 +4,7 @@
 #
 version: 2
 jobs:
-  asdf:
+  build:
     docker:
       # specify the version you desire here
       - image: circleci/node:8
@@ -39,7 +39,7 @@ jobs:
       - run: npm run test
 
       - run: npm run lint
-  build:
+  publish:
     docker:
       - image: circleci/node:8
     steps:
