@@ -53,7 +53,7 @@ jobs:
 
       - run: npm install
       - run: npm run build
-      - run: [[ ! -f "dist/index.js" ]] && echo "Error building!" && ls dist && exit -1
+      - run: '[[ ! -f "dist/index.js" ]] && echo "Error building!" && ls dist && exit -1'
       - run: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
       - run: npm publish
 
