@@ -104,3 +104,50 @@ export interface IValidation {
   /** Other validations */
   [validation: string]: any
 }
+
+export interface IEditorInterface {
+  sys: {
+    id: string,
+    type: 'EditorInterface',
+    space: {
+      sys: {
+        id: string,
+        type: 'Link',
+        linkType: 'Space',
+      },
+    },
+    version: number,
+    createdAt: string,
+    createdBy: {
+      sys: {
+        id: string,
+        type: 'Link',
+        linkType: 'User',
+      },
+    },
+    updatedAt: string,
+    updatedBy: {
+      sys: {
+        id: string,
+        type: 'Link',
+        linkType: 'User',
+      },
+    },
+    contentType: {
+      sys: {
+        id: string,
+        type: 'Link',
+        linkType: 'ContentType',
+      },
+    },
+  },
+  controls: Array<
+      {
+        fieldId: string,
+        widgetId: string,
+        settings?: {
+          helpText: string
+        },
+      }
+    >
+}

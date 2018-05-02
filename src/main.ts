@@ -7,12 +7,13 @@ import { Writable } from 'stream'
 
 import { writeCreate } from './create'
 import { writeDelete } from './delete'
+import { writeEditorInterfaceChange } from './editor_interface';
 import { IContentType } from './model'
 import { writeModify } from './modify'
 import { FilePerContentTypeRunner } from './runners/file_per_content_type'
 import { WriteSingleFileRunner } from './runners/write_single_file'
 import { loadSources } from './source'
-import { asyncWriter, indexById, wait } from './utils'
+import { asyncWriter, indexByContentType, indexById, wait } from './utils'
 
 export interface IArgs {
   from: string,
@@ -26,8 +27,10 @@ export default async function Run(args: IArgs) {
 
   const [from, to] = await loadSources(args)
 
-  const fromTypes = indexById(from)
-  const toTypes = indexById(to)
+  const fromTypes = indexById(from.contentTypes)
+  const fromEditorInterfaces = indexByContentType(from.editorInterfaces)
+  const toTypes = indexById(to.contentTypes)
+  const toEditorInterfaces = indexByContentType(to.editorInterfaces)
 
   const HEADER = `import Migration from 'contentful-migration-cli'
 
@@ -47,12 +50,13 @@ export = function (migration: Migration) {
 
   await runner.init()
 
-  const promises = runner.run(Object.keys(toTypes), (id, chunkWriter) => {
+  const promises = runner.run(Object.keys(toTypes), async (id, chunkWriter) => {
     if (fromTypes[id]) {
-      return writeModify(fromTypes[id], toTypes[id], chunkWriter)
+      await writeModify(fromTypes[id], toTypes[id], chunkWriter)
     } else {
-      return writeCreate(toTypes[id], chunkWriter)
+      await writeCreate(toTypes[id], chunkWriter)
     }
+    return writeEditorInterfaceChange(fromEditorInterfaces[id], toEditorInterfaces[id], chunkWriter)
   })
   promises.push(...runner.run(Object.keys(fromTypes), (id, chunkWriter) => {
     if (toTypes[id]) {
