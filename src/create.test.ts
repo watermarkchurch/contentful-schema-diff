@@ -134,7 +134,7 @@ describe('writeCreate', () => {
     const buf = new Buffer('')
     const chunks: string[] = []
 
-    await writeCreate(contentType, async (chunk) => chunks.push(chunk))
+    await writeCreate(contentType, async (chunk) => chunks.push(chunk), {})
 
     const written = chunks.join('')
     expect(written).to.include('migration.createContentType(\'menu')
@@ -148,7 +148,7 @@ describe('writeCreate', () => {
     const buf = new Buffer('')
     const chunks: string[] = []
 
-    await writeCreate(contentType, async (chunk) => chunks.push(chunk))
+    await writeCreate(contentType, async (chunk) => chunks.push(chunk), {})
 
     const written = chunks.join('')
     expect(written).to.include('menu.createField(\'name')

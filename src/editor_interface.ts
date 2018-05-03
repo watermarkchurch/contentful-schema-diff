@@ -1,10 +1,12 @@
 import { IEditorInterface } from "./model"
 import { eachInSequence } from "./utils";
+import { IContext } from "./runners";
 
 export async function writeEditorInterfaceChange(
       from: IEditorInterface,
       to: IEditorInterface,
       write: (chunk: string) => Promise<any>,
+      context?: IContext
     ): Promise<void> {
 
   let fieldsToWrite = to.controls
@@ -20,11 +22,23 @@ export async function writeEditorInterfaceChange(
       return previous.widgetId != control.widgetId
     })
   }
-  const v = to.sys.contentType.sys.id.camelCase()
+
+  if (fieldsToWrite.length == 0) {
+    return
+  }
+
+  context = context || {}
+  if (!context.varname) {
+    const v = to.sys.contentType.sys.id.camelCase()
+    await write(`
+  var ${v} = migration.editContentType('${to.sys.contentType.sys.id}')
+`)
+    context.varname = v
+  }
 
   await eachInSequence(fieldsToWrite, (field) =>
     write(`
-  ${v}.changeEditorInterface('${field.fieldId}', '${field.widgetId}')
+  ${context.varname}.changeEditorInterface('${field.fieldId}', '${field.widgetId}')
 `)
   )
 }

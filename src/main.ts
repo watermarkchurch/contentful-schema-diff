@@ -50,21 +50,21 @@ export = function (migration: Migration) {
 
   await runner.init()
 
-  const promises = runner.run(Object.keys(toTypes), async (id, chunkWriter) => {
+  const promises = runner.run(Object.keys(toTypes), async (id, chunkWriter, context) => {
     if (fromTypes[id]) {
-      await writeModify(fromTypes[id], toTypes[id], chunkWriter)
+      await writeModify(fromTypes[id], toTypes[id], chunkWriter, context)
     } else {
-      await writeCreate(toTypes[id], chunkWriter)
+      await writeCreate(toTypes[id], chunkWriter, context)
     }
-    return writeEditorInterfaceChange(fromEditorInterfaces[id], toEditorInterfaces[id], chunkWriter)
+    return writeEditorInterfaceChange(fromEditorInterfaces[id], toEditorInterfaces[id], chunkWriter, context)
   })
-  promises.push(...runner.run(Object.keys(fromTypes), (id, chunkWriter) => {
+  promises.push(...runner.run(Object.keys(fromTypes), (id, chunkWriter, context) => {
     if (toTypes[id]) {
       // handled above in 'writeModify'
       return
     }
 
-    return writeDelete(id, chunkWriter)
+    return writeDelete(id, chunkWriter, context)
   }))
 
   await Promise.all(promises)

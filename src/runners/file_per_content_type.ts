@@ -2,9 +2,8 @@ import {WriteStream} from 'fs'
 import * as fs from 'fs-extra'
 import * as path from 'path'
 
-import { asyncWriter, formatFile, wait } from '../utils'
-
-export type AsyncWrite = (chunk: string) => Promise<any>
+import { formatFile, wait } from '../utils'
+import { asyncWriter, AsyncWrite, IContext } from '.';
 
 export class FilePerContentTypeRunner {
   public outDir: string
@@ -23,11 +22,12 @@ export class FilePerContentTypeRunner {
     return
   }
 
-  public run(keys: string[], run: (id: string, write: AsyncWrite) => Promise<void>): Array<Promise<void>> {
+  public run(keys: string[], run: (id: string, write: AsyncWrite, context: IContext) => Promise<void>): Array<Promise<void>> {
     return keys.map(async (id: string) => {
-      const writer = this.makeWriter(id)
+      const context: IContext = {}
+      const writer = this.makeWriter(id, context)
 
-      await run(id, writer)
+      await run(id, writer, context)
     })
   }
 
@@ -41,7 +41,7 @@ export class FilePerContentTypeRunner {
     }))
   }
 
-  private makeWriter(id: string): AsyncWrite {
+  private makeWriter(id: string, context: IContext): AsyncWrite {
     let stream: fs.WriteStream
     let writer: AsyncWrite
     let fileName: string
@@ -56,6 +56,8 @@ export class FilePerContentTypeRunner {
         this.streams.push({ stream, writer, fileName })
 
         await writer(this.header)
+
+        context.open = true
       }
 
       writer(chunk)

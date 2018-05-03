@@ -3,6 +3,7 @@ import {expect} from 'chai'
 import {IContentType} from './model'
 import {writeModify} from './modify'
 import * as utils from './utils'
+import { IContext } from './runners';
 
 describe('writeModify', () => {
   const fromType: IContentType = {
@@ -280,17 +281,27 @@ describe('writeModify', () => {
 
     const chunks: string[] = []
 
-    await writeModify(fromType, toType, async (chunk) => chunks.push(chunk))
+    await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), {})
 
     const written = chunks.join('')
     expect(written).to.include('migration.editContentType(\'menu\')')
+  })
+
+  it('sets varname on context', async () => {
+
+    const chunks: string[] = []
+    const context: IContext = {}
+
+    await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), context)
+
+    expect(context.varname).to.eq('menu')
   })
 
   it('dumps diff as comment', async () => {
 
     const chunks: string[] = []
 
-    await writeModify(fromType, toType, async (chunk) => chunks.push(chunk))
+    await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), {})
 
     const written = chunks.join('')
     expect(written).to.match(/\-\s+type\: \"Symbol\"/)
@@ -301,7 +312,7 @@ describe('writeModify', () => {
 
     const chunks: string[] = []
 
-    await writeModify(fromType, toType, async (chunk) => chunks.push(chunk))
+    await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), {})
 
     const written = chunks.join('')
     expect(written).to.include('menu.createField(\'newField\', { name: \'New Field\',')
@@ -311,7 +322,7 @@ describe('writeModify', () => {
 
     const chunks: string[] = []
 
-    await writeModify(fromType, toType, async (chunk) => chunks.push(chunk))
+    await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), {})
 
     const written = chunks.join('')
     expect(written).to.include('menu.deleteField(\'sideMenu\')')
@@ -321,7 +332,7 @@ describe('writeModify', () => {
 
     const chunks: string[] = []
 
-    await writeModify(fromType, toType, async (chunk) => chunks.push(chunk))
+    await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), {})
 
     const written = chunks.join('')
     expect(written).to.include('menu.moveField(\'movedField\')\n        .afterField(\'name\')')
@@ -331,7 +342,7 @@ describe('writeModify', () => {
 
     const chunks: string[] = []
 
-    await writeModify(fromType, toType, async (chunk) => chunks.push(chunk))
+    await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), {})
 
     const written = chunks.join('')
     expect(written).to.match(/menu.editField\('name'\)\s+.type\('Text'\)/)
@@ -342,7 +353,7 @@ describe('writeModify', () => {
 
     const chunks: string[] = []
 
-    await writeModify(fromType, toType, async (chunk) => chunks.push(chunk))
+    await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), {})
 
     const written = chunks.join('').replace(/\s+/g, '')
     expect(written).to.include(`
@@ -362,7 +373,7 @@ describe('writeModify', () => {
 
     const chunks: string[] = []
 
-    await writeModify(fromType, toType, async (chunk) => chunks.push(chunk))
+    await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), {})
 
     const written = chunks.join('')
     expect(written).to.match(/menu.editField\('movedField'\)\s+.required\(false\)/)

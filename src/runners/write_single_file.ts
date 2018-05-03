@@ -2,9 +2,8 @@ import {WriteStream} from 'fs'
 import * as fs from 'fs-extra'
 import * as path from 'path'
 
-import { asyncWriter, formatFile, wait } from '../utils'
-
-export type AsyncWrite = (chunk: string) => Promise<any>
+import { formatFile, wait } from '../utils'
+import { AsyncWrite, asyncWriter, IContext } from '.';
 
 export class WriteSingleFileRunner {
   public fileName: string
@@ -26,11 +25,14 @@ export class WriteSingleFileRunner {
     await this.fileWriter(this.header)
   }
 
-  public run(keys: string[], run: (id: string, write: AsyncWrite) => Promise<void>): Array<Promise<void>> {
+  public run(keys: string[], doRun: (id: string, write: AsyncWrite, context: IContext) => Promise<void>): Array<Promise<void>> {
     return keys.map(async (id: string) => {
+      const context: IContext = {
+        open: true
+      }
       const chunks: string[] = []
 
-      await run(id, (chunk: string) => Promise.resolve(chunks.push(chunk)))
+      await doRun(id, (chunk: string) => Promise.resolve(chunks.push(chunk)), context)
 
       if (chunks.length > 0) {
         const header = `

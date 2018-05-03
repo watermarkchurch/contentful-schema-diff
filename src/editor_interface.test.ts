@@ -247,7 +247,7 @@ describe('editor interfaces', () => {
       const buf = new Buffer('')
       const chunks: string[] = []
 
-      await writeEditorInterfaceChange(null, to.menu, async (chunk) => chunks.push(chunk))
+      await writeEditorInterfaceChange(null, to.menu, async (chunk) => chunks.push(chunk), { varname: 'menu' })
 
       const written = chunks.join('')
       expect(written).to.include("menu.changeEditorInterface('name', 'singleLine')")
@@ -277,6 +277,27 @@ describe('editor interfaces', () => {
       expect(written).to.include("sectionVideoHighlight.changeEditorInterface('embedCode', 'custom-editor-extension')")
 
       expect(written).to.not.include("title")
+    })
+
+    it('opens content type for edit if varname not set in context', async () => {
+      const buf = new Buffer('')
+      const chunks: string[] = []
+
+      await writeEditorInterfaceChange(from['section-video-highlight'], to['section-video-highlight'], async (chunk) => chunks.push(chunk))
+
+      const written = chunks.join('')
+      expect(written).to.include("var sectionVideoHighlight = migration.editContentType('section-video-highlight')")
+    })
+
+    it('does not reopen content type if variable already was written', async () => {
+      const buf = new Buffer('')
+      const chunks: string[] = []
+
+      await writeEditorInterfaceChange(null, to.menu, async (chunk) => chunks.push(chunk), { varname: 'menu' })
+
+      const written = chunks.join('')
+      expect(written).to.not.include("var menu")
+      expect(written).to.not.include("migration.editContentType")
     })
 
     // contentful-migration-cli does not yet support writing help text
