@@ -2,8 +2,8 @@ import {expect} from 'chai'
 
 import {IContentType} from './model'
 import {writeModify} from './modify'
+import { IContext } from './runners'
 import * as utils from './utils'
-import { IContext } from './runners';
 
 describe('writeModify', () => {
   const fromType: IContentType = {

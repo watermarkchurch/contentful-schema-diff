@@ -25,10 +25,12 @@ export class WriteSingleFileRunner {
     await this.fileWriter(this.header)
   }
 
-  public run(keys: string[], doRun: (id: string, write: AsyncWrite, context: IContext) => Promise<void>): Array<Promise<void>> {
+  public run(
+      keys: string[],
+      doRun: (id: string, write: AsyncWrite, context: IContext) => Promise<void>): Array<Promise<void>> {
     return keys.map(async (id: string) => {
       const context: IContext = {
-        open: true
+        open: true,
       }
       const chunks: string[] = []
 

@@ -2,7 +2,7 @@ import * as fs from 'fs-extra'
 
 import { IArgs } from './main'
 import { IContentType, IEditorInterface } from './model'
-import { eachInSequence } from './utils';
+import { eachInSequence } from './utils'
 
 const {createClient} = require('contentful-management')
 
@@ -20,7 +20,6 @@ export function loadSources(args: IArgs): Promise<ISource[]> {
 }
 
 async function loadSource(source: string, args: IArgs): Promise<ISource> {
-  let type: any
   let contentTypes
   let editorInterfaces: IEditorInterface[]
 
@@ -56,10 +55,10 @@ async function loadSource(source: string, args: IArgs): Promise<ISource> {
       const space = await client.getSpace(spaceId)
       env = await space.getEnvironment(envId)
     }
-    console.log('Using space', spaceId, 'environment', envId)
 
     contentTypes = (await env.getContentTypes()).items
-    editorInterfaces = await eachInSequence(contentTypes, (ct: any) => <Promise<IEditorInterface>>ct.getEditorInterface())
+    editorInterfaces = await eachInSequence(contentTypes,
+      (ct: any) => ct.getEditorInterface() as Promise<IEditorInterface>)
   }
   return {
     id: source,
@@ -72,6 +71,6 @@ function parseEnv(source: string): { spaceId: string, envId: string } {
   const parts = source.split('/')
   return {
     spaceId: parts[0],
-    envId: parts.length > 1 ? parts[1] : 'master'
+    envId: parts.length > 1 ? parts[1] : 'master',
   }
 }

@@ -22,7 +22,9 @@ export class FilePerContentTypeRunner {
     return
   }
 
-  public run(keys: string[], run: (id: string, write: AsyncWrite, context: IContext) => Promise<void>): Array<Promise<void>> {
+  public run(
+      keys: string[],
+      run: (id: string, write: AsyncWrite, context: IContext) => Promise<void>): Array<Promise<void>> {
     return keys.map(async (id: string) => {
       const context: IContext = {}
       const writer = this.makeWriter(id, context)

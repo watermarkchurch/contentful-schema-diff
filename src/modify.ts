@@ -1,6 +1,6 @@
 import { Diff, DiffArray, DiffObj, isDiff, isDiffItem, isDiffObj } from './diff'
 import { IContentType, IField } from './model'
-import { IContext } from './runners';
+import { IContext } from './runners'
 
 const { diff } = require('json-diff')
 const { colorize } = require('json-diff/lib/colorize')
@@ -9,7 +9,7 @@ export async function writeModify(
     from: IContentType,
     to: IContentType,
     write: (chunk: string) => Promise<any>,
-    context: IContext
+    context: IContext,
   ): Promise<void> {
 
   const v = from.sys.id.camelCase()

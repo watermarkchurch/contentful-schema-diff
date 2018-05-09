@@ -7,7 +7,7 @@ import { Writable } from 'stream'
 
 import { writeCreate } from './create'
 import { writeDelete } from './delete'
-import { writeEditorInterfaceChange } from './editor_interface';
+import { writeEditorInterfaceChange } from './editor_interface'
 import { IContentType } from './model'
 import { writeModify } from './modify'
 import { FilePerContentTypeRunner } from './runners/file_per_content_type'

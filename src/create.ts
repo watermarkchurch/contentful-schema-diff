@@ -1,8 +1,8 @@
 import { Writable } from 'stream'
 import { IContentType } from './model'
 
+import { IContext } from './runners'
 import './utils'
-import { IContext } from './runners';
 
 export async function writeCreate(newType: IContentType, write: (chunk: string) => Promise<any>, context: IContext): Promise<void> {
   const v = newType.sys.id.camelCase()

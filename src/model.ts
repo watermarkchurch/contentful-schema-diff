@@ -146,7 +146,7 @@ export interface IEditorInterface {
         fieldId: string,
         widgetId: string,
         settings?: {
-          helpText: string
+          helpText: string,
         },
       }
     >

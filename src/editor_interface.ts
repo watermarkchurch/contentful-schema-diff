@@ -1,21 +1,21 @@
-import { IEditorInterface } from "./model"
-import { eachInSequence } from "./utils";
-import { IContext } from "./runners";
+import { IEditorInterface } from './model'
+import { IContext } from './runners'
+import { eachInSequence } from './utils'
 
 export async function writeEditorInterfaceChange(
       from: IEditorInterface,
       to: IEditorInterface,
       write: (chunk: string) => Promise<any>,
-      context?: IContext
+      context?: IContext,
     ): Promise<void> {
 
   let fieldsToWrite = to.controls
   if (from) {
-    fieldsToWrite = fieldsToWrite.filter(control => {
-      const previous = from.controls.find(prev => prev.fieldId == control.fieldId)
+    fieldsToWrite = fieldsToWrite.filter((control) => {
+      const previous = from.controls.find((prev) => prev.fieldId == control.fieldId)
       if (!previous) {
         // new control
-        return true;
+        return true
       }
 
       // widget ID changed
@@ -39,6 +39,6 @@ export async function writeEditorInterfaceChange(
   await eachInSequence(fieldsToWrite, (field) =>
     write(`
   ${context.varname}.changeEditorInterface('${field.fieldId}', '${field.widgetId}')
-`)
+`),
   )
 }
