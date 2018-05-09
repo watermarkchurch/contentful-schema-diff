@@ -13,7 +13,7 @@ import { writeModify } from './modify'
 import { FilePerContentTypeRunner } from './runners/file_per_content_type'
 import { WriteSingleFileRunner } from './runners/write_single_file'
 import { loadSources } from './source'
-import { asyncWriter, indexByContentType, indexById, wait } from './utils'
+import { indexByContentType, indexById, wait } from './utils'
 
 export interface IArgs {
   from: string,

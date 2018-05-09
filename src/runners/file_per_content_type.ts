@@ -2,8 +2,8 @@ import {WriteStream} from 'fs'
 import * as fs from 'fs-extra'
 import * as path from 'path'
 
+import { AsyncWrite, asyncWriter, IContext } from '.'
 import { formatFile, wait } from '../utils'
-import { asyncWriter, AsyncWrite, IContext } from '.';
 
 export class FilePerContentTypeRunner {
   public outDir: string
