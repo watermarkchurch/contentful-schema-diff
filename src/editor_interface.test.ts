@@ -119,6 +119,13 @@ describe('editor interfaces', () => {
           },
           widgetId: 'multipleLine',
         },
+        {
+          fieldId: 'anotherField',
+          widgetId: 'singleLine',
+          settings: {
+            helpText: 'some prior value',
+          },
+        },
       ],
     },
   }
@@ -214,9 +221,6 @@ describe('editor interfaces', () => {
       controls: [
         {
           fieldId: 'tag',
-          settings: {
-            helpText: 'Choose from one of the available tags',
-          },
           widgetId: 'dropdown',
         },
         {
@@ -237,6 +241,13 @@ describe('editor interfaces', () => {
           },
           widgetId: 'custom-editor-extension',
         },
+        {
+          fieldId: 'anotherField',
+          widgetId: 'singleLine',
+          settings: {
+            helpText: 'This is a change in settings only',
+          },
+        },
       ],
     },
   }
@@ -244,7 +255,6 @@ describe('editor interfaces', () => {
   context('brand new content type', () => {
 
     it('explicitly writes default on initial', async () => {
-      const buf = new Buffer('')
       const chunks: string[] = []
 
       await writeEditorInterfaceChange(null, to.menu, async (chunk) => chunks.push(chunk), { varname: 'menu' })
@@ -256,7 +266,6 @@ describe('editor interfaces', () => {
     })
 
     it('writes nothing if no diff', async () => {
-      const buf = new Buffer('')
       const chunks: string[] = []
 
       await writeEditorInterfaceChange(from.menu, to.menu, async (chunk) => chunks.push(chunk))
@@ -266,34 +275,31 @@ describe('editor interfaces', () => {
     })
 
     it('writes changes for diffs', async () => {
-      const buf = new Buffer('')
       const chunks: string[] = []
 
       await writeEditorInterfaceChange(from['section-video-highlight'],
         to['section-video-highlight'], async (chunk) => chunks.push(chunk))
 
       const written = chunks.join('')
-      expect(written).to.include('sectionVideoHighlight.changeEditorInterface(\'tag\', \'dropdown\')')
-      expect(written).to.include('sectionVideoHighlight.changeEditorInterface(\'subtext\', \'singleLine\')')
+      expect(written).to.include('sectionVideoHighlight.changeEditorInterface(\'tag\', \'dropdown\'')
+      expect(written).to.include('sectionVideoHighlight.changeEditorInterface(\'subtext\', \'singleLine\'')
       expect(written).to.include(
-        'sectionVideoHighlight.changeEditorInterface(\'embedCode\', \'custom-editor-extension\')')
+        'sectionVideoHighlight.changeEditorInterface(\'embedCode\', \'custom-editor-extension\'')
 
-      expect(written).to.not.include('title')
+      expect(written).to.not.include('\'title\'')
     })
 
     it('opens content type for edit if varname not set in context', async () => {
-      const buf = new Buffer('')
       const chunks: string[] = []
 
       await writeEditorInterfaceChange(from['section-video-highlight'],
         to['section-video-highlight'], async (chunk) => chunks.push(chunk))
 
       const written = chunks.join('')
-      expect(written).to.include('var sectionVideoHighlight = migration.editContentType(\'section-video-highlight\')')
+      expect(written).to.include('var sectionVideoHighlight = migration.editContentType(\'section-video-highlight\'')
     })
 
     it('does not reopen content type if variable already was written', async () => {
-      const buf = new Buffer('')
       const chunks: string[] = []
 
       await writeEditorInterfaceChange(null, to.menu, async (chunk) => chunks.push(chunk), { varname: 'menu' })
@@ -303,7 +309,25 @@ describe('editor interfaces', () => {
       expect(written).to.not.include('migration.editContentType')
     })
 
-    // contentful-migration-cli does not yet support writing help text
-    it('writes help text if present')
+    it('writes help text if present', async () => {
+      const chunks: string[] = []
+
+      await writeEditorInterfaceChange(from['section-video-highlight'],
+        to['section-video-highlight'], async (chunk) => chunks.push(chunk))
+
+      const written = chunks.join('')
+      expect(written).to.include('sectionVideoHighlight.changeEditorInterface(\'tag\', \'dropdown\')')
+      expect(written).to.include('sectionVideoHighlight.changeEditorInterface(\'subtext\', \'singleLine\', {')
+    })
+
+    it('writes change if settings changed', async () => {
+      const chunks: string[] = []
+
+      await writeEditorInterfaceChange(from['section-video-highlight'],
+        to['section-video-highlight'], async (chunk) => chunks.push(chunk))
+
+      const written = chunks.join('')
+      expect(written).to.include('sectionVideoHighlight.changeEditorInterface(\'anotherField\', \'singleLine\', {')
+    })
   })
 })

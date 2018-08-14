@@ -1,3 +1,4 @@
+import * as _ from 'lodash'
 import { IEditorInterface } from './model'
 import { IContext } from './runners'
 import { eachInSequence } from './utils'
@@ -19,7 +20,15 @@ export async function writeEditorInterfaceChange(
       }
 
       // widget ID changed
-      return previous.widgetId != control.widgetId
+      if (previous.widgetId != control.widgetId) {
+        return true
+      }
+
+      // settings changed
+      if (!_.isEqual(previous.settings, control.settings)) {
+        return true
+      }
+      return false
     })
   }
 
@@ -36,9 +45,15 @@ export async function writeEditorInterfaceChange(
     context.varname = v
   }
 
-  await eachInSequence(fieldsToWrite, (field) =>
-    write(`
-  ${context.varname}.changeEditorInterface('${field.fieldId}', '${field.widgetId}')
-`),
-  )
+  await eachInSequence(fieldsToWrite, async (field) => {
+    await write(`
+  ${context.varname}.changeEditorInterface('${field.fieldId}', '${field.widgetId}'`)
+
+    if (field.settings) {
+      await write(`, ${field.settings.dump()}`)
+    }
+
+    await write(`)
+`)
+  })
 }
