@@ -21,6 +21,7 @@ export interface IArgs {
   oneFile: boolean,
   outDir: string,
   managementToken: string
+  contentTypes: string[]
 }
 
 export default async function Run(args: IArgs) {
