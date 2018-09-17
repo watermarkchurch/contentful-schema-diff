@@ -318,6 +318,16 @@ describe('writeModify', () => {
     expect(written).to.include('menu.createField(\'newField\', { name: \'New Field\',')
   })
 
+  it('moves newly created fields', async () => {
+
+    const chunks: string[] = []
+
+    await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), {})
+
+    const written = chunks.join('')
+    expect(written).to.include('menu.moveField(\'newField\')\n        .afterField(\'movedField\')')
+  })
+
   it('writes deleted fields', async () => {
 
     const chunks: string[] = []

@@ -110,9 +110,12 @@ ${colorize(fieldsDiff, { color: false } )} */
     const fieldDef = Object.assign({}, field)
     delete(fieldDef.id)
 
-    return `
+    let create = `
     ${v}.createField('${field.id}', ${fieldDef.dump()})
   `
+    create += moveField(field)
+
+    return create
   }
 
   function deleteField(field: IField): string {
@@ -121,7 +124,7 @@ ${colorize(fieldsDiff, { color: false } )} */
   `
   }
 
-  function moveField(field: IField, oldField: IField): string {
+  function moveField(field: IField, oldField?: IField): string {
     let move = `
     ${v}.moveField('${field.id}')`
 
@@ -134,7 +137,7 @@ ${colorize(fieldsDiff, { color: false } )} */
         .afterField('${to.fields[newIndex - 1].id}')`
     }
 
-    const changes = diff(oldField, field) as DiffObj<IField>
+    const changes = oldField && diff(oldField, field) as DiffObj<IField>
     if (changes) {
       move += modifyField(field, changes)
     }

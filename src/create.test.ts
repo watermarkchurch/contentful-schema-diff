@@ -130,8 +130,6 @@ describe('writeCreate', () => {
   }
 
   it('dumps content type', async () => {
-
-    const buf = new Buffer('')
     const chunks: string[] = []
 
     await writeCreate(contentType, async (chunk) => chunks.push(chunk), {})
@@ -144,8 +142,6 @@ describe('writeCreate', () => {
   })
 
   it('dumps simple fields', async () => {
-
-    const buf = new Buffer('')
     const chunks: string[] = []
 
     await writeCreate(contentType, async (chunk) => chunks.push(chunk), {})
