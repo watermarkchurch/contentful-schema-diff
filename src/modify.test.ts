@@ -236,4 +236,37 @@ describe('writeModify', () => {
   .validations([ { in: [0, 1, 2] } ])`.replace(/\s+/g, ''))
   })
 
+  it('properly moves field when new field inserted above', async () => {
+    const from = fakeContentType('page',
+      fakeField({
+        id: 'metaDescription',
+        name: 'Meta-Description',
+        validations: [ { size: { max: 160 } } ],
+      }),
+    )
+
+    const to = fakeContentType('page',
+      fakeField({
+        id: 'metaTitle',
+        name: 'Meta-Title',
+        validations: [ { regexp: { pattern: '^\w+$' }} ],
+      }),
+      fakeField({
+        id: 'metaDescription',
+        name: 'Meta-Description',
+        validations: [ { size: { max: 160 } } ],
+      }),
+    )
+
+    const chunks: string[] = []
+
+    await writeModify(from, to, async (chunk) => chunks.push(chunk), {})
+
+    const written = chunks.join('')
+    expect(written).to.include(`createField('metaTitle'`)
+    expect(written).to.include(`moveField('metaTitle'`)
+    expect(written).to.not.include(`editField('metaDescription'`)
+
+  })
+
 })

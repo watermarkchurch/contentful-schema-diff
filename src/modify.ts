@@ -1,4 +1,4 @@
-import { Diff, DiffArray, DiffObj, isDiff, isDiffItem, isDiffObj } from './diff'
+import { Diff, DiffArray, DiffObj, isDiff, isDiffItem, isDiffObj, isSimpleDiff } from './diff'
 import { IContentType, IField } from './model'
 import { IContext } from './runners'
 
@@ -88,6 +88,14 @@ ${colorize(fieldsDiff, { color: false } )} */
   })
 
   const moved = new Map<string, IField>()
+  modified.forEach((val) => {
+    if (val.diff.id && isSimpleDiff(val.diff.id) && created.has(val.diff.id.__old)) {
+      created.delete(val.diff.id.__old)
+      created.set(val.field.id, val.field)
+    } else {
+      write(modifyField(val.field, val.diff))
+    }
+  })
   created.forEach((val, key) => {
     if (deleted.has(key)) {
       moved.set(key, val)
@@ -101,9 +109,6 @@ ${colorize(fieldsDiff, { color: false } )} */
     deleted.delete(key)
   })
   deleted.forEach((val) => write(deleteField(val)))
-  modified.forEach((val) => {
-    write(modifyField(val.field, val.diff))
-  })
 
   // writer functions
   function createField(field: IField): string {
