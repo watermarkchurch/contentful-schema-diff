@@ -269,4 +269,35 @@ describe('writeModify', () => {
 
   })
 
+  it('also picks up field changes when new field inserted above', async () => {
+    const from = fakeContentType('page',
+      fakeField({
+        id: 'metaDescription',
+        name: 'Meta-Description',
+        validations: [ { size: { max: 160 } } ],
+      }),
+    )
+
+    const to = fakeContentType('page',
+      fakeField({
+        id: 'metaTitle',
+        name: 'Meta-Title',
+        validations: [ { regexp: { pattern: '^\w+$' }} ],
+      }),
+      fakeField({
+        id: 'metaDescription',
+        name: 'Meta-Description',
+        validations: [ { size: { max: 170 } } ],
+      }),
+    )
+
+    const chunks: string[] = []
+
+    await writeModify(from, to, async (chunk) => chunks.push(chunk), {})
+
+    const written = chunks.join('')
+    expect(written.replace(/\s+/g, '')).to
+      .include(`editField('metaDescription').validations([{size:{max:170}}])`)
+  })
+
 })

@@ -89,10 +89,15 @@ ${colorize(fieldsDiff, { color: false } )} */
 
   const moved = new Map<string, IField>()
   modified.forEach((val) => {
-    if (val.diff.id && isSimpleDiff(val.diff.id) && created.has(val.diff.id.__old)) {
+    if (val && val.diff && val.diff.id && isSimpleDiff(val.diff.id) && created.has(val.diff.id.__old)) {
+      // A new field was inserted just before this field and the diff got confused
       created.delete(val.diff.id.__old)
       created.set(val.field.id, val.field)
-    } else {
+
+      // re-diff the old field that was moved to see if we had any changes
+      val = reDiff(val.diff.id.__old)
+    }
+    if (val && val.diff) {
       write(modifyField(val.field, val.diff))
     }
   })
@@ -133,7 +138,7 @@ ${colorize(fieldsDiff, { color: false } )} */
     let move = `
     ${v}.moveField('${field.id}')`
 
-    const newIndex = to.fields.map((f) => f.id).indexOf(field.id)
+    const newIndex = fieldIndex(to.fields, field)
     if (newIndex === 0) {
       move += `
         .toTheTop()`
@@ -160,9 +165,20 @@ ${colorize(fieldsDiff, { color: false } )} */
 
     return base + '\n'
   }
+
+  function reDiff(id: string): { field: IField, diff: DiffObj<IField> } {
+    const toField = to.fields.find((f) => f.id == id)
+    const fromField = from.fields.find((f) => f.id == id)
+    const d = diff(fromField, toField)
+    return d ? { field: toField, diff: d } : null
+  }
 }
 
 // utilities
 function empty(arr: any[]): boolean {
   return !arr || arr.length === 0
+}
+
+function fieldIndex(fields: IField[], field: IField): number {
+  return fields.map((f) => f.id).indexOf(field.id)
 }
