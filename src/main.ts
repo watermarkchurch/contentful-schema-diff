@@ -1,14 +1,6 @@
-
-import {exec} from 'child_process'
-import { create } from 'domain'
-import * as fs from 'fs-extra'
-import * as path from 'path'
-import { Writable } from 'stream'
-
 import { writeCreate } from './create'
 import { writeDelete } from './delete'
 import { writeEditorInterfaceChange } from './editor_interface'
-import { IContentType } from './model'
 import { writeModify } from './modify'
 import { FilePerContentTypeRunner } from './runners/file_per_content_type'
 import { WriteSingleFileRunner } from './runners/write_single_file'
@@ -16,11 +8,20 @@ import { loadSources } from './source'
 import { indexByContentType, indexById } from './utils'
 
 export interface IArgs {
+  /** A contentful export file, or Contentful Space ID */
   from: string,
+  /** A contentful export file, space ID, or environment within the "from" space */
   to: string,
-  oneFile: boolean,
-  outDir: string,
-  managementToken: string
+  /** (optional) Write all the migrations in a single file */
+  oneFile?: boolean,
+  /** The output directory (or file if '--oneFile' was specified) */
+  out: string,
+  /**
+   * A Contentful management token to download content types from a space.
+   * Not required if both `from` and `to` are files.
+   */
+  managementToken?: string
+  /** Generate a migration only for these content types. */
   contentTypes: string[]
 }
 
@@ -46,8 +47,8 @@ export = function (migration: Migration, { makeRequest, spaceId, accessToken }) 
 `
 
   const runner = args.oneFile ?
-    new WriteSingleFileRunner(args.outDir, HEADER, FOOTER) :
-    new FilePerContentTypeRunner(args.outDir, HEADER, FOOTER)
+    new WriteSingleFileRunner(args.out, HEADER, FOOTER) :
+    new FilePerContentTypeRunner(args.out, HEADER, FOOTER)
 
   await runner.init()
 

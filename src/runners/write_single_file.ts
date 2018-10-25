@@ -12,9 +12,13 @@ export class WriteSingleFileRunner {
   public header: string
   public footer: string
 
-  constructor(outDir: string, header: string, footer: string) {
-    const timestamp = new Date().toISOString().replace(/[^\d]/g, '').substring(0, 14)
-    this.fileName = path.join(outDir, `${timestamp}_generated_from_diff.ts`)
+  constructor(out: string, header: string, footer: string) {
+    this.fileName = out
+    if (fs.existsSync(out) && fs.statSync(out).isDirectory()) {
+      const timestamp = new Date().toISOString().replace(/[^\d]/g, '').substring(0, 14)
+      this.fileName = path.join(out, `${timestamp}_generated_from_diff.ts`)
+    }
+
     this.outputStream = fs.createWriteStream(this.fileName)
     this.fileWriter = asyncWriter(this.outputStream)
     this.header = header

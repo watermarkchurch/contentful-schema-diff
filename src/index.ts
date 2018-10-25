@@ -23,7 +23,7 @@ const argv = yargs
   })
   .option('out', {
     alias: 'o',
-    description: 'The output directory in which to place the migration',
+    description: 'The output directory (or file if "--one-file" was specified) in which to place the migration',
   })
   .option('token', {
     alias: 'a',
@@ -47,7 +47,7 @@ const contentTypes = argv.contentType && (Array.isArray(argv.contentType) ? argv
 
 Run({
   from: argv.from,
-  outDir: argv.out,
+  out: argv.out,
   to: argv.to,
   managementToken: argv.token || process.env.CONTENTFUL_MANAGEMENT_TOKEN,
   oneFile: argv.oneFile,
