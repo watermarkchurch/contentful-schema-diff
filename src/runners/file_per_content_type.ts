@@ -62,7 +62,7 @@ export class FilePerContentTypeRunner {
         context.open = true
       }
 
-      writer(chunk)
+      return writer(chunk)
     }
   }
 }
