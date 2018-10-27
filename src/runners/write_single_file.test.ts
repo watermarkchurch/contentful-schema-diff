@@ -19,10 +19,12 @@ describe('WriteSingleFileRunner', () => {
     it('writes a chunk to the specified file', async () => {
       const instance = new WriteSingleFileRunner('temp.ts', '', '')
       await instance.init()
-      await instance.run(['k1', 'k2'],
-        async (id, write, ctx) => {
-          write(`${id}: test`)
-        },
+      await Promise.all(
+        instance.run(['k1', 'k2'],
+          (id, write, ctx) => {
+            return write(`${id}: test`)
+          },
+        ),
       )
 
       await instance.close()
