@@ -45,7 +45,7 @@ ${colorize(fieldsDiff, { color: false } )} */
 
   const created = new Map<string, IField>()
   const deleted = new Map<string, IField>()
-  const modified = new Map<string, { field: IField, diff: DiffObj<IField> }>()
+  const modified = new Map<string, { field: IField, diff: DiffObj<IField> } | null>()
 
   let fromFieldIndex = 0
   let toFieldIndex = 0
@@ -54,7 +54,7 @@ ${colorize(fieldsDiff, { color: false } )} */
     const val = item[1]
     switch (item[0]) {
       case '+':
-        if (!isDiffObj(val)) {
+        if (val && !isDiffObj(val)) {
           created.set(val.id, val)
         } else {
           throw new Error('Diff produced a "+" with a diff obj:\n' + JSON.stringify(item))
@@ -62,7 +62,7 @@ ${colorize(fieldsDiff, { color: false } )} */
         toFieldIndex++
         break
       case '-':
-        if (!isDiffObj(val)) {
+        if (val && !isDiffObj(val)) {
           deleted.set(val.id, val)
         } else {
           throw new Error('Diff produced a "-" with a diff obj:\n' + JSON.stringify(item))
@@ -70,7 +70,7 @@ ${colorize(fieldsDiff, { color: false } )} */
         fromFieldIndex++
         break
       case '~':
-        if (isDiffObj(val)) {
+        if (val && isDiffObj(val)) {
           modified.set(to.fields[toFieldIndex].id,
             { field: to.fields[toFieldIndex], diff: val })
         } else {
@@ -166,9 +166,12 @@ ${colorize(fieldsDiff, { color: false } )} */
     return base + '\n'
   }
 
-  function reDiff(id: string): { field: IField, diff: DiffObj<IField> } {
+  function reDiff(id: string): { field: IField, diff: DiffObj<IField> } | null {
     const toField = to.fields.find((f) => f.id == id)
     const fromField = from.fields.find((f) => f.id == id)
+    if (!toField || !fromField) {
+      throw new Error(`Unable to find field ${id} in re-diff of ${to.name}`)
+    }
     const d = diff(fromField, toField)
     return d ? { field: toField, diff: d } : null
   }

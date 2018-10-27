@@ -131,24 +131,24 @@ describe('isDiff', () => {
 
 describe('isDiffItem', () => {
   it('returns false for empty array', () => {
-    const d = []
+    const d = [] as any[]
 
     // act
-    expect(isDiffItem(d)).to.equal(false)
+    expect(isDiffItem(d as any)).to.equal(false)
   })
 
   it('returns false for array with wrong length', () => {
     const d = ['-', 'a', 'B']
 
     // act
-    expect(isDiffItem(d)).to.equal(false)
+    expect(isDiffItem(d as any)).to.equal(false)
   })
 
   it('returns false for array with wrong key', () => {
     const d = ['a', 'B']
 
     // act
-    expect(isDiffItem(d)).to.equal(false)
+    expect(isDiffItem(d as any)).to.equal(false)
   })
 
   it('handles corner case', () => {
@@ -159,7 +159,7 @@ describe('isDiffItem', () => {
       }]
 
     // act
-    expect(isDiffItem(d)).to.equal(true)
+    expect(isDiffItem(d as any)).to.equal(true)
   })
 })
 
