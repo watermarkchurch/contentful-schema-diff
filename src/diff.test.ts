@@ -1,207 +1,201 @@
+import test from 'ava'
 import { expect } from 'chai'
 
 import { isDiff, isDiffItem, isDiffObj } from './diff'
 
 const { diff } = require('json-diff')
 
-describe('isDiff', () => {
-  it('handles simple diff', () => {
-    const a = { test: 1 }
-    const b = { test: 2 }
-    const d = diff(a, b)
+test('isDiff handles simple diff', () => {
+  const a = { test: 1 }
+  const b = { test: 2 }
+  const d = diff(a, b)
 
-    // act
-    expect(isDiff(d)).to.equal(true)
-  })
+  // act
+  expect(isDiff(d)).to.equal(true)
+})
 
-  it('returns false for empty diff', () => {
-    const a = { test: 1 }
-    const b = { test: 1 }
-    const d = diff(a, b)
+test('isDiff returns false for empty diff', () => {
+  const a = { test: 1 }
+  const b = { test: 1 }
+  const d = diff(a, b)
 
-    // act
-    expect(isDiff(d)).to.equal(false)
-  })
+  // act
+  expect(isDiff(d)).to.equal(false)
+})
 
-  it('returns false for non-diff', () => {
-    // act
-    expect(isDiff({ test: 'data' })).to.equal(false)
-  })
+test('isDiff returns false for non-diff', () => {
+  // act
+  expect(isDiff({ test: 'data' })).to.equal(false)
+})
 
-  it('handles complex diff', () => {
-    const d = [
-      ['~', {
-        type: { __old: 'Symbol', __new: 'Text' },
-      }],
-    ['+',
-      {
-        id: 'movedField',
-        name: 'Moved Field',
-        type: 'Number',
-        localized: false,
-        required: true,
-        validations: [],
-        disabled: false,
-        omitted: false,
-      }],
-    ['+',
-      {
-        id: 'newField',
-        name: 'New Field',
-        type: 'Symbol',
-        localized: false,
-        required: true,
-        validations: [],
-        disabled: false,
-        omitted: false,
-      }],
-    ['~',
-      {
-        validations:
-          [['~',
-            {
-              message:
-                {
-                  __old: 'The Top Button must be a ...',
-                  __new: 'A new message',
-                },
-            }]],
-      }],
-    ['-',
-      {
-        id: 'movedField',
-        name: 'Moved Field',
-        type: 'Number',
-        localized: false,
-        required: true,
-        validations: [],
-        disabled: false,
-        omitted: false,
-      }],
-    ['~',
-      {
-        disabled:
+test('isDiff handles complex diff', () => {
+  const d = [
+    ['~', {
+      type: { __old: 'Symbol', __new: 'Text' },
+    }],
+  ['+',
+    {
+      id: 'movedField',
+      name: 'Moved Field',
+      type: 'Number',
+      localized: false,
+      required: true,
+      validations: [],
+      disabled: false,
+      omitted: false,
+    }],
+  ['+',
+    {
+      id: 'newField',
+      name: 'New Field',
+      type: 'Symbol',
+      localized: false,
+      required: true,
+      validations: [],
+      disabled: false,
+      omitted: false,
+    }],
+  ['~',
+    {
+      validations:
+        [['~',
           {
-            __old: false,
-            __new: true,
-          },
-        items:
-          {
-            validations:
-              [['-',
-                {
-                  range:
-                    {
-                      min: 1,
-                      max: 4,
-                    },
-                }],
-              [' ']],
-          },
-      }],
-    ['-',
-      {
-        id: 'sideMenu',
-        name: 'Side Menu',
-        type: 'Link',
-        localized: false,
-        required: false,
-        validations:
-          [{
-            range:
+            message:
               {
-                min: 1,
-                max: 5,
+                __old: 'The Top Button must be a ...',
+                __new: 'A new message',
               },
-          },
-          {
-            linkContentType: ['menu'],
-            message: 'The Side Menu must be a Menu',
-          }],
-        disabled: false,
-        omitted: false,
-        linkType: 'Entry',
-      }]]
+          }]],
+    }],
+  ['-',
+    {
+      id: 'movedField',
+      name: 'Moved Field',
+      type: 'Number',
+      localized: false,
+      required: true,
+      validations: [],
+      disabled: false,
+      omitted: false,
+    }],
+  ['~',
+    {
+      disabled:
+        {
+          __old: false,
+          __new: true,
+        },
+      items:
+        {
+          validations:
+            [['-',
+              {
+                range:
+                  {
+                    min: 1,
+                    max: 4,
+                  },
+              }],
+            [' ']],
+        },
+    }],
+  ['-',
+    {
+      id: 'sideMenu',
+      name: 'Side Menu',
+      type: 'Link',
+      localized: false,
+      required: false,
+      validations:
+        [{
+          range:
+            {
+              min: 1,
+              max: 5,
+            },
+        },
+        {
+          linkContentType: ['menu'],
+          message: 'The Side Menu must be a Menu',
+        }],
+      disabled: false,
+      omitted: false,
+      linkType: 'Entry',
+    }]]
 
-    // act
-    expect(isDiff(d)).to.equal(true)
-  })
-
+  // act
+  expect(isDiff(d)).to.equal(true)
 })
 
-describe('isDiffItem', () => {
-  it('returns false for empty array', () => {
-    const d = [] as any[]
+test('isDiffItem returns false for empty array', () => {
+  const d = [] as any[]
 
-    // act
-    expect(isDiffItem(d as any)).to.equal(false)
-  })
-
-  it('returns false for array with wrong length', () => {
-    const d = ['-', 'a', 'B']
-
-    // act
-    expect(isDiffItem(d as any)).to.equal(false)
-  })
-
-  it('returns false for array with wrong key', () => {
-    const d = ['a', 'B']
-
-    // act
-    expect(isDiffItem(d as any)).to.equal(false)
-  })
-
-  it('handles corner case', () => {
-    const d = ['~',
-      {
-        disabled: {__old: false, __new: true},
-        items: { validations: [['-', {range: {min: 1, max: 4}}], [' ']] },
-      }]
-
-    // act
-    expect(isDiffItem(d as any)).to.equal(true)
-  })
+  // act
+  expect(isDiffItem(d as any)).to.equal(false)
 })
 
-describe('isDiffObj', () => {
-  it('returns false for empty obj', () => {
-    const d = {}
+test('isDiffItem returns false for array with wrong length', () => {
+  const d = ['-', 'a', 'B']
 
-    // act
-    expect(isDiffObj(d)).to.equal(false)
-  })
+  // act
+  expect(isDiffItem(d as any)).to.equal(false)
+})
 
-  it('returns false for non-obj', () => {
-    const d = ['+', {test: 'data'}]
+test('isDiffItem returns false for array with wrong key', () => {
+  const d = ['a', 'B']
 
-    // act
-    expect(isDiffObj(d)).to.equal(false)
-  })
+  // act
+  expect(isDiffItem(d as any)).to.equal(false)
+})
 
-  it('returns true for simple diff', () => {
-    const a = { test: 1 }
-    const b = { test: 2 }
-    const d = diff(a, b)
+test('isDiffItem handles corner case', () => {
+  const d = ['~',
+    {
+      disabled: {__old: false, __new: true},
+      items: { validations: [['-', {range: {min: 1, max: 4}}], [' ']] },
+    }]
 
-    // act
-    expect(isDiffObj(d)).to.equal(true)
-  })
+  // act
+  expect(isDiffItem(d as any)).to.equal(true)
+})
 
-  it('returns true for diff with sub-diffs', () => {
-    const d = { validations:
-      [ [ '~',
-          { message:
-             { __old: 'The Top Button must be a...',
-               __new: 'A new message' } } ] ] }
+test('isDiffObj returns false for empty obj', () => {
+  const d = {}
 
-    // act
-    expect(isDiffObj(d)).to.equal(true)
-  })
+  // act
+  expect(isDiffObj(d)).to.equal(false)
+})
 
-  it('returns true for complex diff', () => {
-    const d = {disabled: {__old: false, __new: true}, items: {validations: [['-', {range: {min: 1, max: 4}}], [' ']]}}
+test('isDiffObj returns false for non-obj', () => {
+  const d = ['+', {test: 'data'}]
 
-    // act
-    expect(isDiffObj(d)).to.equal(true)
-  })
+  // act
+  expect(isDiffObj(d)).to.equal(false)
+})
+
+test('isDiffObj returns true for simple diff', () => {
+  const a = { test: 1 }
+  const b = { test: 2 }
+  const d = diff(a, b)
+
+  // act
+  expect(isDiffObj(d)).to.equal(true)
+})
+
+test('isDiffObj returns true for diff with sub-diffs', () => {
+  const d = { validations:
+    [ [ '~',
+        { message:
+            { __old: 'The Top Button must be a...',
+              __new: 'A new message' } } ] ] }
+
+  // act
+  expect(isDiffObj(d)).to.equal(true)
+})
+
+test('isDiffObj returns true for complex diff', () => {
+  const d = {disabled: {__old: false, __new: true}, items: {validations: [['-', {range: {min: 1, max: 4}}], [' ']]}}
+
+  // act
+  expect(isDiffObj(d)).to.equal(true)
 })

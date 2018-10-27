@@ -1,7 +1,8 @@
 import * as _ from 'lodash'
 import { IEditorInterface } from './model'
 import { IContext } from './runners'
-import { eachInSequence } from './utils'
+import { eachInSequence, extendPrototypes } from './utils'
+extendPrototypes()
 
 export async function writeEditorInterfaceChange(
       from: IEditorInterface | null,

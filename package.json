@@ -8,7 +8,7 @@
   },
   "scripts": {
     "lint": "tslint src/**/*.ts",
-    "test": "mocha --require ts-node/register 'src/**/*.test.ts'",
+    "test": "ava",
     "test-watch": "nodemon --watch src/ -e ts --exec 'npm run test || echo \"Tests failed!\"'",
     "build": "tsc",
     "prepare": "npm run build"
@@ -20,11 +20,10 @@
     "@types/chai": "^4.1.2",
     "@types/fs-extra": "^5.0.2",
     "@types/lodash": "^4.14.116",
-    "@types/mocha": "^5.0.0",
     "@types/node": "^9.6.4",
     "@types/yargs": "^11.0.0",
+    "ava": "1.0.0-rc.1",
     "chai": "^4.1.2",
-    "mocha": "^5.0.5",
     "ts-node": "^7.0.1",
     "tslint-eslint-rules": "^5.4.0"
   },
@@ -37,5 +36,22 @@
     "typescript": "^3.1",
     "typescript-formatter": "^7.2.2",
     "yargs": "^11.0.0"
-  }
+  },
+  "ava": {
+		"files": [
+			"src/**/*.test.ts"
+		],
+		"cache": true,
+		"concurrency": 5,
+		"failFast": true,
+		"failWithoutAssertions": false,
+		"verbose": true,
+		"compileEnhancements": false,
+		"extensions": [
+			"ts"
+		],
+		"require": [
+			"ts-node/register"
+		]
+	}
 }
