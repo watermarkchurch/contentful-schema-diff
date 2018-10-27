@@ -4,3 +4,5 @@ dist/
 .envrc
 
 *_generated_*
+
+.nyc_output

@@ -8,7 +8,7 @@
   },
   "scripts": {
     "lint": "tslint src/**/*.ts",
-    "test": "ava",
+    "test": "nyc ava",
     "test-watch": "nodemon --watch src/ -e ts --exec 'npm run test || echo \"Tests failed!\"'",
     "build": "tsc",
     "prepare": "npm run build"
@@ -24,6 +24,7 @@
     "@types/yargs": "^11.0.0",
     "ava": "1.0.0-rc.1",
     "chai": "^4.1.2",
+    "nyc": "^13.1.0",
     "ts-node": "^7.0.1",
     "tslint-eslint-rules": "^5.4.0"
   },
@@ -38,20 +39,20 @@
     "yargs": "^11.0.0"
   },
   "ava": {
-		"files": [
-			"src/**/*.test.ts"
-		],
-		"cache": true,
-		"concurrency": 5,
-		"failFast": true,
-		"failWithoutAssertions": false,
-		"verbose": true,
-		"compileEnhancements": false,
-		"extensions": [
-			"ts"
-		],
-		"require": [
-			"ts-node/register"
-		]
-	}
+    "files": [
+      "src/**/*.test.ts"
+    ],
+    "cache": true,
+    "concurrency": 5,
+    "failFast": true,
+    "failWithoutAssertions": false,
+    "verbose": true,
+    "compileEnhancements": false,
+    "extensions": [
+      "ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ]
+  }
 }
