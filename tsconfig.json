@@ -3,6 +3,8 @@
     "declaration": true,
     "outDir": "dist",
     "noImplicitAny": true,
+    "strictFunctionTypes": true,
+    "strictNullChecks": true,
     "lib": [
       "es2015"
     ]

@@ -63,7 +63,7 @@ export = function (migration: Migration, { makeRequest, spaceId, accessToken }) 
   promises.push(...runner.run(Object.keys(fromTypes), (id, chunkWriter, context) => {
     if (toTypes[id]) {
       // handled above in 'writeModify'
-      return
+      return Promise.resolve()
     }
 
     return writeDelete(id, chunkWriter, context)

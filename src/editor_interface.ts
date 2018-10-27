@@ -36,18 +36,18 @@ export async function writeEditorInterfaceChange(
     return
   }
 
-  context = context || {}
-  if (!context.varname) {
+  const ctx = context || {}
+  if (!ctx.varname) {
     const v = to.sys.contentType.sys.id.camelCase()
     await write(`
   var ${v} = migration.editContentType('${to.sys.contentType.sys.id}')
 `)
-    context.varname = v
+    ctx.varname = v
   }
 
   await eachInSequence(fieldsToWrite, async (field) => {
     await write(`
-  ${context.varname}.changeEditorInterface('${field.fieldId}', '${field.widgetId}'`)
+  ${ctx.varname}.changeEditorInterface('${field.fieldId}', '${field.widgetId}'`)
 
     if (field.settings) {
       await write(`, ${field.settings.dump()}`)
