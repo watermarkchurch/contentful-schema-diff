@@ -1,9 +1,7 @@
 import { expect } from 'chai'
 import * as fs from 'fs-extra'
-import * as _ from 'lodash'
 import * as path from 'path'
 
-import { eq } from 'semver'
 import { FilePerContentTypeRunner } from './file_per_content_type'
 
 describe('FilePerContentTypeRunner', () => {
