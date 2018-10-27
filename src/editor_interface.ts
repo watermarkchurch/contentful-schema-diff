@@ -4,7 +4,7 @@ import { IContext } from './runners'
 import { eachInSequence } from './utils'
 
 export async function writeEditorInterfaceChange(
-      from: IEditorInterface,
+      from: IEditorInterface | null,
       to: IEditorInterface,
       write: (chunk: string) => Promise<any>,
       context?: IContext,
