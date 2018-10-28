@@ -1,11 +1,10 @@
 import test from 'ava'
-import { expect } from 'chai'
 
 import { asyncWriter } from './async_writer'
 
 // tslint:disable:no-unused-expression
 
-test('writes chunks to the stream', async () => {
+test('writes chunks to the stream', async (t) => {
   const chunks = [] as string[]
   const stream = {
     write: (chunk: string, cb: () => void) => {
@@ -21,10 +20,10 @@ test('writes chunks to the stream', async () => {
   await write('2')
   await write('3')
 
-  expect(chunks).to.deep.eq(['1', '2', '3'])
+  t.deepEqual(chunks, ['1', '2', '3'])
 })
 
-test('rejects the promise if write sends an error', async () => {
+test('rejects the promise if write sends an error', async (t) => {
   const stream = {
     write: (chunk: string, cb: (err: any) => void) => {
       setTimeout(() => cb('test err'), 1)
@@ -42,10 +41,10 @@ test('rejects the promise if write sends an error', async () => {
     caught = e
   }
 
-  expect(caught).to.exist
+  t.truthy(caught)
 })
 
-test('waits for the drain event if draining', async () => {
+test('waits for the drain event if draining', async (t) => {
   const chunks = [] as string[]
   const drainers = [] as Array<() => void>
   const stream = {
@@ -55,7 +54,7 @@ test('waits for the drain event if draining', async () => {
       return false
     },
     once: (event: string, drainer: () => void) => {
-      expect(event).to.eq('drain')
+      t.deepEqual(event, 'drain')
       drainers.push(drainer)
     },
   }
@@ -68,14 +67,14 @@ test('waits for the drain event if draining', async () => {
   let p2err: any = null
   p2.then(() => p2done = true, (err) => p2err = err)
 
-  expect(chunks).to.deep.eq(['1'])
-  expect(drainers.length).to.eq(1)
+  t.deepEqual(chunks, ['1'])
+  t.deepEqual(drainers.length, 1)
 
-  expect(p2done).to.be.false
-  expect(p2err).to.be.null
+  t.false(p2done)
+  t.falsy(p2err)
 })
 
-test('recursively writes the chunk after drain event', async () => {
+test('recursively writes the chunk after drain event', async (t) => {
   const chunks = [] as string[]
   const drainers = [] as Array<() => void>
   const stream = {
@@ -85,7 +84,7 @@ test('recursively writes the chunk after drain event', async () => {
       return false
     },
     once: (event: string, drainer: () => void) => {
-      expect(event).to.eq('drain')
+      t.deepEqual(event, 'drain')
       drainers.push(drainer)
     },
   }
@@ -103,19 +102,19 @@ test('recursively writes the chunk after drain event', async () => {
   drainers[0]()
   await p2
 
-  expect(p3done).to.be.false
-  expect(p3err).to.be.null
-  expect(chunks).to.deep.eq(['1', '2'])
-  expect(drainers.length).to.eq(2)
+  t.false(p3done)
+  t.falsy(p3err)
+  t.deepEqual(chunks, ['1', '2'])
+  t.deepEqual(drainers.length, 2)
 
   // drain event
   drainers[1]()
   await p3
 
-  expect(chunks).to.deep.eq(['1', '2', '3'])
+  t.deepEqual(chunks, ['1', '2', '3'])
 })
 
-test('catches errors after a drain event', async () => {
+test('catches errors after a drain event', async (t) => {
   const chunks = [] as string[]
   const drainers = [] as Array<() => void>
   const stream = {
@@ -128,7 +127,7 @@ test('catches errors after a drain event', async () => {
       return false
     },
     once: (event: string, drainer: () => void) => {
-      expect(event).to.eq('drain')
+      t.deepEqual(event, 'drain')
       drainers.push(drainer)
     },
   }
@@ -153,5 +152,5 @@ test('catches errors after a drain event', async () => {
   drainers[1]()
   await p3
 
-  expect(caught2).to.exist
+  t.truthy(caught2)
 })

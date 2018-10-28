@@ -1,5 +1,4 @@
 import test from 'ava'
-import { expect } from 'chai'
 import * as fs from 'fs-extra'
 
 import { WriteSingleFileRunner } from './write_single_file'
@@ -14,7 +13,7 @@ test.afterEach(async () => {
   }
 })
 
-test.serial('writes a chunk to the specified file', async () => {
+test.serial('writes a chunk to the specified file', async (t) => {
   const instance = new WriteSingleFileRunner('temp.ts', '', '')
   await instance.init()
   await Promise.all(
@@ -29,11 +28,11 @@ test.serial('writes a chunk to the specified file', async () => {
 
   const contents = (await fs.readFile('temp.ts')).toString()
 
-  expect(contents).to.include('k1: test')
-  expect(contents).to.include('k2: test')
+  t.regex(contents, /k1: test/)
+  t.regex(contents, /k2: test/)
 })
 
-test.serial('writes header and footer', async () => {
+test.serial('writes header and footer', async (t) => {
   const instance = new WriteSingleFileRunner('temp.ts',
     'HEADER!!!\n', 'FOOTER!!!\n')
 
@@ -43,11 +42,11 @@ test.serial('writes header and footer', async () => {
 
   const contents = (await fs.readFile('temp.ts')).toString()
 
-  expect(contents).to.include('HEADER!!!')
-  expect(contents).to.include('FOOTER!!!')
+  t.regex(contents, /HEADER!!!/)
+  t.regex(contents, /FOOTER!!!/)
 })
 
-test.serial('writes timestamped file if directory specified', async () => {
+test.serial('writes timestamped file if directory specified', async (t) => {
   await fs.mkdirp('/tmp/write_single_file_test')
   const instance = new WriteSingleFileRunner('/tmp/write_single_file_test',
     'HEADER!!!\n', 'FOOTER!!!\n')
@@ -57,6 +56,6 @@ test.serial('writes timestamped file if directory specified', async () => {
   await instance.close()
 
   const files = await fs.readdir('/tmp/write_single_file_test')
-  expect(files.length).to.eq(1)
-  expect(files[0]).to.match(/[0-9]+_generated_from_diff\.ts/)
+  t.deepEqual(files.length, 1)
+  t.regex(files[0], /[0-9]+_generated_from_diff\.ts/)
 })

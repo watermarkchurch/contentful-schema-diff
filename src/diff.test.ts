@@ -1,34 +1,33 @@
 import test from 'ava'
-import { expect } from 'chai'
 
 import { isDiff, isDiffItem, isDiffObj } from './diff'
 
 const { diff } = require('json-diff')
 
-test('isDiff handles simple diff', () => {
+test('isDiff handles simple diff', (t) => {
   const a = { test: 1 }
   const b = { test: 2 }
   const d = diff(a, b)
 
   // act
-  expect(isDiff(d)).to.equal(true)
+  t.true(isDiff(d))
 })
 
-test('isDiff returns false for empty diff', () => {
+test('isDiff returns false for empty diff', (t) => {
   const a = { test: 1 }
   const b = { test: 1 }
   const d = diff(a, b)
 
   // act
-  expect(isDiff(d)).to.equal(false)
+  t.false(isDiff(d))
 })
 
-test('isDiff returns false for non-diff', () => {
+test('isDiff returns false for non-diff', (t) => {
   // act
-  expect(isDiff({ test: 'data' })).to.equal(false)
+  t.false(isDiff({ test: 'data' }))
 })
 
-test('isDiff handles complex diff', () => {
+test('isDiff handles complex diff', (t) => {
   const d = [
     ['~', {
       type: { __old: 'Symbol', __new: 'Text' },
@@ -124,31 +123,31 @@ test('isDiff handles complex diff', () => {
     }]]
 
   // act
-  expect(isDiff(d)).to.equal(true)
+  t.true(isDiff(d))
 })
 
-test('isDiffItem returns false for empty array', () => {
+test('isDiffItem returns false for empty array', (t) => {
   const d = [] as any[]
 
   // act
-  expect(isDiffItem(d as any)).to.equal(false)
+  t.false(isDiffItem(d as any))
 })
 
-test('isDiffItem returns false for array with wrong length', () => {
+test('isDiffItem returns false for array with wrong length', (t) => {
   const d = ['-', 'a', 'B']
 
   // act
-  expect(isDiffItem(d as any)).to.equal(false)
+  t.false(isDiffItem(d as any))
 })
 
-test('isDiffItem returns false for array with wrong key', () => {
+test('isDiffItem returns false for array with wrong key', (t) => {
   const d = ['a', 'B']
 
   // act
-  expect(isDiffItem(d as any)).to.equal(false)
+  t.false(isDiffItem(d as any))
 })
 
-test('isDiffItem handles corner case', () => {
+test('isDiffItem handles corner case', (t) => {
   const d = ['~',
     {
       disabled: {__old: false, __new: true},
@@ -156,33 +155,33 @@ test('isDiffItem handles corner case', () => {
     }]
 
   // act
-  expect(isDiffItem(d as any)).to.equal(true)
+  t.true(isDiffItem(d as any))
 })
 
-test('isDiffObj returns false for empty obj', () => {
+test('isDiffObj returns false for empty obj', (t) => {
   const d = {}
 
   // act
-  expect(isDiffObj(d)).to.equal(false)
+  t.false(isDiffObj(d))
 })
 
-test('isDiffObj returns false for non-obj', () => {
+test('isDiffObj returns false for non-obj', (t) => {
   const d = ['+', {test: 'data'}]
 
   // act
-  expect(isDiffObj(d)).to.equal(false)
+  t.false(isDiffObj(d))
 })
 
-test('isDiffObj returns true for simple diff', () => {
+test('isDiffObj returns true for simple diff', (t) => {
   const a = { test: 1 }
   const b = { test: 2 }
   const d = diff(a, b)
 
   // act
-  expect(isDiffObj(d)).to.equal(true)
+  t.true(isDiffObj(d))
 })
 
-test('isDiffObj returns true for diff with sub-diffs', () => {
+test('isDiffObj returns true for diff with sub-diffs', (t) => {
   const d = { validations:
     [ [ '~',
         { message:
@@ -190,12 +189,12 @@ test('isDiffObj returns true for diff with sub-diffs', () => {
               __new: 'A new message' } } ] ] }
 
   // act
-  expect(isDiffObj(d)).to.equal(true)
+  t.true(isDiffObj(d))
 })
 
-test('isDiffObj returns true for complex diff', () => {
+test('isDiffObj returns true for complex diff', (t) => {
   const d = {disabled: {__old: false, __new: true}, items: {validations: [['-', {range: {min: 1, max: 4}}], [' ']]}}
 
   // act
-  expect(isDiffObj(d)).to.equal(true)
+  t.true(isDiffObj(d))
 })

@@ -1,6 +1,4 @@
 import test from 'ava'
-import { expect } from 'chai'
-
 import { writeEditorInterfaceChange } from './editor_interface'
 import { IEditorInterface } from './model'
 
@@ -251,78 +249,78 @@ const to: { [id: string]: IEditorInterface } = {
   },
 }
 
-test('explicitly writes default on initial', async () => {
+test('explicitly writes default on initial', async (t) => {
   const chunks: string[] = []
 
   await writeEditorInterfaceChange(null, to.menu, async (chunk) => chunks.push(chunk), { varname: 'menu' })
 
   const written = chunks.join('')
-  expect(written).to.include('menu.changeEditorInterface(\'name\', \'singleLine\')')
-  expect(written).to.include('menu.changeEditorInterface(\'topButton\', \'entryLinkEditor\')')
-  expect(written).to.include('menu.changeEditorInterface(\'items\', \'entryLinksEditor\')')
+  t.regex(written, /menu\.changeEditorInterface\('name', 'singleLine'\)/)
+  t.regex(written, /menu\.changeEditorInterface\('topButton', 'entryLinkEditor'\)/)
+  t.regex(written, /menu\.changeEditorInterface\('items', 'entryLinksEditor'\)/)
 })
 
-test('writes nothing if no diff', async () => {
+test('writes nothing if no diff', async (t) => {
   const chunks: string[] = []
 
   await writeEditorInterfaceChange(from.menu, to.menu, async (chunk) => chunks.push(chunk))
 
   const written = chunks.join('')
-  expect(written).to.eq('')
+  t.deepEqual(written, '')
 })
 
-test('writes changes for diffs', async () => {
+test('writes changes for diffs', async (t) => {
   const chunks: string[] = []
 
   await writeEditorInterfaceChange(from['section-video-highlight'],
     to['section-video-highlight'], async (chunk) => chunks.push(chunk))
 
   const written = chunks.join('')
-  expect(written).to.include('sectionVideoHighlight.changeEditorInterface(\'tag\', \'dropdown\'')
-  expect(written).to.include('sectionVideoHighlight.changeEditorInterface(\'subtext\', \'singleLine\'')
-  expect(written).to.include(
-    'sectionVideoHighlight.changeEditorInterface(\'embedCode\', \'custom-editor-extension\'')
 
-  expect(written).to.not.include('\'title\'')
+  t.regex(written, /sectionVideoHighlight\.changeEditorInterface\('tag', 'dropdown'\)/)
+  t.regex(written, /sectionVideoHighlight\.changeEditorInterface\('subtext', 'singleLine'/)
+  t.regex(written, /sectionVideoHighlight\.changeEditorInterface\('embedCode', 'custom-editor-extension'/)
+
+  t.notRegex(written, /'title'/)
 })
 
-test('opens content type for edit if varname not set in context', async () => {
+test('opens content type for edit if varname not set in context', async (t) => {
   const chunks: string[] = []
 
   await writeEditorInterfaceChange(from['section-video-highlight'],
     to['section-video-highlight'], async (chunk) => chunks.push(chunk))
 
   const written = chunks.join('')
-  expect(written).to.include('var sectionVideoHighlight = migration.editContentType(\'section-video-highlight\'')
+  t.regex(written, /var sectionVideoHighlight = migration\.editContentType\('section-video-highlight'/)
 })
 
-test('does not reopen content type if variable already was written', async () => {
+test('does not reopen content type if variable already was written', async (t) => {
   const chunks: string[] = []
 
   await writeEditorInterfaceChange(null, to.menu, async (chunk) => chunks.push(chunk), { varname: 'menu' })
 
   const written = chunks.join('')
-  expect(written).to.not.include('var menu')
-  expect(written).to.not.include('migration.editContentType')
+  t.notRegex(written, /var menu/)
+  t.notRegex(written, /migration.editContentType/)
 })
 
-test('writes help text if present', async () => {
+test('writes help text if present', async (t) => {
   const chunks: string[] = []
 
   await writeEditorInterfaceChange(from['section-video-highlight'],
     to['section-video-highlight'], async (chunk) => chunks.push(chunk))
 
   const written = chunks.join('')
-  expect(written).to.include('sectionVideoHighlight.changeEditorInterface(\'tag\', \'dropdown\')')
-  expect(written).to.include('sectionVideoHighlight.changeEditorInterface(\'subtext\', \'singleLine\', {')
+  t.regex(written, /sectionVideoHighlight\.changeEditorInterface\('tag', 'dropdown'\)/)
+  t.regex(written, /sectionVideoHighlight\.changeEditorInterface\('subtext', 'singleLine', {/)
 })
 
-test('writes change if settings changed', async () => {
+test('writes change if settings changed', async (t) => {
   const chunks: string[] = []
 
   await writeEditorInterfaceChange(from['section-video-highlight'],
     to['section-video-highlight'], async (chunk) => chunks.push(chunk))
 
   const written = chunks.join('')
-  expect(written).to.include('sectionVideoHighlight.changeEditorInterface(\'anotherField\', \'singleLine\', {')
+  t.regex(written, /sectionVideoHighlight\.changeEditorInterface\('anotherField', 'singleLine', {/)
 })

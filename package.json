@@ -10,7 +10,7 @@
     "lint": "tslint src/**/*.ts",
     "test": "nyc ava",
     "coveralls": "nyc report --reporter=text-lcov | coveralls",
-    "test-watch": "nodemon --watch src/ -e ts --exec 'npm run test || echo \"Tests failed!\"'",
+    "test-watch": "ava --watch",
     "build": "tsc",
     "prepare": "npm run build"
   },
@@ -18,13 +18,11 @@
   "license": "MIT",
   "repository": "https://github.com/watermarkchurch/contentful-schema-diff",
   "devDependencies": {
-    "@types/chai": "^4.1.2",
     "@types/fs-extra": "^5.0.2",
     "@types/lodash": "^4.14.116",
     "@types/node": "^9.6.4",
     "@types/yargs": "^11.0.0",
     "ava": "1.0.0-rc.1",
-    "chai": "^4.1.2",
     "coveralls": "^3.0.2",
     "nyc": "^13.1.0",
     "ts-node": "^7.0.1",

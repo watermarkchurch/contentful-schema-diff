@@ -1,5 +1,4 @@
 import test from 'ava'
-import {expect} from 'chai'
 
 import {writeCreate} from './create'
 import {IContentType} from './model'
@@ -129,24 +128,24 @@ const contentType: IContentType = {
   ],
 }
 
-test('dumps content type', async () => {
+test('dumps content type', async (t) => {
   const chunks: string[] = []
 
   await writeCreate(contentType, async (chunk) => chunks.push(chunk), {})
 
   const written = chunks.join('')
-  expect(written).to.include('migration.createContentType(\'menu')
-  expect(written).to.include('displayField: \'name\'')
-  expect(written).to.include('name: \'Menu\'')
-  expect(written).to.include('description: \'A Menu contains')
+  t.regex(written, /migration\.createContentType\('menu/)
+  t.regex(written, /displayField:\s+'name'/)
+  t.regex(written, /name:\s+'Menu'/)
+  t.regex(written, /description:\s+'A Menu contains/)
 })
 
-test('dumps simple fields', async () => {
+test('dumps simple fields', async (t) => {
   const chunks: string[] = []
 
   await writeCreate(contentType, async (chunk) => chunks.push(chunk), {})
 
   const written = chunks.join('')
-  expect(written).to.include('menu.createField(\'name')
-  expect(written).to.include('name: \'Menu Name\'')
+  t.regex(written, /menu\.createField\('name/)
+  t.regex(written, /name:\s+'Menu Name'/)
 })
