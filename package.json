@@ -8,7 +8,8 @@
   },
   "scripts": {
     "lint": "tslint src/**/*.ts",
-    "test": "nyc ava",
+    "test": "tsc --project tsconfig.test.json && nyc ava 'src/**/*.test.js'",
+    "coverage": "npm run test && nyc report --reporter=html && open coverage/index.html",
     "coveralls": "nyc report --reporter=text-lcov | coveralls",
     "test-watch": "ava --watch",
     "build": "tsc",

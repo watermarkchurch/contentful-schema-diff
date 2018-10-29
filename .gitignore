@@ -1,8 +1,12 @@
 node_modules
 dist/
+src/**/*.js
+src/**/*.map
+src/**/*.d.ts
 
 .envrc
 
 *_generated_*
 
 .nyc_output
+coverage

@@ -1,21 +1,18 @@
 {
     "include": [
-      "src/**/*.ts"
+      "src/**/*.js"
     ],
     "exclude": [
-      "**/*.d.ts",
-      "**/*.test.ts"
+      "**/*.ts",
+      "**/*.test.js"
     ],
     "extension": [
-      ".ts"
-    ],
-    "require": [
-      "ts-node/register"
+      ".js"
     ],
     "reporter": [
       "text"
     ],
-    "sourceMap": false,
+    "sourceMap": true,
     "instrument": true,
     "all": true
 }
