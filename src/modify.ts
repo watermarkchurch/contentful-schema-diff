@@ -1,6 +1,8 @@
 import { Diff, DiffArray, DiffObj, isDiff, isDiffItem, isDiffObj, isSimpleDiff } from './diff'
 import { IContentType, IField } from './model'
 import { IContext } from './runners'
+import {extendPrototypes} from './utils'
+extendPrototypes()
 
 const { diff } = require('json-diff')
 const { colorize } = require('json-diff/lib/colorize')

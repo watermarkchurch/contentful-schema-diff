@@ -1,88 +1,84 @@
-import { expect } from 'chai'
+import test from 'ava'
 import * as fs from 'fs-extra'
 import * as path from 'path'
 
 import { FilePerContentTypeRunner } from './file_per_content_type'
 
-describe('FilePerContentTypeRunner', () => {
-  describe('run', () => {
-    let instance: FilePerContentTypeRunner
+let instance: FilePerContentTypeRunner
 
-    beforeEach(async () => {
+test.beforeEach(async () => {
 
-      await fs.mkdirp('db/migrate')
-      instance = new FilePerContentTypeRunner('db/migrate',
-        'HEADER!!!\n', 'FOOTER!!!\n')
+  await fs.mkdirp('/tmp/file_per_content_type_test')
+  instance = new FilePerContentTypeRunner('/tmp/file_per_content_type_test',
+    'HEADER!!!\n', 'FOOTER!!!\n')
 
-      await instance.init()
-    })
+  await instance.init()
+})
 
-    afterEach(async () => {
-      if (await fs.pathExists('db/migrate')) {
-        for (const f of await fs.readdir('db/migrate')) {
-          await fs.remove(`db/migrate/${f}`)
-        }
-        await fs.rmdir('db/migrate')
+test.afterEach(async () => {
+  if (await fs.pathExists('/tmp/file_per_content_type_test')) {
+    for (const f of await fs.readdir('/tmp/file_per_content_type_test')) {
+      await fs.remove(`/tmp/file_per_content_type_test/${f}`)
+    }
+    await fs.rmdir('/tmp/file_per_content_type_test')
+  }
+})
+
+test.serial('writes timestamped file for each content type', async (t) => {
+  // act
+  await Promise.all(
+    instance.run(['ct-a', 'ct-b', 'ct-c'], (id, write, ctx) => {
+      return write('test:' + id)
+    }),
+  )
+
+  await instance.close()
+
+  const files = await fs.readdir('/tmp/file_per_content_type_test')
+  t.deepEqual(files.length, 3)
+  t.regex(files[0], /[0-9]+_generated_diff_ct-a\.ts/)
+  t.regex(files[1], /[0-9]+_generated_diff_ct-b\.ts/)
+  t.regex(files[2], /[0-9]+_generated_diff_ct-c\.ts/)
+})
+
+test.serial('does not write file if nothing written', async (t) => {
+  // act
+  await Promise.all(
+    instance.run(['ct-a', 'ct-b', 'ct-c'], (id, write, ctx) => {
+      if (id == 'ct-a') {
+        return write('test:' + id)
       }
-    })
+      return Promise.resolve()
+    }),
+  )
 
-    it('writes timestamped file for each content type', async () => {
-      // act
-      await Promise.all(
-        instance.run(['ct-a', 'ct-b', 'ct-c'], (id, write, ctx) => {
-          return write('test:' + id)
-        }),
-      )
+  await instance.close()
 
-      await instance.close()
+  const files = await fs.readdir('/tmp/file_per_content_type_test')
+  t.deepEqual(files.length, 1)
+  t.regex(files[0], /[0-9]+_generated_diff_ct-a\.ts/)
+})
 
-      const files = await fs.readdir('db/migrate')
-      expect(files.length).to.eq(3)
-      expect(files[0]).to.match(/[0-9]+_generated_diff_ct-a\.ts/)
-      expect(files[1]).to.match(/[0-9]+_generated_diff_ct-b\.ts/)
-      expect(files[2]).to.match(/[0-9]+_generated_diff_ct-c\.ts/)
-    })
-
-    it('does not write file if nothing written', async () => {
-      // act
-      await Promise.all(
-        instance.run(['ct-a', 'ct-b', 'ct-c'], (id, write, ctx) => {
-          if (id == 'ct-a') {
-            return write('test:' + id)
-          }
-          return Promise.resolve()
-        }),
-      )
-
-      await instance.close()
-
-      const files = await fs.readdir('db/migrate')
-      expect(files.length).to.eq(1)
-      expect(files[0]).to.match(/[0-9]+_generated_diff_ct-a\.ts/)
-    })
-
-    it('handles lots of lines', async () => {
-      const numLines = 100
-      // act
-      await Promise.all(
-        instance.run(['ct-a', 'ct-b', 'ct-c'], async (id, write, ctx) => {
-          for (let i = 0; i < numLines; i++) {
-            await write(`const t${i} = '${loremIpsum}'\n`)
-          }
-        }),
-      )
-
-      await instance.close()
-
-      const files = await fs.readdir('db/migrate')
-      const contents = (await fs.readFile(path.join('db/migrate', files[0]))).toString()
-      const lines = contents.split('\n')
-      expect(lines.length).to.eq(numLines + 3)
+test.serial('handles lots of lines', async (t) => {
+  const numLines = 100
+  // act
+  await Promise.all(
+    instance.run(['ct-a', 'ct-b', 'ct-c'], async (id, write, ctx) => {
       for (let i = 0; i < numLines; i++) {
-        expect(lines[i + 1]).to.eq(`const t${i} = '${loremIpsum}'`)
+        await write(`const t${i} = '${loremIpsum}'\n`)
       }
-    })
-  })
+    }),
+  )
+
+  await instance.close()
+
+  const files = await fs.readdir('/tmp/file_per_content_type_test')
+  const contents = (await fs.readFile(path.join('/tmp/file_per_content_type_test', files[0]))).toString()
+  const lines = contents.split('\n')
+  t.deepEqual(lines.length, numLines + 3)
+  for (let i = 0; i < numLines; i++) {
+    t.deepEqual(lines[i + 1], `const t${i} = '${loremIpsum}'`)
+  }
 })
 
 const loremIpsum = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed' +

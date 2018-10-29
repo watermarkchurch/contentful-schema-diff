@@ -3,7 +3,8 @@ import * as fs from 'fs-extra'
 import * as path from 'path'
 
 import { IContext } from '.'
-import { formatFile, wait } from '../utils'
+import { extendPrototypes, formatFile, wait } from '../utils'
+extendPrototypes()
 import { AsyncWrite, asyncWriter } from './async_writer'
 
 export class FilePerContentTypeRunner {

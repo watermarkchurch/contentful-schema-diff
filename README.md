@@ -1,5 +1,11 @@
 # contentful-schema-diff
 
+[![npm version](https://img.shields.io/npm/v/contentful-schema-diff.svg)](https://www.npmjs.com/package/contentful-schema-diff)
+[![License](https://img.shields.io/npm/l/contentful-schema-diff.svg)](LICENSE.txt)
+[![CircleCI](https://circleci.com/gh/watermarkchurch/contentful-schema-diff.svg?style=svg)](https://circleci.com/gh/watermarkchurch/contentful-schema-diff)
+[![Coverage Status](https://coveralls.io/repos/github/watermarkchurch/contentful-schema-diff/badge.svg)](https://coveralls.io/github/watermarkchurch/contentful-schema-diff)
+![Dependencies](https://img.shields.io/david/watermarkchurch/contentful-schema-diff.svg)
+
 A tool to automatically generate a starting point for a schema migration
 between two Contentful spaces
 
