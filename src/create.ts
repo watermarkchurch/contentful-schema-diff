@@ -5,7 +5,11 @@ import { IContext } from './runners'
 import {extendPrototypes} from './utils'
 extendPrototypes()
 
-export async function writeCreate(newType: IContentType, write: (chunk: string) => Promise<any>, context: IContext): Promise<void> {
+export async function writeCreate(
+  newType: IContentType,
+  write: (chunk: string) => Promise<any>,
+  context: IContext,
+): Promise<void> {
   const v = newType.sys.id.camelCase()
   const typeDef = Object.assign({}, newType)
   delete(typeDef.fields)

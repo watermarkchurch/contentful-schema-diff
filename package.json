@@ -7,7 +7,7 @@
     "contentful-schema-diff": "bin/index.js"
   },
   "scripts": {
-    "lint": "tslint src/**/*.ts",
+    "lint": "tslint 'src/**/*.ts'",
     "test": "tsc --project tsconfig.test.json && nyc ava 'src/**/*.test.js'",
     "coverage": "npm run test && nyc report --reporter=html && open coverage/index.html",
     "coveralls": "nyc report --reporter=text-lcov | coveralls",
@@ -34,7 +34,7 @@
     "fs-extra": "^5.0.0",
     "json-diff": "^0.5.2",
     "lodash": "^4.17.10",
-    "tslint": "^5.9.1",
+    "tslint": "^5.11.0",
     "typescript": "^3.1",
     "typescript-formatter": "^7.2.2",
     "yargs": "^11.0.0"
