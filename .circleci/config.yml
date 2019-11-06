@@ -26,18 +26,18 @@ jobs:
           # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
 
-      - run: npm install
+      - run: yarn install
 
       - save_cache:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
         
-      - run: npm run build
+      - run: yarn run build
 
       # run tests!
-      - run: npm run test
+      - run: yarn run test
 
-      - run: npm run coveralls
+      - run: yarn run coveralls
 
-      - run: npm run lint
+      - run: yarn run lint

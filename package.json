@@ -9,11 +9,11 @@
   "scripts": {
     "lint": "tslint 'src/**/*.ts'",
     "test": "tsc --project tsconfig.test.json && nyc ava 'src/**/*.test.js'",
-    "coverage": "npm run test && nyc report --reporter=html && open coverage/index.html",
+    "coverage": "yarn run test && nyc report --reporter=html && open coverage/index.html",
     "coveralls": "nyc report --reporter=text-lcov | coveralls",
     "test-watch": "ava --watch",
     "build": "tsc",
-    "prepare": "npm run build"
+    "prepare": "yarn run build"
   },
   "author": "Gordon Burgett (gordon@gordonburgett.net)",
   "license": "MIT",
