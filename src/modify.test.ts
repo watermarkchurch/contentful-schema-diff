@@ -157,7 +157,7 @@ test('writes created fields', async (t) => {
   await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), {})
 
   const written = chunks.join('')
-  t.regex(written, /menu.createField\('newField', { name: 'New Field',/)
+  t.regex(written, /menu.createField\('newField', { name:\s+'New Field',/m)
 })
 
 test('moves newly created fields', async (t) => {
