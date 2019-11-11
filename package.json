@@ -20,7 +20,7 @@
   "license": "MIT",
   "repository": "https://github.com/watermarkchurch/contentful-schema-diff",
   "devDependencies": {
-    "@types/fs-extra": "^5.0.2",
+    "@types/fs-extra": "^8.0.1",
     "@types/lodash": "^4.14.116",
     "@types/node": "^12.12.6",
     "@types/yargs": "^11.0.0",
