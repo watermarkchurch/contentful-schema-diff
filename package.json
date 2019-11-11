@@ -8,12 +8,12 @@
   },
   "scripts": {
     "lint": "tslint 'src/**/*.ts'",
-    "test": "tsc --project tsconfig.test.json && nyc ava 'src/**/*.test.js'",
+    "test": "tsc --project tsconfig.test.json && nyc ava src/**/*.test.js",
     "coverage": "yarn run test && nyc report --reporter=html && open coverage/index.html",
     "coveralls": "nyc report --reporter=text-lcov | coveralls",
     "test-watch": "ava -s --watch",
     "build": "tsc",
-    "clean": "tsc --build --clean; rm -rf dist coverage .nyc_output; rm -f src/**/*.d.ts src/**/*.js src/**/*.js.map",
+    "clean": "rm -f src/**/*.d.ts src/**/*.js src/**/*.js.map; tsc --build --clean || true; rm -rf dist coverage .nyc_output || true",
     "prepare": "yarn run build"
   },
   "author": "Gordon Burgett (gordon@gordonburgett.net)",
