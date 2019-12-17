@@ -42,14 +42,17 @@ const from: { [id: string]: IEditorInterface } = {
     controls: [
       {
         fieldId: 'name',
+        widgetNamespace: 'builtin',
         widgetId: 'singleLine',
       },
       {
         fieldId: 'topButton',
+        widgetNamespace: 'builtin',
         widgetId: 'entryLinkEditor',
       },
       {
         fieldId: 'items',
+        widgetNamespace: 'builtin',
         widgetId: 'entryLinksEditor',
       },
     ],
@@ -96,10 +99,12 @@ const from: { [id: string]: IEditorInterface } = {
         settings: {
           helpText: 'This will be displayed in small text above the video title',
         },
+        widgetNamespace: 'builtin',
         widgetId: 'singleLine',
       },
       {
         fieldId: 'title',
+        widgetNamespace: 'builtin',
         widgetId: 'singleLine',
       },
       {
@@ -107,6 +112,7 @@ const from: { [id: string]: IEditorInterface } = {
         settings: {
           helpText: 'This text will be subdued beneath the title',
         },
+        widgetNamespace: 'builtin',
         widgetId: 'multipleLine',
       },
       {
@@ -114,11 +120,13 @@ const from: { [id: string]: IEditorInterface } = {
         settings: {
           helpText: 'This must be an "iframe" or "script" snippet',
         },
+        widgetNamespace: 'builtin',
         widgetId: 'multipleLine',
       },
       {
         fieldId: 'anotherField',
         widgetId: 'singleLine',
+        widgetNamespace: 'builtin',
         settings: {
           helpText: 'some prior value',
         },
@@ -167,14 +175,17 @@ const to: { [id: string]: IEditorInterface } = {
     controls: [
       {
         fieldId: 'name',
+        widgetNamespace: 'builtin',
         widgetId: 'singleLine',
       },
       {
         fieldId: 'topButton',
+        widgetNamespace: 'builtin',
         widgetId: 'entryLinkEditor',
       },
       {
         fieldId: 'items',
+        widgetNamespace: 'builtin',
         widgetId: 'entryLinksEditor',
       },
     ],
@@ -218,10 +229,12 @@ const to: { [id: string]: IEditorInterface } = {
     controls: [
       {
         fieldId: 'tag',
+        widgetNamespace: 'builtin',
         widgetId: 'dropdown',
       },
       {
         fieldId: 'title',
+        widgetNamespace: 'builtin',
         widgetId: 'singleLine',
       },
       {
@@ -229,6 +242,7 @@ const to: { [id: string]: IEditorInterface } = {
         settings: {
           helpText: 'This text will be subdued beneath the title',
         },
+        widgetNamespace: 'builtin',
         widgetId: 'singleLine',
       },
       {
@@ -236,11 +250,13 @@ const to: { [id: string]: IEditorInterface } = {
         settings: {
           helpText: 'This must be an "iframe" or "script" snippet',
         },
+        widgetNamespace: 'builtin',
         widgetId: 'custom-editor-extension',
       },
       {
         fieldId: 'anotherField',
         widgetId: 'singleLine',
+        widgetNamespace: 'builtin',
         settings: {
           helpText: 'This is a change in settings only',
         },
@@ -255,9 +271,9 @@ test('explicitly writes default on initial', async (t) => {
   await writeEditorInterfaceChange(null, to.menu, async (chunk) => chunks.push(chunk), { varname: 'menu' })
 
   const written = chunks.join('')
-  t.regex(written, /menu\.changeEditorInterface\('name', 'singleLine'\)/)
-  t.regex(written, /menu\.changeEditorInterface\('topButton', 'entryLinkEditor'\)/)
-  t.regex(written, /menu\.changeEditorInterface\('items', 'entryLinksEditor'\)/)
+  t.regex(written, /menu\.changeFieldControl\('name', 'builtin', 'singleLine'\)/)
+  t.regex(written, /menu\.changeFieldControl\('topButton', 'builtin', 'entryLinkEditor'\)/)
+  t.regex(written, /menu\.changeFieldControl\('items', 'builtin', 'entryLinksEditor'\)/)
 })
 
 test('writes nothing if no diff', async (t) => {
@@ -277,9 +293,9 @@ test('writes changes for diffs', async (t) => {
 
   const written = chunks.join('')
 
-  t.regex(written, /sectionVideoHighlight\.changeEditorInterface\('tag', 'dropdown'\)/)
-  t.regex(written, /sectionVideoHighlight\.changeEditorInterface\('subtext', 'singleLine'/)
-  t.regex(written, /sectionVideoHighlight\.changeEditorInterface\('embedCode', 'custom-editor-extension'/)
+  t.regex(written, /sectionVideoHighlight\.changeFieldControl\('tag', 'builtin', 'dropdown'\)/)
+  t.regex(written, /sectionVideoHighlight\.changeFieldControl\('subtext', 'builtin', 'singleLine'/)
+  t.regex(written, /sectionVideoHighlight\.changeFieldControl\('embedCode', 'builtin', 'custom-editor-extension'/)
 
   t.notRegex(written, /'title'/)
 })
@@ -311,8 +327,8 @@ test('writes help text if present', async (t) => {
     to['section-video-highlight'], async (chunk) => chunks.push(chunk))
 
   const written = chunks.join('')
-  t.regex(written, /sectionVideoHighlight\.changeEditorInterface\('tag', 'dropdown'\)/)
-  t.regex(written, /sectionVideoHighlight\.changeEditorInterface\('subtext', 'singleLine', {/)
+  t.regex(written, /sectionVideoHighlight\.changeFieldControl\('tag', 'builtin', 'dropdown'\)/)
+  t.regex(written, /sectionVideoHighlight\.changeFieldControl\('subtext', 'builtin', 'singleLine', {/)
 })
 
 test('writes change if settings changed', async (t) => {
@@ -322,5 +338,5 @@ test('writes change if settings changed', async (t) => {
     to['section-video-highlight'], async (chunk) => chunks.push(chunk))
 
   const written = chunks.join('')
-  t.regex(written, /sectionVideoHighlight\.changeEditorInterface\('anotherField', 'singleLine', {/)
+  t.regex(written, /sectionVideoHighlight\.changeFieldControl\('anotherField', 'builtin', 'singleLine', {/)
 })
