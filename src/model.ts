@@ -144,6 +144,7 @@ export interface IEditorInterface {
   controls: Array<
       {
         fieldId: string,
+        widgetNamespace: string,
         widgetId: string,
         settings?: {
           helpText: string,
