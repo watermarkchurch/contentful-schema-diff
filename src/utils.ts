@@ -63,11 +63,10 @@ export function wait(ms: number): Promise<void> {
 }
 
 export function formatFile(file: string): Promise<void> {
-  const tsFmtBinLocation = path.join(require.resolve('typescript-formatter'), '../../.bin/tsfmt')
-  const tsfmtConfigFile = path.relative(process.cwd(), path.join(__dirname, '../tsfmt.json'))
+  const prettierBinLocation = path.join(require.resolve('prettier'), '../bin-prettier.js')
 
   return new Promise((resolve, reject) => {
-    exec(`${tsFmtBinLocation} -r ${file} --useTsfmt ${tsfmtConfigFile}`, (err, stdout, stderr) => {
+    exec(`${prettierBinLocation} --write ${file}`, (err, stdout, stderr) => {
       if (err) {
         reject(err.message + '\n\t' + stderr)
       } else {

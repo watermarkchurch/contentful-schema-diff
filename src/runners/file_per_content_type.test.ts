@@ -7,21 +7,18 @@ import { FilePerContentTypeRunner } from './file_per_content_type'
 let instance: FilePerContentTypeRunner
 
 test.beforeEach(async () => {
-
-  await fs.mkdirp('/tmp/file_per_content_type_test')
-  instance = new FilePerContentTypeRunner('/tmp/file_per_content_type_test',
-    'HEADER!!!\n', 'FOOTER!!!\n')
-
-  await instance.init()
-})
-
-test.afterEach(async () => {
   if (await fs.pathExists('/tmp/file_per_content_type_test')) {
     for (const f of await fs.readdir('/tmp/file_per_content_type_test')) {
       await fs.remove(`/tmp/file_per_content_type_test/${f}`)
     }
     await fs.rmdir('/tmp/file_per_content_type_test')
   }
+
+  await fs.mkdirp('/tmp/file_per_content_type_test')
+  instance = new FilePerContentTypeRunner('/tmp/file_per_content_type_test',
+    '// HEADER!!!\n', '// FOOTER!!!\n')
+
+  await instance.init()
 })
 
 test.serial('writes timestamped file for each content type', async (t) => {
@@ -75,9 +72,11 @@ test.serial('handles lots of lines', async (t) => {
   const files = await fs.readdir('/tmp/file_per_content_type_test')
   const contents = (await fs.readFile(path.join('/tmp/file_per_content_type_test', files[0]))).toString()
   const lines = contents.split('\n')
-  t.deepEqual(lines.length, numLines + 3)
+  t.deepEqual(lines.length, (numLines * 2) + 3)
   for (let i = 0; i < numLines; i++) {
-    t.deepEqual(lines[i + 1], `const t${i} = '${loremIpsum}'`)
+    const lineNum = (i * 2) + 1
+    t.deepEqual(lines[lineNum], `const t${i} =`)
+    t.deepEqual(lines[lineNum + 1], `  "${loremIpsum}";`)
   }
 })
 
