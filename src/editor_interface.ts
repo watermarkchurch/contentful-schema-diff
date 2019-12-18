@@ -48,7 +48,7 @@ export async function writeEditorInterfaceChange(
 
   await eachInSequence(fieldsToWrite, async (field) => {
     await write(`
-  ${ctx.varname}.changeFieldControl('${field.fieldId}', '${field.widgetNamespace}', '${field.widgetId}'`);
+  ${ctx.varname}.changeFieldControl('${field.fieldId}', '${field.widgetNamespace}', '${field.widgetId}'`)
 
     if (field.settings) {
       await write(`, ${field.settings.dump()}`)
