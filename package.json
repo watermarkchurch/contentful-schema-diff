@@ -6,6 +6,9 @@
   "bin": {
     "contentful-schema-diff": "bin/index.js"
   },
+  "files": [
+    "dist/**/*"
+  ],
   "scripts": {
     "lint": "tslint 'src/**/*.ts'",
     "test": "bash -c 'shopt -s globstar; tsc --project tsconfig.test.json && nyc ava src/**/*.test.js'",
