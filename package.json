@@ -7,7 +7,8 @@
     "contentful-schema-diff": "bin/index.js"
   },
   "files": [
-    "dist/**/*"
+    "dist/**/*",
+    "bin/**/*"
   ],
   "scripts": {
     "lint": "tslint 'src/**/*.ts'",
