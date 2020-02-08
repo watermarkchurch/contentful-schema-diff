@@ -8,7 +8,13 @@ export function asyncWriter(stream: Writable): (chunk: string) => Promise<any> {
   function doWrite(chunk: any) {
     return new Promise<void>((resolve, reject) => {
       if (draining) {
-        draining = stream.write(chunk, (err: any) => {
+        let chunkToWrite = chunk
+
+        if (chunkToWrite instanceof Object) {
+          chunkToWrite = JSON.stringify(chunkToWrite)
+        }
+
+        draining = stream.write(chunkToWrite, (err: any) => {
           if (err) {
             reject(err)
           } else {
