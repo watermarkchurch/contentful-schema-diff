@@ -1,7 +1,7 @@
 import test from 'ava'
 
-import {writeCreate} from './create'
-import {IContentType} from './model'
+import { writeCreate } from '../create'
+import { IContentType } from '../model'
 
 const contentType: IContentType = {
   sys: {
@@ -52,7 +52,8 @@ const contentType: IContentType = {
   },
   displayField: 'name',
   name: 'Menu',
-  description: 'A Menu contains a number of Menu Buttons or other Menus, which will be rendered as drop-downs.',
+  description:
+    'A Menu contains a number of Menu Buttons or other Menus, which will be rendered as drop-downs.',
   fields: [
     {
       id: 'name',
@@ -60,8 +61,7 @@ const contentType: IContentType = {
       type: 'Symbol',
       localized: false,
       required: true,
-      validations: [
-      ],
+      validations: [],
       disabled: false,
       omitted: false,
     },
@@ -73,9 +73,7 @@ const contentType: IContentType = {
       required: false,
       validations: [
         {
-          linkContentType: [
-            'menuButton',
-          ],
+          linkContentType: ['menuButton'],
           message: 'The Top Button must be a button linking to a...',
         },
       ],
@@ -89,18 +87,14 @@ const contentType: IContentType = {
       type: 'Array',
       localized: false,
       required: false,
-      validations: [
-      ],
+      validations: [],
       disabled: false,
       omitted: false,
       items: {
         type: 'Link',
         validations: [
           {
-            linkContentType: [
-              'menu',
-              'menuButton',
-            ],
+            linkContentType: ['menu', 'menuButton'],
             message: 'The items must be either buttons or drop-down menus',
           },
         ],
@@ -115,9 +109,7 @@ const contentType: IContentType = {
       required: false,
       validations: [
         {
-          linkContentType: [
-            'menu',
-          ],
+          linkContentType: ['menu'],
           message: 'The Side Menu must be a Menu',
         },
       ],

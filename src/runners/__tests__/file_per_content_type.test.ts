@@ -2,7 +2,7 @@ import test from 'ava'
 import * as fs from 'fs-extra'
 import * as path from 'path'
 
-import { FilePerContentTypeRunner } from './file_per_content_type'
+import { FilePerContentTypeRunner } from '../file_per_content_type'
 
 let instance: FilePerContentTypeRunner
 
@@ -15,8 +15,11 @@ test.beforeEach(async () => {
   }
 
   await fs.mkdirp('/tmp/file_per_content_type_test')
-  instance = new FilePerContentTypeRunner('/tmp/file_per_content_type_test',
-    '// HEADER!!!\n', '// FOOTER!!!\n')
+  instance = new FilePerContentTypeRunner(
+    '/tmp/file_per_content_type_test',
+    '// HEADER!!!\n',
+    '// FOOTER!!!\n',
+  )
 
   await instance.init()
 })
@@ -70,20 +73,23 @@ test.serial('handles lots of lines', async (t) => {
   await instance.close()
 
   const files = await fs.readdir('/tmp/file_per_content_type_test')
-  const contents = (await fs.readFile(path.join('/tmp/file_per_content_type_test', files[0]))).toString()
+  const contents = (await fs.readFile(
+    path.join('/tmp/file_per_content_type_test', files[0]),
+  )).toString()
   const lines = contents.split('\n')
-  t.deepEqual(lines.length, (numLines * 2) + 3)
+  t.deepEqual(lines.length, numLines * 2 + 3)
   for (let i = 0; i < numLines; i++) {
-    const lineNum = (i * 2) + 1
+    const lineNum = i * 2 + 1
     t.deepEqual(lines[lineNum], `const t${i} =`)
     t.deepEqual(lines[lineNum + 1], `  "${loremIpsum}";`)
   }
 })
 
-const loremIpsum = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed' +
-' non aliquam tortor. Vivamus sed libero at metus ornare pretium vitae id velit.' +
-' Nullam bibendum fringilla lacus, sit amet varius ex tincidunt nec. Pellentesque' +
-' dui magna, porta at semper eu, finibus semper urna. Proin lorem nunc, dignissim' +
-' nec sagittis eget, viverra sit amet nisl. Sed bibendum tellus sit amet nunc' +
-' molestie, nec viverra lorem sollicitudin. Quisque sed tortor elementum, semper' +
-' eros nec, tempor dui. Aliquam dignissim sapien vitae odio sagittis feugiat.'
+const loremIpsum =
+  'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed' +
+  ' non aliquam tortor. Vivamus sed libero at metus ornare pretium vitae id velit.' +
+  ' Nullam bibendum fringilla lacus, sit amet varius ex tincidunt nec. Pellentesque' +
+  ' dui magna, porta at semper eu, finibus semper urna. Proin lorem nunc, dignissim' +
+  ' nec sagittis eget, viverra sit amet nisl. Sed bibendum tellus sit amet nunc' +
+  ' molestie, nec viverra lorem sollicitudin. Quisque sed tortor elementum, semper' +
+  ' eros nec, tempor dui. Aliquam dignissim sapien vitae odio sagittis feugiat.'

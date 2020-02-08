@@ -1,7 +1,7 @@
 import test from 'ava'
 import * as fs from 'fs-extra'
 
-import { WriteSingleFileRunner } from './write_single_file'
+import { WriteSingleFileRunner } from '../write_single_file'
 
 test.afterEach(async () => {
   await fs.remove('temp.ts')
@@ -17,11 +17,9 @@ test.serial('writes a chunk to the specified file', async (t) => {
   const instance = new WriteSingleFileRunner('temp.ts', '', '')
   await instance.init()
   await Promise.all(
-    instance.run(['k1', 'k2'],
-      (id, write, ctx) => {
-        return write(`${id}: test`)
-      },
-    ),
+    instance.run(['k1', 'k2'], (id, write, ctx) => {
+      return write(`${id}: test`)
+    }),
   )
 
   await instance.close()
@@ -33,8 +31,11 @@ test.serial('writes a chunk to the specified file', async (t) => {
 })
 
 test.serial('writes header and footer', async (t) => {
-  const instance = new WriteSingleFileRunner('temp.ts',
-    'HEADER!!!\n', 'FOOTER!!!\n')
+  const instance = new WriteSingleFileRunner(
+    'temp.ts',
+    'HEADER!!!\n',
+    'FOOTER!!!\n',
+  )
 
   await instance.init()
 
@@ -48,8 +49,11 @@ test.serial('writes header and footer', async (t) => {
 
 test.serial('writes timestamped file if directory specified', async (t) => {
   await fs.mkdirp('/tmp/write_single_file_test')
-  const instance = new WriteSingleFileRunner('/tmp/write_single_file_test',
-    'HEADER!!!\n', 'FOOTER!!!\n')
+  const instance = new WriteSingleFileRunner(
+    '/tmp/write_single_file_test',
+    'HEADER!!!\n',
+    'FOOTER!!!\n',
+  )
 
   await instance.init()
 

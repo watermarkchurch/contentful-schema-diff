@@ -1,10 +1,11 @@
 import test from 'ava'
 
-import {writeModify} from './modify'
-import { IContext } from './runners'
-import {fakeContentType, fakeField} from './test-support'
+import { writeModify } from '../modify'
+import { IContext } from '../runners'
+import { fakeContentType, fakeField } from '../test-support'
 
-const fromType = fakeContentType('menu',
+const fromType = fakeContentType(
+  'menu',
   fakeField({
     id: 'name',
     name: 'Menu Name',
@@ -14,7 +15,12 @@ const fromType = fakeContentType('menu',
     id: 'topButton',
     name: 'Top Button',
     type: 'Link',
-    validations: [ { linkContentType: ['menuButton'], message: 'The Top Button must be a...' }],
+    validations: [
+      {
+        linkContentType: ['menuButton'],
+        message: 'The Top Button must be a...',
+      },
+    ],
     linkType: 'Entry',
   }),
   fakeField({
@@ -34,10 +40,7 @@ const fromType = fakeContentType('menu',
           range: { min: 1, max: 4 },
         },
         {
-          linkContentType: [
-            'menu',
-            'menuButton',
-          ],
+          linkContentType: ['menu', 'menuButton'],
           message: 'The items must be either buttons or drop-down menus',
         },
       ],
@@ -47,20 +50,19 @@ const fromType = fakeContentType('menu',
   fakeField({
     id: 'sideMenu',
     name: 'Side Menu',
-      type: 'Link',
-      validations: [
-        {
-          linkContentType: [
-            'menu',
-          ],
-          message: 'The Side Menu must be a Menu',
-        },
-      ],
-      linkType: 'Entry',
+    type: 'Link',
+    validations: [
+      {
+        linkContentType: ['menu'],
+        message: 'The Side Menu must be a Menu',
+      },
+    ],
+    linkType: 'Entry',
   }),
 )
 
-const toType = fakeContentType('menu',
+const toType = fakeContentType(
+  'menu',
   fakeField({
     id: 'name',
     name: 'Menu Name',
@@ -71,9 +73,7 @@ const toType = fakeContentType('menu',
     id: 'movedField',
     name: 'Moved Field',
     type: 'Number',
-    validations: [
-      { in: [0, 1, 2] },
-    ],
+    validations: [{ in: [0, 1, 2] }],
   }),
   fakeField({
     id: 'newField',
@@ -87,9 +87,7 @@ const toType = fakeContentType('menu',
     type: 'Link',
     validations: [
       {
-        linkContentType: [
-          'menuButton',
-        ],
+        linkContentType: ['menuButton'],
         message: 'A new message',
       },
     ],
@@ -107,10 +105,7 @@ const toType = fakeContentType('menu',
           range: { min: 1, max: 5 },
         },
         {
-          linkContentType: [
-            'menu',
-            'menuButton',
-          ],
+          linkContentType: ['menu', 'menuButton'],
           message: 'The items must be either buttons or drop-down menus',
         },
       ],
@@ -120,7 +115,6 @@ const toType = fakeContentType('menu',
 )
 
 test('writes content type without def', async (t) => {
-
   const chunks: string[] = []
 
   await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), {})
@@ -130,17 +124,20 @@ test('writes content type without def', async (t) => {
 })
 
 test('sets varname on context', async (t) => {
-
   const chunks: string[] = []
   const context: IContext = {}
 
-  await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), context)
+  await writeModify(
+    fromType,
+    toType,
+    async (chunk) => chunks.push(chunk),
+    context,
+  )
 
   t.deepEqual(context.varname, 'menu')
 })
 
 test('dumps diff as comment', async (t) => {
-
   const chunks: string[] = []
 
   await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), {})
@@ -151,7 +148,6 @@ test('dumps diff as comment', async (t) => {
 })
 
 test('writes created fields', async (t) => {
-
   const chunks: string[] = []
 
   await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), {})
@@ -161,17 +157,18 @@ test('writes created fields', async (t) => {
 })
 
 test('moves newly created fields', async (t) => {
-
   const chunks: string[] = []
 
   await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), {})
 
   const written = chunks.join('')
-  t.regex(written, /menu.moveField\('newField'\)\s*.afterField\('movedField'\)/m)
+  t.regex(
+    written,
+    /menu.moveField\('newField'\)\s*.afterField\('movedField'\)/m,
+  )
 })
 
 test('writes deleted fields', async (t) => {
-
   const chunks: string[] = []
 
   await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), {})
@@ -181,7 +178,6 @@ test('writes deleted fields', async (t) => {
 })
 
 test('writes moved fields', async (t) => {
-
   const chunks: string[] = []
 
   await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), {})
@@ -191,7 +187,6 @@ test('writes moved fields', async (t) => {
 })
 
 test('writes change to top-level field details', async (t) => {
-
   const chunks: string[] = []
 
   await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), {})
@@ -202,13 +197,14 @@ test('writes change to top-level field details', async (t) => {
 })
 
 test('writes change to items', async (t) => {
-
   const chunks: string[] = []
 
   await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), {})
 
   const written = chunks.join('').replace(/\s+/g, '')
-  t.true(written.includes(`
+  t.true(
+    written.includes(
+      `
   .items({ type: 'Link',
 validations:
   [ { range:
@@ -218,39 +214,45 @@ validations:
       [ 'menu',
         'menuButton' ],
       message: 'The items must be either buttons or drop-down menus' } ],
-linkType: 'Entry' }`.replace(/\s+/g, '')))
+linkType: 'Entry' }`.replace(/\s+/g, ''),
+    ),
+  )
 })
 
 test('writes change to moved field', async (t) => {
-
   const chunks: string[] = []
 
   await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), {})
 
   const written = chunks.join('')
   t.regex(written, /menu.editField\('movedField'\)\s+.required\(false\)/)
-  t.regex(written, /\.validations\(\[\s*{\s*in:\s*\[\s*0,\s*1,\s*2\s*\]\s*}\s*\]\)/m)
+  t.regex(
+    written,
+    /\.validations\(\[\s*{\s*in:\s*\[\s*0,\s*1,\s*2\s*\]\s*}\s*\]\)/m,
+  )
 })
 
 test('properly moves field when new field inserted above', async (t) => {
-  const from = fakeContentType('page',
+  const from = fakeContentType(
+    'page',
     fakeField({
       id: 'metaDescription',
       name: 'Meta-Description',
-      validations: [ { size: { max: 160 } } ],
+      validations: [{ size: { max: 160 } }],
     }),
   )
 
-  const to = fakeContentType('page',
+  const to = fakeContentType(
+    'page',
     fakeField({
       id: 'metaTitle',
       name: 'Meta-Title',
-      validations: [ { regexp: { pattern: '^\w+$' }} ],
+      validations: [{ regexp: { pattern: '^w+$' } }],
     }),
     fakeField({
       id: 'metaDescription',
       name: 'Meta-Description',
-      validations: [ { size: { max: 160 } } ],
+      validations: [{ size: { max: 160 } }],
     }),
   )
 
@@ -262,28 +264,29 @@ test('properly moves field when new field inserted above', async (t) => {
   t.regex(written, /createField\('metaTitle'/)
   t.regex(written, /moveField\('metaTitle'/)
   t.notRegex(written, /editField\('metaDescription'/)
-
 })
 
 test('also picks up field changes when new field inserted above', async (t) => {
-  const from = fakeContentType('page',
+  const from = fakeContentType(
+    'page',
     fakeField({
       id: 'metaDescription',
       name: 'Meta-Description',
-      validations: [ { size: { max: 160 } } ],
+      validations: [{ size: { max: 160 } }],
     }),
   )
 
-  const to = fakeContentType('page',
+  const to = fakeContentType(
+    'page',
     fakeField({
       id: 'metaTitle',
       name: 'Meta-Title',
-      validations: [ { regexp: { pattern: '^\w+$' }} ],
+      validations: [{ regexp: { pattern: '^w+$' } }],
     }),
     fakeField({
       id: 'metaDescription',
       name: 'Meta-Description',
-      validations: [ { size: { max: 170 } } ],
+      validations: [{ size: { max: 170 } }],
     }),
   )
 
@@ -292,5 +295,8 @@ test('also picks up field changes when new field inserted above', async (t) => {
   await writeModify(from, to, async (chunk) => chunks.push(chunk), {})
 
   const written = chunks.join('')
-  t.regex(written, /editField\('metaDescription'\)\s*\.validations\(\[\s*{\s*size:\s*{\s*max:\s*170\s*}\s*}\s*\]\)/m)
+  t.regex(
+    written,
+    /editField\('metaDescription'\)\s*\.validations\(\[\s*{\s*size:\s*{\s*max:\s*170\s*}\s*}\s*\]\)/m,
+  )
 })

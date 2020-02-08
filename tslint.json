@@ -1,8 +1,5 @@
 {
-  "extends": [
-    "tslint:recommended",
-    "tslint-eslint-rules"
-  ],
+  "extends": ["tslint:recommended", "tslint-eslint-rules"],
   "rules": {
     "semicolon": [true, "never"],
     "quotemark": [true, "single"],
@@ -11,9 +8,6 @@
     "object-literal-sort-keys": false
   },
   "linterOptions": {
-    "exclude": [
-      "**/*.js",
-      "**/*.d.ts"
-    ]
+    "exclude": ["**/*.js", "**/*.d.ts"]
   }
 }

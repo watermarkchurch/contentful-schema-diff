@@ -1,7 +1,10 @@
 import { IContentType, IField } from './model'
 
-export function fakeContentType(id: string = 'test', ...fields: IContentType['fields']): IContentType {
- return {
+export function fakeContentType(
+  id: string = 'test',
+  ...fields: IContentType['fields']
+): IContentType {
+  return {
     sys: {
       space: {
         sys: {
@@ -50,21 +53,24 @@ export function fakeContentType(id: string = 'test', ...fields: IContentType['fi
     },
     displayField: 'name',
     name: 'Menu',
-    description: 'A Menu contains a number of Menu Buttons or other Menus, which will be rendered as drop-downs.',
+    description:
+      'A Menu contains a number of Menu Buttons or other Menus, which will be rendered as drop-downs.',
     fields,
   }
 }
 
 export function fakeField(field: Partial<IField>): IField {
-  return Object.assign({
-    id: 'test',
-    name: 'Test',
-    type: 'Symbol',
-    localized: false,
-    required: false,
-    validations: [
-    ],
-    disabled: false,
-    omitted: false,
-  }, field)
+  return Object.assign(
+    {
+      id: 'test',
+      name: 'Test',
+      type: 'Symbol',
+      localized: false,
+      required: false,
+      validations: [],
+      disabled: false,
+      omitted: false,
+    },
+    field,
+  )
 }

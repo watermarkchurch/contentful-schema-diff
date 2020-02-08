@@ -1,6 +1,6 @@
 import test from 'ava'
 
-import { asyncWriter } from './async_writer'
+import { asyncWriter } from '../async_writer'
 
 // tslint:disable:no-unused-expression
 
@@ -65,7 +65,7 @@ test('waits for the drain event if draining', async (t) => {
   const p2 = write('2')
   let p2done = false
   let p2err: any = null
-  p2.then(() => p2done = true, (err) => p2err = err)
+  p2.then(() => (p2done = true), (err) => (p2err = err))
 
   t.deepEqual(chunks, ['1'])
   t.deepEqual(drainers.length, 1)
@@ -96,7 +96,7 @@ test('recursively writes the chunk after drain event', async (t) => {
   const p3 = write('3')
   let p3done = false
   let p3err: any = null
-  p3.then(() => p3done = true, (err) => p3err = err)
+  p3.then(() => (p3done = true), (err) => (p3err = err))
 
   // drain event
   drainers[0]()
@@ -120,8 +120,8 @@ test('catches errors after a drain event', async (t) => {
   const stream = {
     write: (chunk: string, cb: (err?: any) => void) => {
       chunks.push(chunk)
-      setTimeout(() =>
-        cb(chunks.length == 2 ? new Error('test err') : undefined),
+      setTimeout(
+        () => cb(chunks.length == 2 ? new Error('test err') : undefined),
         1,
       )
       return false

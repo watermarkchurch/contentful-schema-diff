@@ -4,7 +4,7 @@ import { IArgs } from './main'
 import { IContentType, IEditorInterface } from './model'
 import { eachInSequence } from './utils'
 
-const {createClient} = require('contentful-management')
+const { createClient } = require('contentful-management')
 
 export interface ISource {
   id: string
@@ -13,10 +13,7 @@ export interface ISource {
 }
 
 export function loadSources(args: IArgs): Promise<ISource[]> {
-  return Promise.all([
-    loadSource(args.from, args),
-    loadSource(args.to, args),
-  ])
+  return Promise.all([loadSource(args.from, args), loadSource(args.to, args)])
 }
 
 async function loadSource(source: string, args: IArgs): Promise<ISource> {
@@ -31,14 +28,16 @@ async function loadSource(source: string, args: IArgs): Promise<ISource> {
   } else {
     // get from space
     if (!args.managementToken) {
-      throw new Error(`${source} is not a file and I don't have a management token to talk to contentful.`)
+      throw new Error(
+        `${source} is not a file and I don't have a management token to talk to contentful.`,
+      )
     }
 
     const client = createClient({
       accessToken: args.managementToken,
     })
 
-    let {spaceId, envId} = parseEnv(source)
+    let { spaceId, envId } = parseEnv(source)
     let env: any
     try {
       const space = await client.getSpace(spaceId)
@@ -46,7 +45,7 @@ async function loadSource(source: string, args: IArgs): Promise<ISource> {
     } catch (e) {
       // the source may not be a space - it might be an environment on the '--from' space
       if (args.from == source) {
-        throw(e)
+        throw e
       }
       // we're loading the args.to
 
@@ -58,12 +57,14 @@ async function loadSource(source: string, args: IArgs): Promise<ISource> {
 
     contentTypes = (await env.getContentTypes()).items
     if (args.contentTypes && args.contentTypes.length > 0) {
-      contentTypes = contentTypes.filter((ct) =>
-        args.contentTypes.indexOf(ct.sys.id) >= 0,
+      contentTypes = contentTypes.filter(
+        (ct) => args.contentTypes.indexOf(ct.sys.id) >= 0,
       )
     }
-    editorInterfaces = await eachInSequence(contentTypes,
-      (ct: any) => ct.getEditorInterface() as Promise<IEditorInterface>)
+    editorInterfaces = await eachInSequence(
+      contentTypes,
+      (ct: any) => ct.getEditorInterface() as Promise<IEditorInterface>,
+    )
   }
   return {
     id: source,
@@ -72,7 +73,7 @@ async function loadSource(source: string, args: IArgs): Promise<ISource> {
   }
 }
 
-function parseEnv(source: string): { spaceId: string, envId: string } {
+function parseEnv(source: string): { spaceId: string; envId: string } {
   const parts = source.split('/')
   return {
     spaceId: parts[0],
