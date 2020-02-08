@@ -1,9 +1,9 @@
-import {WriteStream} from 'fs'
+import { WriteStream } from 'fs'
 import * as fs from 'fs-extra'
 import * as path from 'path'
 
 import { IContext } from '.'
-import { formatFile, wait } from '../utils'
+import { wait } from '../utils'
 import { AsyncWrite, asyncWriter } from './async_writer'
 
 export class WriteSingleFileRunner {
@@ -31,8 +31,8 @@ export class WriteSingleFileRunner {
   }
 
   public run(
-      keys: string[],
-      doRun: (id: string, write: AsyncWrite, context: IContext) => Promise<void>): Array<Promise<void>> {
+    keys: string[],
+    doRun: (id: string, write: AsyncWrite, context: IContext) => Promise<void>): Array<Promise<void>> {
     return keys.map(async (id: string) => {
       const context: IContext = {
         open: true,
@@ -54,7 +54,6 @@ export class WriteSingleFileRunner {
     await this.fileWriter(this.footer)
     this.outputStream.close()
     await wait(1)
-    await formatFile(this.fileName)
     return [this.fileName]
   }
 }

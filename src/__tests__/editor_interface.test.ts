@@ -1,4 +1,3 @@
-import test from 'ava'
 import { writeEditorInterfaceChange } from '../editor_interface'
 import { IEditorInterface } from '../model'
 
@@ -265,132 +264,103 @@ const to: { [id: string]: IEditorInterface } = {
   },
 }
 
-test('explicitly writes default on initial', async (t) => {
-  const chunks: string[] = []
+describe('EditorInterface', () => {
+  test('explicitly writes default on initial', async () => {
+    const chunks: string[] = []
 
-  await writeEditorInterfaceChange(
-    null,
-    to.menu,
-    async (chunk) => chunks.push(chunk),
-    { varname: 'menu' },
-  )
+    await writeEditorInterfaceChange(
+      null,
+      to.menu,
+      async (chunk) => chunks.push(chunk),
+      { varname: 'menu' },
+    )
 
-  const written = chunks.join('')
-  t.regex(
-    written,
-    /menu\.changeFieldControl\('name', 'builtin', 'singleLine'\)/,
-  )
-  t.regex(
-    written,
-    /menu\.changeFieldControl\('topButton', 'builtin', 'entryLinkEditor'\)/,
-  )
-  t.regex(
-    written,
-    /menu\.changeFieldControl\('items', 'builtin', 'entryLinksEditor'\)/,
-  )
-})
+    const written = chunks.join('')
+    expect(written).toMatch(/menu\.changeFieldControl\('name', 'builtin', 'singleLine'\)/)
+    expect(written).toMatch(/menu\.changeFieldControl\('topButton', 'builtin', 'entryLinkEditor'\)/)
+    expect(written).toMatch(/menu\.changeFieldControl\('items', 'builtin', 'entryLinksEditor'\)/)
+  })
 
-test('writes nothing if no diff', async (t) => {
-  const chunks: string[] = []
+  test('writes nothing if no diff', async () => {
+    const chunks: string[] = []
 
-  await writeEditorInterfaceChange(from.menu, to.menu, async (chunk) =>
-    chunks.push(chunk),
-  )
+    await writeEditorInterfaceChange(from.menu, to.menu, async (chunk) =>
+      chunks.push(chunk),
+    )
 
-  const written = chunks.join('')
-  t.deepEqual(written, '')
-})
+    const written = chunks.join('')
+    expect(written).toBe('')
+  })
 
-test('writes changes for diffs', async (t) => {
-  const chunks: string[] = []
+  test('writes changes for diffs', async () => {
+    const chunks: string[] = []
 
-  await writeEditorInterfaceChange(
-    from['section-video-highlight'],
-    to['section-video-highlight'],
-    async (chunk) => chunks.push(chunk),
-  )
+    await writeEditorInterfaceChange(
+      from['section-video-highlight'],
+      to['section-video-highlight'],
+      async (chunk) => chunks.push(chunk),
+    )
 
-  const written = chunks.join('')
+    const written = chunks.join('')
 
-  t.regex(
-    written,
-    /sectionVideoHighlight\.changeFieldControl\('tag', 'builtin', 'dropdown'\)/,
-  )
-  t.regex(
-    written,
-    /sectionVideoHighlight\.changeFieldControl\('subtext', 'builtin', 'singleLine'/,
-  )
-  t.regex(
-    written,
-    /sectionVideoHighlight\.changeFieldControl\('embedCode', 'builtin', 'custom-editor-extension'/,
-  )
+    expect(written).toMatch(/sectionVideoHighlight\.changeFieldControl\('tag', 'builtin', 'dropdown'\)/)
+    expect(written).toMatch(/sectionVideoHighlight\.changeFieldControl\('subtext', 'builtin', 'singleLine'/)
+    expect(written).toMatch(/sectionVideoHighlight\.changeFieldControl\('embedCode', 'builtin', 'custom-editor-extension'/)
+    expect(written).not.toMatch(/'title'/)
+  })
 
-  t.notRegex(written, /'title'/)
-})
+  test('opens content type for edit if varname not set in context', async () => {
+    const chunks: string[] = []
 
-test('opens content type for edit if varname not set in context', async (t) => {
-  const chunks: string[] = []
+    await writeEditorInterfaceChange(
+      from['section-video-highlight'],
+      to['section-video-highlight'],
+      async (chunk) => chunks.push(chunk),
+    )
 
-  await writeEditorInterfaceChange(
-    from['section-video-highlight'],
-    to['section-video-highlight'],
-    async (chunk) => chunks.push(chunk),
-  )
+    const written = chunks.join('')
+    expect(written).toMatch(/var sectionVideoHighlight = migration\.editContentType\('section-video-highlight'/)
+  })
 
-  const written = chunks.join('')
-  t.regex(
-    written,
-    /var sectionVideoHighlight = migration\.editContentType\('section-video-highlight'/,
-  )
-})
+  test('does not reopen content type if variable already was written', async () => {
+    const chunks: string[] = []
 
-test('does not reopen content type if variable already was written', async (t) => {
-  const chunks: string[] = []
+    await writeEditorInterfaceChange(
+      null,
+      to.menu,
+      async (chunk) => chunks.push(chunk),
+      { varname: 'menu' },
+    )
 
-  await writeEditorInterfaceChange(
-    null,
-    to.menu,
-    async (chunk) => chunks.push(chunk),
-    { varname: 'menu' },
-  )
+    const written = chunks.join('')
+    expect(written).not.toMatch(/var menu/)
+    expect(written).not.toMatch(/migration.editContentType/)
+  })
 
-  const written = chunks.join('')
-  t.notRegex(written, /var menu/)
-  t.notRegex(written, /migration.editContentType/)
-})
+  test('writes help text if present', async () => {
+    const chunks: string[] = []
 
-test('writes help text if present', async (t) => {
-  const chunks: string[] = []
+    await writeEditorInterfaceChange(
+      from['section-video-highlight'],
+      to['section-video-highlight'],
+      async (chunk) => chunks.push(chunk),
+    )
 
-  await writeEditorInterfaceChange(
-    from['section-video-highlight'],
-    to['section-video-highlight'],
-    async (chunk) => chunks.push(chunk),
-  )
+    const written = chunks.join('')
+    expect(written).toMatch(/sectionVideoHighlight\.changeFieldControl\('tag', 'builtin', 'dropdown'\)/)
+    expect(written).toMatch(/sectionVideoHighlight\.changeFieldControl\('subtext', 'builtin', 'singleLine', {/)
+  })
 
-  const written = chunks.join('')
-  t.regex(
-    written,
-    /sectionVideoHighlight\.changeFieldControl\('tag', 'builtin', 'dropdown'\)/,
-  )
-  t.regex(
-    written,
-    /sectionVideoHighlight\.changeFieldControl\('subtext', 'builtin', 'singleLine', {/,
-  )
-})
+  test('writes change if settings changed', async () => {
+    const chunks: string[] = []
 
-test('writes change if settings changed', async (t) => {
-  const chunks: string[] = []
+    await writeEditorInterfaceChange(
+      from['section-video-highlight'],
+      to['section-video-highlight'],
+      async (chunk) => chunks.push(chunk),
+    )
 
-  await writeEditorInterfaceChange(
-    from['section-video-highlight'],
-    to['section-video-highlight'],
-    async (chunk) => chunks.push(chunk),
-  )
-
-  const written = chunks.join('')
-  t.regex(
-    written,
-    /sectionVideoHighlight\.changeFieldControl\('anotherField', 'builtin', 'singleLine', {/,
-  )
+    const written = chunks.join('')
+    expect(written).toMatch(/sectionVideoHighlight\.changeFieldControl\('anotherField', 'builtin', 'singleLine', {/)
+  })
 })

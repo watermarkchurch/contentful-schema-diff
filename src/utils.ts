@@ -65,23 +65,6 @@ export function wait(ms: number): Promise<void> {
   })
 }
 
-export function formatFile(file: string): Promise<void> {
-  const prettierBinLocation = path.join(
-    require.resolve('prettier'),
-    '../bin-prettier.js',
-  )
-
-  return new Promise((resolve, reject) => {
-    exec(`${prettierBinLocation} --write ${file}`, (err, stdout, stderr) => {
-      if (err) {
-        reject(err.message + '\n\t' + stderr)
-      } else {
-        resolve()
-      }
-    })
-  })
-}
-
 export async function eachInSequence<T, U>(
   items: T[],
   op: (item: T, index?: number, items?: T[]) => Promise<U>,

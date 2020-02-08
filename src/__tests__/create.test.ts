@@ -1,5 +1,3 @@
-import test from 'ava'
-
 import { writeCreate } from '../create'
 import { IContentType } from '../model'
 
@@ -120,24 +118,27 @@ const contentType: IContentType = {
   ],
 }
 
-test('dumps content type', async (t) => {
-  const chunks: string[] = []
+describe('Create', () => {
+  test('dumps content type', async () => {
+    const chunks: string[] = []
 
-  await writeCreate(contentType, async (chunk) => chunks.push(chunk), {})
+    await writeCreate(contentType, async (chunk) => chunks.push(chunk), {})
 
-  const written = chunks.join('')
-  t.regex(written, /migration\.createContentType\('menu/)
-  t.regex(written, /displayField:\s+'name'/)
-  t.regex(written, /name:\s+'Menu'/)
-  t.regex(written, /description:\s+'A Menu contains/)
-})
+    const written = chunks.join('')
 
-test('dumps simple fields', async (t) => {
-  const chunks: string[] = []
+    expect(written).toMatch(/migration\.createContentType\('menu/)
+    expect(written).toMatch(/displayField:\s+'name'/)
+    expect(written).toMatch(/name:\s+'Menu'/)
+    expect(written).toMatch(/description:\s+'A Menu contains/)
+  })
 
-  await writeCreate(contentType, async (chunk) => chunks.push(chunk), {})
+  test('dumps simple fields', async () => {
+    const chunks: string[] = []
 
-  const written = chunks.join('')
-  t.regex(written, /menu\.createField\('name/)
-  t.regex(written, /name:\s+'Menu Name'/)
+    await writeCreate(contentType, async (chunk) => chunks.push(chunk), {})
+
+    const written = chunks.join('')
+    expect(written).toMatch(/menu\.createField\('name/)
+    expect(written).toMatch(/name:\s+'Menu Name'/)
+  })
 })

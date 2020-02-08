@@ -1,231 +1,233 @@
-import test from 'ava'
-
 import { isDiff, isDiffItem, isDiffObj } from '../diff'
 
 const { diff } = require('json-diff')
 
-test('isDiff handles simple diff', (t) => {
-  const a = { test: 1 }
-  const b = { test: 2 }
-  const d = diff(a, b)
+describe('Diff', () => {
+  describe('isDiff', () => {
 
-  // act
-  t.true(isDiff(d))
-})
+    test('handles simple diff', () => {
+      const a = { test: 1 }
+      const b = { test: 2 }
+      const d = diff(a, b)
 
-test('isDiff returns false for empty diff', (t) => {
-  const a = { test: 1 }
-  const b = { test: 1 }
-  const d = diff(a, b)
+      expect(isDiff(d)).toBe(true)
+    })
 
-  // act
-  t.false(isDiff(d))
-})
+    test('returns false for empty diff', () => {
+      const a = { test: 1 }
+      const b = { test: 1 }
+      const d = diff(a, b)
 
-test('isDiff returns false for non-diff', (t) => {
-  // act
-  t.false(isDiff({ test: 'data' }))
-})
+      expect(isDiff(d)).toBe(false)
+    })
 
-test('isDiff handles complex diff', (t) => {
-  const d = [
-    [
-      '~',
-      {
-        type: { __old: 'Symbol', __new: 'Text' },
-      },
-    ],
-    [
-      '+',
-      {
-        id: 'movedField',
-        name: 'Moved Field',
-        type: 'Number',
-        localized: false,
-        required: true,
-        validations: [],
-        disabled: false,
-        omitted: false,
-      },
-    ],
-    [
-      '+',
-      {
-        id: 'newField',
-        name: 'New Field',
-        type: 'Symbol',
-        localized: false,
-        required: true,
-        validations: [],
-        disabled: false,
-        omitted: false,
-      },
-    ],
-    [
-      '~',
-      {
+    test('returns false for non-diff', () => {
+      expect(isDiff({ test: 'data' })).toBe(false)
+    })
+
+    test('handles complex diff', () => {
+      const d = [
+        [
+          '~',
+          {
+            type: { __old: 'Symbol', __new: 'Text' },
+          },
+        ],
+        [
+          '+',
+          {
+            id: 'movedField',
+            name: 'Moved Field',
+            type: 'Number',
+            localized: false,
+            required: true,
+            validations: [],
+            disabled: false,
+            omitted: false,
+          },
+        ],
+        [
+          '+',
+          {
+            id: 'newField',
+            name: 'New Field',
+            type: 'Symbol',
+            localized: false,
+            required: true,
+            validations: [],
+            disabled: false,
+            omitted: false,
+          },
+        ],
+        [
+          '~',
+          {
+            validations: [
+              [
+                '~',
+                {
+                  message: {
+                    __old: 'The Top Button must be a ...',
+                    __new: 'A new message',
+                  },
+                },
+              ],
+            ],
+          },
+        ],
+        [
+          '-',
+          {
+            id: 'movedField',
+            name: 'Moved Field',
+            type: 'Number',
+            localized: false,
+            required: true,
+            validations: [],
+            disabled: false,
+            omitted: false,
+          },
+        ],
+        [
+          '~',
+          {
+            disabled: {
+              __old: false,
+              __new: true,
+            },
+            items: {
+              validations: [
+                [
+                  '-',
+                  {
+                    range: {
+                      min: 1,
+                      max: 4,
+                    },
+                  },
+                ],
+                [' '],
+              ],
+            },
+          },
+        ],
+        [
+          '-',
+          {
+            id: 'sideMenu',
+            name: 'Side Menu',
+            type: 'Link',
+            localized: false,
+            required: false,
+            validations: [
+              {
+                range: {
+                  min: 1,
+                  max: 5,
+                },
+              },
+              {
+                linkContentType: ['menu'],
+                message: 'The Side Menu must be a Menu',
+              },
+            ],
+            disabled: false,
+            omitted: false,
+            linkType: 'Entry',
+          },
+        ],
+      ]
+
+      expect(isDiff(d)).toBe(true)
+    })
+  })
+
+  describe('isDiffItem', () => {
+
+    test('returns false for empty array', () => {
+      const d = [] as any[]
+
+      // act
+      expect(isDiffItem(d)).toBe(false)
+    })
+
+    test('returns false for array with wrong length', () => {
+      const d = ['-', 'a', 'B']
+
+      // act
+      expect(isDiffItem(d as any)).toBe(false)
+    })
+
+    test('returns false for array with wrong key', () => {
+      const d = ['a', 'B']
+
+      expect(isDiffItem(d as any)).toBe(false)
+    })
+
+    test('handles corner case', () => {
+      const d = [
+        '~',
+        {
+          disabled: { __old: false, __new: true },
+          items: { validations: [['-', { range: { min: 1, max: 4 } }], [' ']] },
+        },
+      ]
+
+      expect(isDiffItem(d as any)).toBe(true)
+    })
+  })
+
+  describe('isDiffObj', () => {
+
+    test('returns false for empty obj', () => {
+      const d = {}
+
+      expect(isDiffObj(d)).toBe(false)
+    })
+
+    test('returns false for non-obj', () => {
+      const d = ['+', { test: 'data' }]
+
+      // act
+      expect(isDiffObj(d as any)).toBe(false)
+    })
+
+    test('returns true for simple diff', () => {
+      const a = { test: 1 }
+      const b = { test: 2 }
+      const d = diff(a, b)
+
+      // act
+      expect(isDiffObj(d)).toBe(true)
+    })
+
+    test('returns true for diff with sub-diffs', () => {
+      const d = {
         validations: [
           [
             '~',
             {
               message: {
-                __old: 'The Top Button must be a ...',
+                __old: 'The Top Button must be a...',
                 __new: 'A new message',
               },
             },
           ],
         ],
-      },
-    ],
-    [
-      '-',
-      {
-        id: 'movedField',
-        name: 'Moved Field',
-        type: 'Number',
-        localized: false,
-        required: true,
-        validations: [],
-        disabled: false,
-        omitted: false,
-      },
-    ],
-    [
-      '~',
-      {
-        disabled: {
-          __old: false,
-          __new: true,
-        },
-        items: {
-          validations: [
-            [
-              '-',
-              {
-                range: {
-                  min: 1,
-                  max: 4,
-                },
-              },
-            ],
-            [' '],
-          ],
-        },
-      },
-    ],
-    [
-      '-',
-      {
-        id: 'sideMenu',
-        name: 'Side Menu',
-        type: 'Link',
-        localized: false,
-        required: false,
-        validations: [
-          {
-            range: {
-              min: 1,
-              max: 5,
-            },
-          },
-          {
-            linkContentType: ['menu'],
-            message: 'The Side Menu must be a Menu',
-          },
-        ],
-        disabled: false,
-        omitted: false,
-        linkType: 'Entry',
-      },
-    ],
-  ]
+      }
 
-  // act
-  t.true(isDiff(d))
-})
+      // act
+      expect(isDiffObj(d)).toBe(true)
+    })
 
-test('isDiffItem returns false for empty array', (t) => {
-  const d = [] as any[]
+    test('returns true for complex diff', () => {
+      const d = {
+        disabled: { __old: false, __new: true },
+        items: { validations: [['-', { range: { min: 1, max: 4 } }], [' ']] },
+      }
 
-  // act
-  t.false(isDiffItem(d as any))
-})
-
-test('isDiffItem returns false for array with wrong length', (t) => {
-  const d = ['-', 'a', 'B']
-
-  // act
-  t.false(isDiffItem(d as any))
-})
-
-test('isDiffItem returns false for array with wrong key', (t) => {
-  const d = ['a', 'B']
-
-  // act
-  t.false(isDiffItem(d as any))
-})
-
-test('isDiffItem handles corner case', (t) => {
-  const d = [
-    '~',
-    {
-      disabled: { __old: false, __new: true },
-      items: { validations: [['-', { range: { min: 1, max: 4 } }], [' ']] },
-    },
-  ]
-
-  // act
-  t.true(isDiffItem(d as any))
-})
-
-test('isDiffObj returns false for empty obj', (t) => {
-  const d = {}
-
-  // act
-  t.false(isDiffObj(d))
-})
-
-test('isDiffObj returns false for non-obj', (t) => {
-  const d = ['+', { test: 'data' }]
-
-  // act
-  t.false(isDiffObj(d))
-})
-
-test('isDiffObj returns true for simple diff', (t) => {
-  const a = { test: 1 }
-  const b = { test: 2 }
-  const d = diff(a, b)
-
-  // act
-  t.true(isDiffObj(d))
-})
-
-test('isDiffObj returns true for diff with sub-diffs', (t) => {
-  const d = {
-    validations: [
-      [
-        '~',
-        {
-          message: {
-            __old: 'The Top Button must be a...',
-            __new: 'A new message',
-          },
-        },
-      ],
-    ],
-  }
-
-  // act
-  t.true(isDiffObj(d))
-})
-
-test('isDiffObj returns true for complex diff', (t) => {
-  const d = {
-    disabled: { __old: false, __new: true },
-    items: { validations: [['-', { range: { min: 1, max: 4 } }], [' ']] },
-  }
-
-  // act
-  t.true(isDiffObj(d))
+      // act
+      expect(isDiffObj(d)).toBe(true)
+    })
+  })
 })

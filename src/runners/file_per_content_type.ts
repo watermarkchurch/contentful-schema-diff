@@ -1,9 +1,9 @@
-import {WriteStream} from 'fs'
+import { WriteStream } from 'fs'
 import * as fs from 'fs-extra'
 import * as path from 'path'
 
 import { IContext } from '.'
-import { extendPrototypes, formatFile, wait } from '../utils'
+import { extendPrototypes, wait } from '../utils'
 extendPrototypes()
 import { AsyncWrite, asyncWriter } from './async_writer'
 
@@ -25,8 +25,8 @@ export class FilePerContentTypeRunner {
   }
 
   public run(
-      keys: string[],
-      run: (id: string, write: AsyncWrite, context: IContext) => Promise<void>): Array<Promise<void>> {
+    keys: string[],
+    run: (id: string, write: AsyncWrite, context: IContext) => Promise<void>): Array<Promise<void>> {
     return keys.map(async (id: string) => {
       const context: IContext = {}
       const writer = this.makeWriter(id, context)
@@ -40,7 +40,6 @@ export class FilePerContentTypeRunner {
       await tuple.writer(this.footer)
       tuple.stream.close()
       await wait(1)
-      await formatFile(tuple.fileName)
       return tuple.fileName
     }))
   }

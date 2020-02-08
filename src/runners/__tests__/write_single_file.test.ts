@@ -1,65 +1,78 @@
-import test from 'ava'
 import * as fs from 'fs-extra'
-
+import * as path from 'path'
+import { DirResult, dirSync } from 'tmp'
 import { WriteSingleFileRunner } from '../write_single_file'
 
-test.afterEach(async () => {
-  await fs.remove('temp.ts')
-  if (await fs.pathExists('/tmp/write_single_file_test')) {
-    for (const f of await fs.readdir('/tmp/write_single_file_test')) {
-      await fs.remove(`/tmp/write_single_file_test/${f}`)
+let tmpDirectory: DirResult
+let instance: WriteSingleFileRunner
+
+describe('WriteSingleFileRunner', () => {
+  beforeEach(async () => {
+    tmpDirectory = dirSync()
+  })
+
+  afterEach(async () => {
+    if (tmpDirectory.removeCallback) {
+      tmpDirectory.removeCallback()
     }
-    await fs.rmdir('/tmp/write_single_file_test')
-  }
-})
 
-test.serial('writes a chunk to the specified file', async (t) => {
-  const instance = new WriteSingleFileRunner('temp.ts', '', '')
-  await instance.init()
-  await Promise.all(
-    instance.run(['k1', 'k2'], (id, write, ctx) => {
-      return write(`${id}: test`)
-    }),
-  )
+    if (fs.pathExistsSync(tmpDirectory.name)) {
+      fs.readdirSync(tmpDirectory.name).forEach((file) => {
+        fs.removeSync(path.join(tmpDirectory.name, file))
+      })
+    }
+  })
 
-  await instance.close()
+  it('writes a chunk to the specified file', async () => {
+    instance = new WriteSingleFileRunner(
+      path.join(tmpDirectory.name, 'temp.ts'),
+      'HEADER!!!',
+      'FOOTER!!!',
+    )
 
-  const contents = (await fs.readFile('temp.ts')).toString()
+    await instance.init()
+    await Promise.all(
+      instance.run(['k1', 'k2'], (id, write, ctx) => {
+        return write(`${id}: test`)
+      }),
+    )
 
-  t.regex(contents, /k1: test/)
-  t.regex(contents, /k2: test/)
-})
+    await instance.close()
 
-test.serial('writes header and footer', async (t) => {
-  const instance = new WriteSingleFileRunner(
-    'temp.ts',
-    'HEADER!!!\n',
-    'FOOTER!!!\n',
-  )
+    const contents = (fs.readFileSync(path.join(tmpDirectory.name, 'temp.ts'))).toString()
 
-  await instance.init()
+    expect(contents).toMatch(/k1: test/g)
+    expect(contents).toMatch(/k2: test/g)
+  })
 
-  await instance.close()
+  it('writes header and footer', async () => {
+    instance = new WriteSingleFileRunner(
+      path.join(tmpDirectory.name, 'temp.ts'),
+      'HEADER!!!',
+      'FOOTER!!!',
+    )
 
-  const contents = (await fs.readFile('temp.ts')).toString()
+    await instance.init()
+    await instance.close()
 
-  t.regex(contents, /HEADER!!!/)
-  t.regex(contents, /FOOTER!!!/)
-})
+    const contents = fs.readFileSync(path.join(tmpDirectory.name, 'temp.ts')).toString()
 
-test.serial('writes timestamped file if directory specified', async (t) => {
-  await fs.mkdirp('/tmp/write_single_file_test')
-  const instance = new WriteSingleFileRunner(
-    '/tmp/write_single_file_test',
-    'HEADER!!!\n',
-    'FOOTER!!!\n',
-  )
+    expect(contents).toMatch(/HEADER!!!/)
+    expect(contents).toMatch(/FOOTER!!!/)
+  })
 
-  await instance.init()
+  it('writes timestamped file if directory specified', async () => {
+    instance = new WriteSingleFileRunner(
+      tmpDirectory.name,
+      'HEADER!!!',
+      'FOOTER!!!',
+    )
 
-  await instance.close()
+    await instance.init()
+    await instance.close()
 
-  const files = await fs.readdir('/tmp/write_single_file_test')
-  t.deepEqual(files.length, 1)
-  t.regex(files[0], /[0-9]+_generated_from_diff\.ts/)
+    const files = fs.readdirSync(tmpDirectory.name)
+    expect(files.length).toBe(1)
+    expect(files[0]).toMatch(/[0-9]+_generated_from_diff\.ts/)
+  })
 })

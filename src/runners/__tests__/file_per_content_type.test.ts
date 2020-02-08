@@ -1,89 +1,8 @@
-import test from 'ava'
 import * as fs from 'fs-extra'
 import * as path from 'path'
+import { DirResult, dirSync } from 'tmp'
 
 import { FilePerContentTypeRunner } from '../file_per_content_type'
-
-let instance: FilePerContentTypeRunner
-
-test.beforeEach(async () => {
-  if (await fs.pathExists('/tmp/file_per_content_type_test')) {
-    for (const f of await fs.readdir('/tmp/file_per_content_type_test')) {
-      await fs.remove(`/tmp/file_per_content_type_test/${f}`)
-    }
-    await fs.rmdir('/tmp/file_per_content_type_test')
-  }
-
-  await fs.mkdirp('/tmp/file_per_content_type_test')
-  instance = new FilePerContentTypeRunner(
-    '/tmp/file_per_content_type_test',
-    '// HEADER!!!\n',
-    '// FOOTER!!!\n',
-  )
-
-  await instance.init()
-})
-
-test.serial('writes timestamped file for each content type', async (t) => {
-  // act
-  await Promise.all(
-    instance.run(['ct-a', 'ct-b', 'ct-c'], (id, write, ctx) => {
-      return write('test:' + id)
-    }),
-  )
-
-  await instance.close()
-
-  const files = await fs.readdir('/tmp/file_per_content_type_test')
-  t.deepEqual(files.length, 3)
-  t.regex(files[0], /[0-9]+_generated_diff_ct-a\.ts/)
-  t.regex(files[1], /[0-9]+_generated_diff_ct-b\.ts/)
-  t.regex(files[2], /[0-9]+_generated_diff_ct-c\.ts/)
-})
-
-test.serial('does not write file if nothing written', async (t) => {
-  // act
-  await Promise.all(
-    instance.run(['ct-a', 'ct-b', 'ct-c'], (id, write, ctx) => {
-      if (id == 'ct-a') {
-        return write('test:' + id)
-      }
-      return Promise.resolve()
-    }),
-  )
-
-  await instance.close()
-
-  const files = await fs.readdir('/tmp/file_per_content_type_test')
-  t.deepEqual(files.length, 1)
-  t.regex(files[0], /[0-9]+_generated_diff_ct-a\.ts/)
-})
-
-test.serial('handles lots of lines', async (t) => {
-  const numLines = 100
-  // act
-  await Promise.all(
-    instance.run(['ct-a', 'ct-b', 'ct-c'], async (id, write, ctx) => {
-      for (let i = 0; i < numLines; i++) {
-        await write(`const t${i} = '${loremIpsum}'\n`)
-      }
-    }),
-  )
-
-  await instance.close()
-
-  const files = await fs.readdir('/tmp/file_per_content_type_test')
-  const contents = (await fs.readFile(
-    path.join('/tmp/file_per_content_type_test', files[0]),
-  )).toString()
-  const lines = contents.split('\n')
-  t.deepEqual(lines.length, numLines * 2 + 3)
-  for (let i = 0; i < numLines; i++) {
-    const lineNum = i * 2 + 1
-    t.deepEqual(lines[lineNum], `const t${i} =`)
-    t.deepEqual(lines[lineNum + 1], `  "${loremIpsum}";`)
-  }
-})
 
 const loremIpsum =
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed' +
@@ -93,3 +12,89 @@ const loremIpsum =
   ' nec sagittis eget, viverra sit amet nisl. Sed bibendum tellus sit amet nunc' +
   ' molestie, nec viverra lorem sollicitudin. Quisque sed tortor elementum, semper' +
   ' eros nec, tempor dui. Aliquam dignissim sapien vitae odio sagittis feugiat.'
+
+let instance: FilePerContentTypeRunner
+let tmpDirectory: DirResult
+
+describe('FilePerContentType', () => {
+  beforeAll(() => {
+    tmpDirectory = dirSync()
+  })
+
+  afterAll(() => tmpDirectory.removeCallback && tmpDirectory.removeCallback())
+
+  beforeEach(async () => {
+    if (fs.existsSync(tmpDirectory.name)) {
+      for (const f of fs.readdirSync(tmpDirectory.name)) {
+        fs.removeSync(path.join(tmpDirectory.name, f))
+      }
+    }
+
+    instance = new FilePerContentTypeRunner(
+      tmpDirectory.name,
+      '// HEADER!!!\n',
+      '// FOOTER!!!\n',
+    )
+
+    await instance.init()
+  })
+
+  it('writes timestamped file for each content type', async () => {
+    await Promise.all(
+      instance.run(['ct-a', 'ct-b', 'ct-c'], (id, write) => {
+        return write('test:' + id)
+      }),
+    )
+
+    await instance.close()
+
+    const files = fs.readdirSync(tmpDirectory.name)
+    expect(files.length).toBe(3)
+    expect(files[0]).toMatch(/[0-9]+_generated_diff_ct-a\.ts/)
+    expect(files[1]).toMatch(/[0-9]+_generated_diff_ct-b\.ts/)
+    expect(files[2]).toMatch(/[0-9]+_generated_diff_ct-c\.ts/)
+  })
+
+  it('does not write file if nothing written', async () => {
+    await Promise.all(
+      instance.run(['ct-a', 'ct-b', 'ct-c'], (id, write) => {
+        if (id == 'ct-a') {
+          return write('test:' + id)
+        }
+
+        return Promise.resolve()
+      }),
+    )
+
+    await instance.close()
+
+    const files = fs.readdirSync(tmpDirectory.name)
+    expect(files.length).toBe(1)
+    expect(files[0]).toMatch(/[0-9]+_generated_diff_ct-a\.ts/)
+  })
+
+  it('handles lots of lines', async () => {
+    const numLines = 100
+
+    await Promise.all(
+      instance.run(['ct-a', 'ct-b', 'ct-c'], async (id, write) => {
+        for (let i = 0; i < numLines; i++) {
+          await write(`const t${i} = '${loremIpsum}'\n`)
+        }
+      }),
+    )
+
+    await instance.close()
+
+    const [testFile] = fs.readdirSync(tmpDirectory.name)
+    const contents = (fs.readFileSync(path.join(tmpDirectory.name, testFile))).toString()
+    const lines = contents.split('\n')
+
+    expect(lines.length).toBe(numLines + 3)
+
+    for (let i = 0; i < numLines; i++) {
+      const lineNum = i + 1
+      expect(lines[lineNum]).toBe(`const t${i} = '${loremIpsum}'`)
+    }
+  })
+})

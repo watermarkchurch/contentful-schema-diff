@@ -7,26 +7,26 @@
     "contentful-schema-diff": "bin/index.js"
   },
   "scripts": {
-    "lint": "tslint 'src/**/*.ts'",
-    "test": "bash -c 'shopt -s globstar; tsc --project tsconfig.test.json && nyc ava src/**/*.test.js'",
-    "coverage": "yarn run test && nyc report --reporter=html && open coverage/index.html",
-    "coveralls": "nyc report --reporter=text-lcov | coveralls",
-    "test-watch": "ava -s --watch",
     "build": "tsc",
-    "clean": "bash -c 'shopt -s globstar; rm -f src/**/*.d.ts src/**/*.js src/**/*.js.map; tsc --build --clean || true; rm -rf dist coverage .nyc_output || true'",
-    "prepare": "yarn run build"
+    "coverage": "jest --collectCoverage --coverageDirectory coverage && open coverage/lcov-report/index.html",
+    "lint": "tslint 'src/**/*.ts'",
+    "prepare": "yarn run build",
+    "test": "jest",
+    "test-watch": "yarn test --watch"
   },
   "author": "Gordon Burgett (gordon@gordonburgett.net)",
   "license": "MIT",
   "repository": "https://github.com/watermarkchurch/contentful-schema-diff",
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",
+    "@types/jest": "^24.9.1",
     "@types/lodash": "^4.14.116",
     "@types/node": "^12.12.6",
+    "@types/tmp": "^0.1.0",
     "@types/yargs": "^11.0.0",
-    "ava": "2.4.0",
-    "coveralls": "^3.0.2",
-    "nyc": "^13.1.0",
+    "jest": "^25.1.0",
+    "tmp": "^0.1.0",
+    "ts-jest": "^25.0.0",
     "ts-node": "^8.4.1",
     "tslint-eslint-rules": "^5.4.0"
   },
@@ -39,20 +39,5 @@
     "tslint": "^5.11.0",
     "typescript": "^3.1",
     "yargs": "^11.0.0"
-  },
-  "ava": {
-    "files": [
-      "src/**/*.test.ts"
-    ],
-    "cache": true,
-    "failFast": true,
-    "verbose": true,
-    "compileEnhancements": false,
-    "extensions": [
-      "ts"
-    ],
-    "require": [
-      "ts-node/register"
-    ]
   }
 }

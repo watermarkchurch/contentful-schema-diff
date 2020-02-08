@@ -1,5 +1,3 @@
-import test from 'ava'
-
 import { writeModify } from '../modify'
 import { IContext } from '../runners'
 import { fakeContentType, fakeField } from '../test-support'
@@ -114,97 +112,93 @@ const toType = fakeContentType(
   }),
 )
 
-test('writes content type without def', async (t) => {
-  const chunks: string[] = []
+describe('Modify', () => {
+  test('writes content type without def', async () => {
+    const chunks: string[] = []
 
-  await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), {})
+    await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), {})
 
-  const written = chunks.join('')
-  t.regex(written, /migration.editContentType\('menu'\)/)
-})
+    const written = chunks.join('')
+    expect(written).toMatch(/migration.editContentType\('menu'\)/g)
+  })
 
-test('sets varname on context', async (t) => {
-  const chunks: string[] = []
-  const context: IContext = {}
+  test('sets varname on context', async () => {
+    const chunks: string[] = []
+    const context: IContext = {}
 
-  await writeModify(
-    fromType,
-    toType,
-    async (chunk) => chunks.push(chunk),
-    context,
-  )
+    await writeModify(
+      fromType,
+      toType,
+      async (chunk) => chunks.push(chunk),
+      context,
+    )
 
-  t.deepEqual(context.varname, 'menu')
-})
+    expect(context.varname).toBe('menu')
+  })
 
-test('dumps diff as comment', async (t) => {
-  const chunks: string[] = []
+  test('dumps diff as comment', async () => {
+    const chunks: string[] = []
 
-  await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), {})
+    await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), {})
 
-  const written = chunks.join('')
-  t.regex(written, /\-\s+type\: \"Symbol\"/)
-  t.regex(written, /\+\s+type\: \"Text\"/)
-})
+    const written = chunks.join('')
+    expect(written).toMatch(/\-\s + type\: \"Symbol\"/g)
+    expect(written).toMatch(/\+\s + type\: \"Text\"/g)
+  })
 
-test('writes created fields', async (t) => {
-  const chunks: string[] = []
+  test('writes created fields', async () => {
+    const chunks: string[] = []
 
-  await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), {})
+    await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), {})
 
-  const written = chunks.join('')
-  t.regex(written, /menu.createField\('newField', { name:\s+'New Field',/m)
-})
+    const written = chunks.join('')
+    expect(written).toMatch(/menu.createField\('newField', {\s+name:\s+'New Field',/m)
+  })
 
-test('moves newly created fields', async (t) => {
-  const chunks: string[] = []
+  test('moves newly created fields', async () => {
+    const chunks: string[] = []
 
-  await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), {})
+    await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), {})
 
-  const written = chunks.join('')
-  t.regex(
-    written,
-    /menu.moveField\('newField'\)\s*.afterField\('movedField'\)/m,
-  )
-})
+    const written = chunks.join('')
+    expect(written).toMatch(/menu.moveField\('newField'\)\s*.afterField\('movedField'\)/m)
+  })
 
-test('writes deleted fields', async (t) => {
-  const chunks: string[] = []
+  test('writes deleted fields', async () => {
+    const chunks: string[] = []
 
-  await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), {})
+    await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), {})
 
-  const written = chunks.join('')
-  t.regex(written, /menu.deleteField\('sideMenu'\)/)
-})
+    const written = chunks.join('')
+    expect(written).toMatch(/menu.deleteField\('sideMenu'\)/g)
+  })
 
-test('writes moved fields', async (t) => {
-  const chunks: string[] = []
+  test('writes moved fields', async () => {
+    const chunks: string[] = []
 
-  await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), {})
+    await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), {})
 
-  const written = chunks.join('')
-  t.regex(written, /menu.moveField\('movedField'\)\s*.afterField\('name'\)/m)
-})
+    const written = chunks.join('')
+    expect(written).toMatch(/menu.moveField\('movedField'\)\s+.afterField\('name'\)/m)
+  })
 
-test('writes change to top-level field details', async (t) => {
-  const chunks: string[] = []
+  test('writes change to top-level field details', async () => {
+    const chunks: string[] = []
 
-  await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), {})
+    await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), {})
 
-  const written = chunks.join('')
-  t.regex(written, /menu.editField\('name'\)\s+.type\('Text'\)/)
-  t.regex(written, /menu.editField\('items'\)\s+.disabled\(true\)/)
-})
+    const written = chunks.join('')
+    expect(written).toMatch(/menu.editField\('name'\)\s+.type\('Text'\)/m)
+    expect(written).toMatch(/menu.editField\('items'\)\s+.disabled\(true\)/m)
+  })
 
-test('writes change to items', async (t) => {
-  const chunks: string[] = []
+  test('writes change to items', async () => {
+    const chunks: string[] = []
 
-  await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), {})
+    await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), {})
 
-  const written = chunks.join('').replace(/\s+/g, '')
-  t.true(
-    written.includes(
-      `
+    const written = chunks.join('').replace(/\s+/g, '')
+    expect(written).toContain(`
   .items({ type: 'Link',
 validations:
   [ { range:
@@ -215,88 +209,82 @@ validations:
         'menuButton' ],
       message: 'The items must be either buttons or drop-down menus' } ],
 linkType: 'Entry' }`.replace(/\s+/g, ''),
-    ),
-  )
-})
+    )
+  })
 
-test('writes change to moved field', async (t) => {
-  const chunks: string[] = []
+  test('writes change to moved field', async () => {
+    const chunks: string[] = []
 
-  await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), {})
+    await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), {})
 
-  const written = chunks.join('')
-  t.regex(written, /menu.editField\('movedField'\)\s+.required\(false\)/)
-  t.regex(
-    written,
-    /\.validations\(\[\s*{\s*in:\s*\[\s*0,\s*1,\s*2\s*\]\s*}\s*\]\)/m,
-  )
-})
+    const written = chunks.join('')
+    expect(written).toMatch(/menu.editField\('movedField'\)\s+.required\(false\)/)
+    expect(written).toMatch(/\.validations\(\[\s*{\s*in:\s*\[\s*0,\s*1,\s*2\s*\]\s*}\s*\]\)/m)
+  })
 
-test('properly moves field when new field inserted above', async (t) => {
-  const from = fakeContentType(
-    'page',
-    fakeField({
-      id: 'metaDescription',
-      name: 'Meta-Description',
-      validations: [{ size: { max: 160 } }],
-    }),
-  )
+  test('properly moves field when new field inserted above', async () => {
+    const from = fakeContentType(
+      'page',
+      fakeField({
+        id: 'metaDescription',
+        name: 'Meta-Description',
+        validations: [{ size: { max: 160 } }],
+      }),
+    )
 
-  const to = fakeContentType(
-    'page',
-    fakeField({
-      id: 'metaTitle',
-      name: 'Meta-Title',
-      validations: [{ regexp: { pattern: '^w+$' } }],
-    }),
-    fakeField({
-      id: 'metaDescription',
-      name: 'Meta-Description',
-      validations: [{ size: { max: 160 } }],
-    }),
-  )
+    const to = fakeContentType(
+      'page',
+      fakeField({
+        id: 'metaTitle',
+        name: 'Meta-Title',
+        validations: [{ regexp: { pattern: '^w+$' } }],
+      }),
+      fakeField({
+        id: 'metaDescription',
+        name: 'Meta-Description',
+        validations: [{ size: { max: 160 } }],
+      }),
+    )
 
-  const chunks: string[] = []
+    const chunks: string[] = []
 
-  await writeModify(from, to, async (chunk) => chunks.push(chunk), {})
+    await writeModify(from, to, async (chunk) => chunks.push(chunk), {})
 
-  const written = chunks.join('')
-  t.regex(written, /createField\('metaTitle'/)
-  t.regex(written, /moveField\('metaTitle'/)
-  t.notRegex(written, /editField\('metaDescription'/)
-})
+    const written = chunks.join('')
+    expect(written).toMatch(/createField\('metaTitle'/)
+    expect(written).toMatch(/moveField\('metaTitle'/)
+    expect(written).not.toMatch(/editField\('metaDescription'/)
+  })
 
-test('also picks up field changes when new field inserted above', async (t) => {
-  const from = fakeContentType(
-    'page',
-    fakeField({
-      id: 'metaDescription',
-      name: 'Meta-Description',
-      validations: [{ size: { max: 160 } }],
-    }),
-  )
+  test('also picks up field changes when new field inserted above', async () => {
+    const from = fakeContentType(
+      'page',
+      fakeField({
+        id: 'metaDescription',
+        name: 'Meta-Description',
+        validations: [{ size: { max: 160 } }],
+      }),
+    )
 
-  const to = fakeContentType(
-    'page',
-    fakeField({
-      id: 'metaTitle',
-      name: 'Meta-Title',
-      validations: [{ regexp: { pattern: '^w+$' } }],
-    }),
-    fakeField({
-      id: 'metaDescription',
-      name: 'Meta-Description',
-      validations: [{ size: { max: 170 } }],
-    }),
-  )
+    const to = fakeContentType(
+      'page',
+      fakeField({
+        id: 'metaTitle',
+        name: 'Meta-Title',
+        validations: [{ regexp: { pattern: '^w+$' } }],
+      }),
+      fakeField({
+        id: 'metaDescription',
+        name: 'Meta-Description',
+        validations: [{ size: { max: 170 } }],
+      }),
+    )
 
-  const chunks: string[] = []
+    const chunks: string[] = []
 
-  await writeModify(from, to, async (chunk) => chunks.push(chunk), {})
+    await writeModify(from, to, async (chunk) => chunks.push(chunk), {})
 
-  const written = chunks.join('')
-  t.regex(
-    written,
-    /editField\('metaDescription'\)\s*\.validations\(\[\s*{\s*size:\s*{\s*max:\s*170\s*}\s*}\s*\]\)/m,
-  )
+    const written = chunks.join('')
+    expect(written).toMatch(/editField\('metaDescription'\)\s*\.validations\(\[\s*{\s*size:\s*{\s*max:\s*170\s*}\s*}\s*\]\)/m)
+  })
 })
