@@ -34,6 +34,12 @@ You will be generating a migration *from* the state of the current production sp
 The tool works either on Contentful export files, or by directly downloading content
 from a space.
 
+> ## ⚠️ WARNING! ⚠️
+> This tool outputs Typescript files by default.  You cannot run these files directly with the contenful-migration tool.
+> See https://github.com/watermarkchurch/contentful-schema-diff/issues/49 for instructions on how to run them directly,
+> or https://github.com/watermarkchurch/contentful-schema-diff/issues/59 for how to run them programmatically.
+> Or better yet, send us a pull request that would make the tool output javascript migrations!
+
 ## Method 1: download content types from the space directly
 
 ```bash
