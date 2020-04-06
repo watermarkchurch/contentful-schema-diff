@@ -24,7 +24,7 @@
     "@types/lodash": "^4.14.116",
     "@types/node": "^12.12.6",
     "@types/yargs": "^11.0.0",
-    "ava": "2.4.0",
+    "ava": "3.6.0",
     "coveralls": "^3.0.2",
     "nyc": "^13.1.0",
     "ts-node": "^8.4.1",
