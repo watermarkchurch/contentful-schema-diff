@@ -110,7 +110,7 @@ import Migration from 'contentful-migration'
 // to   gburgett
 export = function(migration : Migration) {
 
-  var resource = migration.createContentType('resource', {
+  const resource = migration.createContentType('resource', {
     displayField: 'name',
     name: 'Resource',
     description: ''
