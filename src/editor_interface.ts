@@ -37,7 +37,7 @@ export async function writeEditorInterfaceChange(
     return
   }
 
-  const ctx = context || {}
+  const ctx: IContext = context || { operations: [] }
   if (!ctx.varname) {
     const v = to.sys.contentType.sys.id.camelCase()
     await write(`

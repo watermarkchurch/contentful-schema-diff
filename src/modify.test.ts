@@ -119,11 +119,18 @@ const toType = fakeContentType('menu',
   }),
 )
 
+function createCtx(ctx?: Partial<IContext>): IContext {
+  return {
+    operations: [],
+    ...ctx,
+  }
+}
+
 test('writes content type without def', async (t) => {
 
   const chunks: string[] = []
 
-  await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), {})
+  await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), createCtx())
 
   const written = chunks.join('')
   t.regex(written, /migration.editContentType\('menu'\)/)
@@ -132,7 +139,7 @@ test('writes content type without def', async (t) => {
 test('sets varname on context', async (t) => {
 
   const chunks: string[] = []
-  const context: IContext = {}
+  const context: IContext = createCtx()
 
   await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), context)
 
@@ -143,7 +150,7 @@ test('dumps diff as comment', async (t) => {
 
   const chunks: string[] = []
 
-  await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), {})
+  await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), createCtx())
 
   const written = chunks.join('')
   t.regex(written, /\-\s+type\: \"Symbol\"/)
@@ -154,7 +161,7 @@ test('writes created fields', async (t) => {
 
   const chunks: string[] = []
 
-  await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), {})
+  await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), createCtx())
 
   const written = chunks.join('')
   t.regex(written, /menu.createField\('newField', { name:\s+'New Field',/m)
@@ -164,7 +171,7 @@ test('moves newly created fields', async (t) => {
 
   const chunks: string[] = []
 
-  await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), {})
+  await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), createCtx())
 
   const written = chunks.join('')
   t.regex(written, /menu.moveField\('newField'\)\s*.afterField\('movedField'\)/m)
@@ -174,7 +181,7 @@ test('writes deleted fields', async (t) => {
 
   const chunks: string[] = []
 
-  await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), {})
+  await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), createCtx())
 
   const written = chunks.join('')
   t.regex(written, /menu.deleteField\('sideMenu'\)/)
@@ -184,7 +191,7 @@ test('writes moved fields', async (t) => {
 
   const chunks: string[] = []
 
-  await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), {})
+  await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), createCtx())
 
   const written = chunks.join('')
   t.regex(written, /menu.moveField\('movedField'\)\s*.afterField\('name'\)/m)
@@ -194,7 +201,7 @@ test('writes change to top-level field details', async (t) => {
 
   const chunks: string[] = []
 
-  await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), {})
+  await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), createCtx())
 
   const written = chunks.join('')
   t.regex(written, /menu.editField\('name'\)\s+.type\('Text'\)/)
@@ -205,7 +212,7 @@ test('writes change to items', async (t) => {
 
   const chunks: string[] = []
 
-  await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), {})
+  await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), createCtx())
 
   const written = chunks.join('').replace(/\s+/g, '')
   t.true(written.includes(`
@@ -225,7 +232,7 @@ test('writes change to moved field', async (t) => {
 
   const chunks: string[] = []
 
-  await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), {})
+  await writeModify(fromType, toType, async (chunk) => chunks.push(chunk), createCtx())
 
   const written = chunks.join('')
   t.regex(written, /menu.editField\('movedField'\)\s+.required\(false\)/)
@@ -256,7 +263,7 @@ test('properly moves field when new field inserted above', async (t) => {
 
   const chunks: string[] = []
 
-  await writeModify(from, to, async (chunk) => chunks.push(chunk), {})
+  await writeModify(from, to, async (chunk) => chunks.push(chunk), createCtx())
 
   const written = chunks.join('')
   t.regex(written, /createField\('metaTitle'/)
@@ -289,7 +296,7 @@ test('also picks up field changes when new field inserted above', async (t) => {
 
   const chunks: string[] = []
 
-  await writeModify(from, to, async (chunk) => chunks.push(chunk), {})
+  await writeModify(from, to, async (chunk) => chunks.push(chunk), createCtx())
 
   const written = chunks.join('')
   t.regex(written, /editField\('metaDescription'\)\s*\.validations\(\[\s*{\s*size:\s*{\s*max:\s*170\s*}\s*}\s*\]\)/m)

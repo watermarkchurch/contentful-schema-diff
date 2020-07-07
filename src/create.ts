@@ -10,6 +10,8 @@ export async function writeCreate(
   write: (chunk: string) => Promise<any>,
   context: IContext,
 ): Promise<void> {
+  context.operations.push('create')
+
   const v = newType.sys.id.camelCase()
   const typeDef = Object.assign({}, newType)
   delete(typeDef.fields)

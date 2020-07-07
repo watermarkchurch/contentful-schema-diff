@@ -1,6 +1,7 @@
 import test from 'ava'
 import { writeEditorInterfaceChange } from './editor_interface'
 import { IEditorInterface } from './model'
+import { IContext } from './runners'
 
 const from: { [id: string]: IEditorInterface } = {
   'menu': {
@@ -265,10 +266,17 @@ const to: { [id: string]: IEditorInterface } = {
   },
 }
 
+function makeCtx(ctx?: Partial<IContext>): IContext {
+  return {
+    operations: [],
+    ...ctx,
+  }
+}
+
 test('explicitly writes default on initial', async (t) => {
   const chunks: string[] = []
 
-  await writeEditorInterfaceChange(null, to.menu, async (chunk) => chunks.push(chunk), { varname: 'menu' })
+  await writeEditorInterfaceChange(null, to.menu, async (chunk) => chunks.push(chunk), makeCtx({ varname: 'menu' }))
 
   const written = chunks.join('')
   t.regex(written, /menu\.changeFieldControl\('name', 'builtin', 'singleLine'\)/)
@@ -313,7 +321,7 @@ test('opens content type for edit if varname not set in context', async (t) => {
 test('does not reopen content type if variable already was written', async (t) => {
   const chunks: string[] = []
 
-  await writeEditorInterfaceChange(null, to.menu, async (chunk) => chunks.push(chunk), { varname: 'menu' })
+  await writeEditorInterfaceChange(null, to.menu, async (chunk) => chunks.push(chunk), makeCtx({ varname: 'menu' }))
 
   const written = chunks.join('')
   t.notRegex(written, /var menu/)

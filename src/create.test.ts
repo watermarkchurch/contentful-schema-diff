@@ -131,7 +131,7 @@ const contentType: IContentType = {
 test('dumps content type', async (t) => {
   const chunks: string[] = []
 
-  await writeCreate(contentType, async (chunk) => chunks.push(chunk), {})
+  await writeCreate(contentType, async (chunk) => chunks.push(chunk), { operations: [] })
 
   const written = chunks.join('')
   t.regex(written, /migration\.createContentType\('menu/)
@@ -143,7 +143,7 @@ test('dumps content type', async (t) => {
 test('dumps simple fields', async (t) => {
   const chunks: string[] = []
 
-  await writeCreate(contentType, async (chunk) => chunks.push(chunk), {})
+  await writeCreate(contentType, async (chunk) => chunks.push(chunk), { operations: [] })
 
   const written = chunks.join('')
   t.regex(written, /menu\.createField\('name/)

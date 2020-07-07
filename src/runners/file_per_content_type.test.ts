@@ -56,6 +56,54 @@ test.serial('does not write file if nothing written', async (t) => {
   t.regex(files[0], /[0-9]+_generated_diff_ct-a\.ts/)
 })
 
+test.serial('renames file when only create operations performed', async (t) => {
+  // act
+  await Promise.all(
+    instance.run(['ct-a'], (id, write, ctx) => {
+      ctx.operations.push('create')
+      return write('test:' + id)
+    }),
+  )
+
+  await instance.close()
+
+  const files = await fs.readdir('/tmp/file_per_content_type_test')
+  t.deepEqual(files.length, 1)
+  t.regex(files[0], /[0-9]+_create_ct-a\.ts/)
+})
+
+test.serial('renames file when only modify operations performed', async (t) => {
+  // act
+  await Promise.all(
+    instance.run(['ct-a'], (id, write, ctx) => {
+      ctx.operations.push('modify')
+      return write('test:' + id)
+    }),
+  )
+
+  await instance.close()
+
+  const files = await fs.readdir('/tmp/file_per_content_type_test')
+  t.deepEqual(files.length, 1)
+  t.regex(files[0], /[0-9]+_modify_ct-a\.ts/)
+})
+
+test.serial('renames file when only delete operations performed', async (t) => {
+  // act
+  await Promise.all(
+    instance.run(['ct-a'], (id, write, ctx) => {
+      ctx.operations.push('delete')
+      return write('test:' + id)
+    }),
+  )
+
+  await instance.close()
+
+  const files = await fs.readdir('/tmp/file_per_content_type_test')
+  t.deepEqual(files.length, 1)
+  t.regex(files[0], /[0-9]+_delete_ct-a\.ts/)
+})
+
 test.serial('handles lots of lines', async (t) => {
   const numLines = 100
   // act

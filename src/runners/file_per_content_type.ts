@@ -6,13 +6,14 @@ import { IContext } from '.'
 import { extendPrototypes, formatFile, wait } from '../utils'
 extendPrototypes()
 import { AsyncWrite, asyncWriter } from './async_writer'
+import _ = require('lodash')
 
 export class FilePerContentTypeRunner {
   public outDir: string
   public header: string
   public footer: string
 
-  public streams: Array<{ stream: fs.WriteStream, writer: AsyncWrite, fileName: string }> = []
+  public streams: Array<{ stream: fs.WriteStream, writer: AsyncWrite, fileName: string, context: IContext }> = []
 
   constructor(outDir: string, header: string, footer: string) {
     this.outDir = outDir
@@ -28,7 +29,7 @@ export class FilePerContentTypeRunner {
       keys: string[],
       run: (id: string, write: AsyncWrite, context: IContext) => Promise<void>): Array<Promise<void>> {
     return keys.map(async (id: string) => {
-      const context: IContext = {}
+      const context: IContext = { operations: [] }
       const writer = this.makeWriter(id, context)
 
       await run(id, writer, context)
@@ -40,6 +41,15 @@ export class FilePerContentTypeRunner {
       await tuple.writer(this.footer)
       tuple.stream.close()
       await wait(1)
+
+      // rename if operations all the same type
+      const uniqOps = _.uniq(tuple.context.operations)
+      if (uniqOps.length == 1) {
+        const newFilename = tuple.fileName.replace('generated_diff', uniqOps[0])
+        await fs.move(tuple.fileName, newFilename)
+        tuple.fileName = newFilename
+      }
+
       await formatFile(tuple.fileName)
       return tuple.fileName
     }))
@@ -57,7 +67,7 @@ export class FilePerContentTypeRunner {
         fileName = path.join(this.outDir, `${timestamp}_generated_diff_${id.underscore()}.ts`)
         stream = fs.createWriteStream(fileName)
         writer = asyncWriter(stream)
-        this.streams.push({ stream, writer, fileName })
+        this.streams.push({ stream, writer, fileName, context })
 
         await writer(this.header)
 

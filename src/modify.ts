@@ -13,6 +13,7 @@ export async function writeModify(
     write: (chunk: string) => Promise<any>,
     context: IContext,
   ): Promise<void> {
+  context.operations.push('modify')
 
   const v = from.sys.id.camelCase()
   const fromTypeDef = Object.assign({}, to)
