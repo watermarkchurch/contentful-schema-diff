@@ -93,10 +93,11 @@ function formatFileWithTslint(file: string): Promise<void> {
   return new Promise((resolve, reject) => {
     exec(`./node_modules/.bin/tslint --fix ${file}`, (err, stdout, stderr) => {
       if (err) {
-        reject(err.message + '\n\t' + stderr)
-      } else {
-        resolve()
+        // tslint:disable-next-line: no-console
+        console.warn(err.message + '\n\t' + stderr)
       }
+
+      resolve()
     })
   })
 }
@@ -105,10 +106,11 @@ function formatFileWithEslint(file: string): Promise<void> {
   return new Promise((resolve, reject) => {
     exec(`./node_modules/.bin/eslint --fix ${file}`, (err, stdout, stderr) => {
       if (err) {
-        reject(err.message + '\n\t' + stderr)
-      } else {
-        resolve()
+        // tslint:disable-next-line: no-console
+        console.warn(err.message + '\n\t' + stderr)
       }
+
+      resolve()
     })
   })
 }
@@ -119,10 +121,11 @@ function formatFileWithPrettier(file: string): Promise<void> {
   return new Promise((resolve, reject) => {
     exec(`${prettierBinLocation} --write ${file}`, (err, stdout, stderr) => {
       if (err) {
-        reject(err.message + '\n\t' + stderr)
-      } else {
-        resolve()
+        // tslint:disable-next-line: no-console
+        console.warn(err.message + '\n\t' + stderr)
       }
+
+      resolve()
     })
   })
 }
