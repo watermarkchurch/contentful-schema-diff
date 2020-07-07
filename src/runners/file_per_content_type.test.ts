@@ -16,7 +16,7 @@ test.beforeEach(async () => {
 
   await fs.mkdirp('/tmp/file_per_content_type_test')
   instance = new FilePerContentTypeRunner('/tmp/file_per_content_type_test',
-    { header: '// HEADER!!!\n', footer: '// FOOTER!!!\n' })
+    { header: '// HEADER!!!\n', footer: '// FOOTER!!!\n', extension: 'ts' })
 
   await instance.init()
 })

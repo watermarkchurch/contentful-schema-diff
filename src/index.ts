@@ -1,10 +1,10 @@
 // tslint:disable no-console
 
 import * as fs from 'fs-extra'
+import * as path from 'path'
 import * as yargs from 'yargs'
 
 import Run from './main'
-import { boolean } from 'yargs'
 
 const argv = yargs
   .usage('$0 --from <export file or space> --to <export file or space>')
@@ -25,6 +25,14 @@ const argv = yargs
   .option('out', {
     alias: 'o',
     description: 'The output directory (or file if "--one-file" was specified) in which to place the migration',
+  })
+  .option('js', {
+    type: 'boolean',
+    description: 'force writing javascript files'
+  })
+  .option('ts', {
+    type: 'boolean',
+    description: 'force writing typescript files',
   })
   .option('token', {
     alias: 'a',
@@ -47,7 +55,22 @@ if (!argv.out) {
     argv.out = './'
   }
 }
-fs.mkdirp(argv.out)
+fs.mkdirpSync(argv.out)
+
+let extension: 'js' | 'ts' | undefined
+if (argv.ts) {
+  extension = 'ts'
+} else if (argv.js) {
+  extension = 'js'
+} else {
+  // auto-detect extension
+  const contents = fs.readdirSync(argv.out)
+  if (contents.find((filename) => /\.ts/.test(filename))) {
+    extension = 'ts'
+  } else {
+    extension = 'js'
+  }
+}
 
 const contentTypes = argv.contentType && (Array.isArray(argv.contentType) ? argv.contentType : [argv.contentType])
 
@@ -58,6 +81,7 @@ Run({
   managementToken: argv.token || process.env.CONTENTFUL_MANAGEMENT_TOKEN,
   oneFile: argv.oneFile,
   format: !argv['no-format'],
+  extension,
   contentTypes,
 })
   .then((files) => {

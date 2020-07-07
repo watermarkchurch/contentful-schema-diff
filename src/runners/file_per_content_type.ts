@@ -10,6 +10,7 @@ import { AsyncWrite, asyncWriter } from './async_writer'
 interface IOptions {
   header: string,
   footer: string,
+  extension: 'js' | 'ts'
 
   format: boolean
 }
@@ -27,6 +28,7 @@ export class FilePerContentTypeRunner {
     this.options = Object.assign({
       header: '',
       footer: '',
+      extension: 'js',
       format: true,
     }, options)
 
@@ -77,7 +79,7 @@ export class FilePerContentTypeRunner {
       // don't open the file stream until first write
       if (!stream) {
         const timestamp = new Date().toISOString().replace(/[^\d]/g, '').substring(0, 14)
-        fileName = path.join(this.outDir, `${timestamp}_generated_diff_${id.underscore()}.ts`)
+        fileName = path.join(this.outDir, `${timestamp}_generated_diff_${id.underscore()}.${this.options.extension}`)
         stream = fs.createWriteStream(fileName)
         writer = asyncWriter(stream)
         this.streams.push({ stream, writer, fileName, context })

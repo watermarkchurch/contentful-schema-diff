@@ -48,7 +48,7 @@ test.serial('writes header and footer', async (t) => {
 
 test.serial('writes timestamped file if directory specified', async (t) => {
   await fs.mkdirp('/tmp/write_single_file_test')
-  const instance = new WriteSingleFileRunner('/tmp/write_single_file_test')
+  const instance = new WriteSingleFileRunner('/tmp/write_single_file_test', { extension: 'ts' })
 
   await instance.init()
 
