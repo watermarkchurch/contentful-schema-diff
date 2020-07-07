@@ -64,12 +64,13 @@ export function wait(ms: number): Promise<void> {
 }
 
 export async function formatFile(file: string): Promise<void> {
-  if (await checkTslint()) {
-    return formatFileWithTslint(file)
-  }
-  if (await checkEslint()) {
-    return formatFileWithEslint(file)
-  }
+  // TODO: figure out how to make this better
+  // if (await checkTslint()) {
+  //   return formatFileWithTslint(file)
+  // }
+  // if (await checkEslint()) {
+  //   return formatFileWithEslint(file)
+  // }
   return formatFileWithPrettier(file)
 }
 
