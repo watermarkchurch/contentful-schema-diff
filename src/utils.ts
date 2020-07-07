@@ -1,8 +1,8 @@
 import { exec } from 'child_process'
+import * as fs from 'fs-extra'
 import * as path from 'path'
 import * as util from 'util'
 import { IContentType } from './model'
-import * as fs from 'fs-extra'
 
 declare global {
   // tslint:disable interface-name

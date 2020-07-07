@@ -1,3 +1,4 @@
+import { string } from 'yargs'
 import { writeCreate } from './create'
 import { writeDelete } from './delete'
 import { writeEditorInterfaceChange } from './editor_interface'
@@ -6,7 +7,6 @@ import { FilePerContentTypeRunner } from './runners/file_per_content_type'
 import { WriteSingleFileRunner } from './runners/write_single_file'
 import { loadSources } from './source'
 import { indexByContentType, indexById } from './utils'
-import { string } from 'yargs'
 
 export interface IArgs {
   /** A contentful export file, or Contentful Space ID */

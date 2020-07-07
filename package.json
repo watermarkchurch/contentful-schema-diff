@@ -12,6 +12,7 @@
   ],
   "scripts": {
     "lint": "tslint 'src/**/*.ts'",
+    "fix": "tslint 'src/**/*.ts' --fix",
     "test": "bash -c 'shopt -s globstar; tsc --project tsconfig.test.json && nyc ava src/**/*.test.js'",
     "coverage": "yarn run test && nyc report --reporter=html && open coverage/index.html",
     "coveralls": "nyc report --reporter=text-lcov | coveralls",

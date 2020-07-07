@@ -28,7 +28,7 @@ const argv = yargs
   })
   .option('js', {
     type: 'boolean',
-    description: 'force writing javascript files'
+    description: 'force writing javascript files',
   })
   .option('ts', {
     type: 'boolean',
