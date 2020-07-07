@@ -2,6 +2,7 @@ import { exec } from 'child_process'
 import * as path from 'path'
 import * as util from 'util'
 import { IContentType } from './model'
+import * as fs from 'fs-extra'
 
 declare global {
   // tslint:disable interface-name
@@ -62,7 +63,57 @@ export function wait(ms: number): Promise<void> {
   })
 }
 
-export function formatFile(file: string): Promise<void> {
+export async function formatFile(file: string): Promise<void> {
+  if (await checkTslint()) {
+    return formatFileWithTslint(file)
+  }
+  if (await checkEslint()) {
+    return formatFileWithEslint(file)
+  }
+  return formatFileWithPrettier(file)
+}
+
+let tslintExists: boolean | undefined
+async function checkTslint(): Promise<boolean> {
+  if (tslintExists === undefined) {
+    tslintExists = await fs.pathExists('./node_modules/.bin/tslint')
+  }
+  return tslintExists
+}
+
+let eslintExists: boolean | undefined
+async function checkEslint(): Promise<boolean> {
+  if (eslintExists === undefined) {
+    eslintExists = await fs.pathExists('./node_modules/.bin/eslint')
+  }
+  return eslintExists
+}
+
+function formatFileWithTslint(file: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    exec(`./node_modules/.bin/tslint --fix ${file}`, (err, stdout, stderr) => {
+      if (err) {
+        reject(err.message + '\n\t' + stderr)
+      } else {
+        resolve()
+      }
+    })
+  })
+}
+
+function formatFileWithEslint(file: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    exec(`./node_modules/.bin/eslint --fix ${file}`, (err, stdout, stderr) => {
+      if (err) {
+        reject(err.message + '\n\t' + stderr)
+      } else {
+        resolve()
+      }
+    })
+  })
+}
+
+function formatFileWithPrettier(file: string): Promise<void> {
   const prettierBinLocation = path.join(require.resolve('prettier'), '../bin-prettier.js')
 
   return new Promise((resolve, reject) => {

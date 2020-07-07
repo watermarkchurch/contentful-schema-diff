@@ -14,12 +14,12 @@ test.afterEach(async () => {
 })
 
 test.serial('writes a chunk to the specified file', async (t) => {
-  const instance = new WriteSingleFileRunner('temp.ts', '', '')
+  const instance = new WriteSingleFileRunner('temp.ts')
   await instance.init()
   await Promise.all(
     instance.run(['k1', 'k2'],
       (id, write, ctx) => {
-        return write(`${id}: test`)
+        return write(`const ${id}: string = test`)
       },
     ),
   )
@@ -28,13 +28,13 @@ test.serial('writes a chunk to the specified file', async (t) => {
 
   const contents = (await fs.readFile('temp.ts')).toString()
 
-  t.regex(contents, /k1: test/)
-  t.regex(contents, /k2: test/)
+  t.regex(contents, /const k1: string = test/)
+  t.regex(contents, /const k2: string = test/)
 })
 
 test.serial('writes header and footer', async (t) => {
   const instance = new WriteSingleFileRunner('temp.ts',
-    'HEADER!!!\n', 'FOOTER!!!\n')
+    { header: '// HEADER!!!\n', footer: '// FOOTER!!!\n' })
 
   await instance.init()
 
@@ -48,8 +48,7 @@ test.serial('writes header and footer', async (t) => {
 
 test.serial('writes timestamped file if directory specified', async (t) => {
   await fs.mkdirp('/tmp/write_single_file_test')
-  const instance = new WriteSingleFileRunner('/tmp/write_single_file_test',
-    'HEADER!!!\n', 'FOOTER!!!\n')
+  const instance = new WriteSingleFileRunner('/tmp/write_single_file_test')
 
   await instance.init()
 

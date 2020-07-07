@@ -16,7 +16,7 @@ test.beforeEach(async () => {
 
   await fs.mkdirp('/tmp/file_per_content_type_test')
   instance = new FilePerContentTypeRunner('/tmp/file_per_content_type_test',
-    '// HEADER!!!\n', '// FOOTER!!!\n')
+    { header: '// HEADER!!!\n', footer: '// FOOTER!!!\n' })
 
   await instance.init()
 })
@@ -105,6 +105,12 @@ test.serial('renames file when only delete operations performed', async (t) => {
 })
 
 test.serial('handles lots of lines', async (t) => {
+  // disable formatting for this test
+  await instance.close()
+  instance = new FilePerContentTypeRunner('/tmp/file_per_content_type_test',
+    { header: '// HEADER!!!\n', footer: '// FOOTER!!!\n', format: false })
+  await instance.init()
+
   const numLines = 100
   // act
   await Promise.all(
@@ -120,11 +126,10 @@ test.serial('handles lots of lines', async (t) => {
   const files = await fs.readdir('/tmp/file_per_content_type_test')
   const contents = (await fs.readFile(path.join('/tmp/file_per_content_type_test', files[0]))).toString()
   const lines = contents.split('\n')
-  t.deepEqual(lines.length, (numLines * 2) + 3)
+  t.deepEqual(lines.length, numLines + 3)
   for (let i = 0; i < numLines; i++) {
-    const lineNum = (i * 2) + 1
-    t.deepEqual(lines[lineNum], `const t${i} =`)
-    t.deepEqual(lines[lineNum + 1], `  "${loremIpsum}";`)
+    const lineNum = i + 1
+    t.deepEqual(lines[lineNum], `const t${i} = '${loremIpsum}'`)
   }
 })
 

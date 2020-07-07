@@ -4,6 +4,7 @@ import * as fs from 'fs-extra'
 import * as yargs from 'yargs'
 
 import Run from './main'
+import { boolean } from 'yargs'
 
 const argv = yargs
   .usage('$0 --from <export file or space> --to <export file or space>')
@@ -32,6 +33,11 @@ const argv = yargs
   .option('one-file', {
     description: 'Write all the migrations in a single file',
   })
+  .option('no-format', {
+    alias: 'F',
+    type: 'boolean',
+    description: 'disables formatting the output file',
+  })
   .argv
 
 if (!argv.out) {
@@ -51,6 +57,7 @@ Run({
   to: argv.to,
   managementToken: argv.token || process.env.CONTENTFUL_MANAGEMENT_TOKEN,
   oneFile: argv.oneFile,
+  format: !argv['no-format'],
   contentTypes,
 })
   .then((files) => {

@@ -1,24 +1,35 @@
-import {WriteStream} from 'fs'
 import * as fs from 'fs-extra'
+import * as _ from 'lodash'
 import * as path from 'path'
 
 import { IContext } from '.'
 import { extendPrototypes, formatFile, wait } from '../utils'
 extendPrototypes()
 import { AsyncWrite, asyncWriter } from './async_writer'
-import _ = require('lodash')
+
+interface IOptions {
+  header: string,
+  footer: string,
+
+  format: boolean
+}
 
 export class FilePerContentTypeRunner {
   public outDir: string
-  public header: string
-  public footer: string
+
+  public readonly options: Readonly<IOptions>
 
   public streams: Array<{ stream: fs.WriteStream, writer: AsyncWrite, fileName: string, context: IContext }> = []
 
-  constructor(outDir: string, header: string, footer: string) {
+  constructor(outDir: string, options?: Partial<IOptions>) {
     this.outDir = outDir
-    this.header = header
-    this.footer = footer
+
+    this.options = Object.assign({
+      header: '',
+      footer: '',
+      format: true,
+    }, options)
+
   }
 
   public async init(): Promise<void> {
@@ -38,7 +49,7 @@ export class FilePerContentTypeRunner {
 
   public async close() {
     return Promise.all(this.streams.map(async (tuple) => {
-      await tuple.writer(this.footer)
+      await tuple.writer(this.options.footer)
       tuple.stream.close()
       await wait(1)
 
@@ -50,7 +61,9 @@ export class FilePerContentTypeRunner {
         tuple.fileName = newFilename
       }
 
-      await formatFile(tuple.fileName)
+      if (this.options.format) {
+        await formatFile(tuple.fileName)
+      }
       return tuple.fileName
     }))
   }
@@ -69,7 +82,7 @@ export class FilePerContentTypeRunner {
         writer = asyncWriter(stream)
         this.streams.push({ stream, writer, fileName, context })
 
-        await writer(this.header)
+        await writer(this.options.header)
 
         context.open = true
       }

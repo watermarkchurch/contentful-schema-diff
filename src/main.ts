@@ -14,6 +14,8 @@ export interface IArgs {
   to: string,
   /** (optional) Write all the migrations in a single file */
   oneFile?: boolean,
+  /** (optional) auto-format the file using detected linter (default true) */
+  format?: boolean,
   /** The output directory (or file if '--oneFile' was specified) */
   out: string,
   /**
@@ -47,8 +49,8 @@ export = function (migration: Migration, { makeRequest, spaceId, accessToken }) 
 `
 
   const runner = args.oneFile ?
-    new WriteSingleFileRunner(args.out, HEADER, FOOTER) :
-    new FilePerContentTypeRunner(args.out, HEADER, FOOTER)
+    new WriteSingleFileRunner(args.out, { header: HEADER, footer: FOOTER, ...args}) :
+    new FilePerContentTypeRunner(args.out, { header: HEADER, footer: FOOTER, ...args })
 
   await runner.init()
 

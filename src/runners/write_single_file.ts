@@ -6,28 +6,39 @@ import { IContext } from '.'
 import { formatFile, wait } from '../utils'
 import { AsyncWrite, asyncWriter } from './async_writer'
 
+interface IOptions {
+  header: string,
+  footer: string,
+
+  format: boolean
+}
+
 export class WriteSingleFileRunner {
   public fileName: string
   public fileWriter: AsyncWrite
   public outputStream: WriteStream
-  public header: string
-  public footer: string
 
-  constructor(out: string, header: string, footer: string) {
+  public readonly options: Readonly<IOptions>
+
+  constructor(out: string, options?: Partial<IOptions>) {
     this.fileName = out
     if (fs.existsSync(out) && fs.statSync(out).isDirectory()) {
       const timestamp = new Date().toISOString().replace(/[^\d]/g, '').substring(0, 14)
       this.fileName = path.join(out, `${timestamp}_generated_from_diff.ts`)
     }
 
+    this.options = Object.assign({
+      header: '',
+      footer: '',
+      format: true,
+    }, options)
+
     this.outputStream = fs.createWriteStream(this.fileName)
     this.fileWriter = asyncWriter(this.outputStream)
-    this.header = header
-    this.footer = footer
   }
 
   public async init() {
-    await this.fileWriter(this.header)
+    await this.fileWriter(this.options.header)
   }
 
   public run(
@@ -52,10 +63,12 @@ export class WriteSingleFileRunner {
   }
 
   public async close() {
-    await this.fileWriter(this.footer)
+    await this.fileWriter(this.options.footer)
     this.outputStream.close()
     await wait(1)
-    await formatFile(this.fileName)
+    if (this.options.format) {
+      await formatFile(this.fileName)
+    }
     return [this.fileName]
   }
 }
