@@ -16,15 +16,21 @@ usage:
 contentful-schema-diff --from <export file or space> --to <export file or space>
 
 Options:
-  --help       Show help                                               [boolean]
-  --version    Show version number                                     [boolean]
-  --from, -f   A contentful export file, or Contentful Space ID       [required]
-  --to, -t     A contentful export file, space ID, or environment within the
-               "from" space                                           [required]
-  --out, -o    The output directory in which to place the migration
-  --token, -a  A Contentful management token to download content types from a
-               space
-  --one-file   Write all the migrations in a single file
+  --help              Show help                                        [boolean]
+  --version           Show version number                              [boolean]
+  --from, -f          A contentful export file, or Contentful Space ID[required]
+  --to, -t            A contentful export file, space ID, or environment within
+                      the "from" space                                [required]
+  --content-type, -c  Generate a migration only for this content type.  Repeat
+                      to select multiple types.
+  --out, -o           The output directory (or file if "--one-file" was
+                      specified) in which to place the migration
+  --js                force writing javascript files                   [boolean]
+  --ts                force writing typescript files                   [boolean]
+  --token, -a         A Contentful management token to download content types
+                      from a space
+  --one-file          Write all the migrations in a single file
+  --no-format, -F     disables formatting the output file              [boolean]
 ```
 
 Note: "from" indicates the space with the *old versions* of the content types.
