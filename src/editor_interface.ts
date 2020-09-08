@@ -11,10 +11,10 @@ export async function writeEditorInterfaceChange(
       context?: IContext,
     ): Promise<void> {
 
-  let fieldsToWrite = to.controls
+  let fieldsToWrite = to.controls || []
   if (from) {
     fieldsToWrite = fieldsToWrite.filter((control) => {
-      const previous = from.controls.find((prev) => prev.fieldId == control.fieldId)
+      const previous = (from.controls || []).find((prev) => prev.fieldId == control.fieldId)
       if (!previous) {
         // new control
         return true

@@ -141,7 +141,7 @@ export interface IEditorInterface {
       },
     },
   },
-  controls: Array<
+  controls?: Array<
       {
         fieldId: string,
         widgetNamespace: string,
