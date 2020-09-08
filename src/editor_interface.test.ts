@@ -348,3 +348,50 @@ test('writes change if settings changed', async (t) => {
   const written = chunks.join('')
   t.regex(written, /sectionVideoHighlight\.changeFieldControl\('anotherField', 'builtin', 'singleLine', {/)
 })
+
+test('does not blow up if controls are nil', async (t) => {
+  const menu: Partial<IEditorInterface> = {
+    sys: {
+      id: 'default',
+      type: 'EditorInterface',
+      space: {
+        sys: {
+          id: '7yx6ovlj39n5',
+          type: 'Link',
+          linkType: 'Space',
+        },
+      },
+      version: 14,
+      createdAt: '2018-03-27T18:04:12.981Z',
+      createdBy: {
+        sys: {
+          id: '0SUbYs2vZlXjVR6bH6o83O',
+          type: 'Link',
+          linkType: 'User',
+        },
+      },
+      updatedAt: '2018-04-06T20:02:28.673Z',
+      updatedBy: {
+        sys: {
+          id: '0SUbYs2vZlXjVR6bH6o83O',
+          type: 'Link',
+          linkType: 'User',
+        },
+      },
+      contentType: {
+        sys: {
+          id: 'menu',
+          type: 'Link',
+          linkType: 'ContentType',
+        },
+      },
+    },
+  }
+
+  const chunks: string[] = []
+
+  await writeEditorInterfaceChange(menu as any, menu as any,
+    async (chunk) => chunks.push(chunk))
+
+  t.deepEqual(chunks.join(''), '')
+})
