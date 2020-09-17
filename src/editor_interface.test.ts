@@ -315,7 +315,7 @@ test('opens content type for edit if varname not set in context', async (t) => {
     to['section-video-highlight'], async (chunk) => chunks.push(chunk))
 
   const written = chunks.join('')
-  t.regex(written, /var sectionVideoHighlight = migration\.editContentType\('section-video-highlight'/)
+  t.regex(written, /const sectionVideoHighlight = migration\.editContentType\('section-video-highlight'/)
 })
 
 test('does not reopen content type if variable already was written', async (t) => {
@@ -324,7 +324,7 @@ test('does not reopen content type if variable already was written', async (t) =
   await writeEditorInterfaceChange(null, to.menu, async (chunk) => chunks.push(chunk), makeCtx({ varname: 'menu' }))
 
   const written = chunks.join('')
-  t.notRegex(written, /var menu/)
+  t.notRegex(written, /const menu/)
   t.notRegex(written, /migration.editContentType/)
 })
 

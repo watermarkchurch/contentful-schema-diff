@@ -41,7 +41,7 @@ export async function writeEditorInterfaceChange(
   if (!ctx.varname) {
     const v = to.sys.contentType.sys.id.camelCase()
     await write(`
-  var ${v} = migration.editContentType('${to.sys.contentType.sys.id}')
+  const ${v} = migration.editContentType('${to.sys.contentType.sys.id}')
 `)
     ctx.varname = v
   }

@@ -32,11 +32,11 @@ export async function writeModify(
 
   if (empty(typeDefDiff)) {
     await write(`
-  var ${v} = migration.editContentType('${from.sys.id}')
+  const  ${v} = migration.editContentType('${from.sys.id}')
   `)
   } else {
     await write(`
-  var ${v} = migration.editContentType('${from.sys.id}', ${toTypeDef.dump()})
+  const ${v} = migration.editContentType('${from.sys.id}', ${toTypeDef.dump()})
 `)
   }
   context.varname = v
