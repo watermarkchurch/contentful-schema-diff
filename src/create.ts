@@ -18,7 +18,7 @@ export async function writeCreate(
   delete(typeDef.sys)
 
   await write(`
-  var ${v} = migration.createContentType('${newType.sys.id}', ${typeDef.dump()})
+  const ${v} = migration.createContentType('${newType.sys.id}', ${typeDef.dump()})
 `)
   context.varname = v
 
