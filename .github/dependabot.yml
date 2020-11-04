@@ -1,0 +1,20 @@
+version: 2
+updates:
+- package-ecosystem: npm
+  directory: "/"
+  schedule:
+    interval: weekly
+    time: "11:00"
+    timezone: America/Chicago
+  allow:
+  - dependency-type: development
+  ignore:
+  - dependency-name: ava
+    versions:
+    - "> 2.4.0"
+  - dependency-name: "@types/node"
+    versions:
+    - "> 12.12.7"
+  - dependency-name: "@types/yargs"
+    versions:
+    - "> 11.0.0"
