@@ -34,8 +34,13 @@ jobs:
           flag_name: Node << parameters.version >>
 
   lint:
+    parameters:
+      version:
+        description: NodeJS version
+        type: string
     executor:
       name: node/default
+      tag: << parameters.version >>
     steps:
       - checkout
       - restore_cache:
@@ -67,3 +72,4 @@ workflows:
               version: ["15.11", "13.14"]
       - lint:
           requires: [test]
+          version: "15.11"
