@@ -3,7 +3,7 @@ import { URL } from 'url'
 import { IContentType, IEditorInterface } from '../model'
 import { wait } from '../utils'
 
-interface ClientOptions {
+interface IClientOptions {
   baseUrl: string,
   spaceId: string,
   environmentId: string
@@ -11,10 +11,10 @@ interface ClientOptions {
 }
 
 export default class SimpleCMAClient {
-  private readonly options: ClientOptions
+  private readonly options: IClientOptions
 
   constructor(
-    options?: Partial<ClientOptions>,
+    options?: Partial<IClientOptions>,
     private readonly fetch: typeof _fetch = _fetch,
   ) {
     this.options = {
@@ -71,7 +71,6 @@ export default class SimpleCMAClient {
     let resp: Response
 
     do {
-      console.log('get', url.toString())
       resp = await this.fetch(url.toString(), {
         method: 'GET',
         headers: {
@@ -101,4 +100,5 @@ export default class SimpleCMAClient {
   }
 }
 
+// tslint:disable-next-line: max-classes-per-file
 export class NotFoundError extends Error {}

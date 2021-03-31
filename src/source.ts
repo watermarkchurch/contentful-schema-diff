@@ -54,7 +54,6 @@ async function loadSource(source: string, args: IArgs): Promise<ISource> {
       }
     } catch (e) {
       if (!/^404:/.test(e.message)) {
-        console.log('raise', e)
         throw e
       }
       // the source may not be a space - it might be an environment on the '--from' space
