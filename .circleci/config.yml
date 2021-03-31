@@ -28,18 +28,17 @@ jobs:
           paths:
             - ~/.cache/yarn
 
-      - run: yarn run build
-
       - run: yarn run test
       - coveralls/upload:
           parallel: true
           flag_name: Node << parameters.version >>
 
-      - run: yarn run lint
-  done:
+  lint:
     executor:
       name: node/default
     steps:
+      - run: yarn run build
+      - run: yarn run lint
       - coveralls/upload:
           parallel_finished: true
 
@@ -51,5 +50,5 @@ workflows:
             parameters:
               # https://hub.docker.com/r/cimg/node/tags
               version: ["15.11", "13.14"]
-      - done:
+      - lint:
           requires: [test]
