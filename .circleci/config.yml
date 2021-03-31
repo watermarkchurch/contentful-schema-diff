@@ -1,0 +1,54 @@
+version: 2.1
+orbs:
+  node: circleci/node@3.0.0
+  coveralls: coveralls/coveralls@1.0.6
+
+jobs:
+  test:
+    parameters:
+      version:
+        description: NodeJS version
+        type: string
+    executor:
+      name: node/default
+      tag: << parameters.version >>
+    steps:
+      - checkout
+      - restore_cache:
+          name: Restore Yarn Cache
+          keys:
+            - repo-node-<< parameters.version >>-{{ checksum "yarn.lock" }}
+      - run:
+          name: Install Dependencies
+          command: |
+            yarn install --frozen-lockfile
+      - save_cache:
+          name: Save Yarn Package Cache
+          key: repo-node-<< parameters.version >>-{{ checksum "yarn.lock" }}
+          paths:
+            - ~/.cache/yarn
+
+      - run: yarn run build
+
+      - run: yarn run test
+      - coveralls/upload:
+          parallel: true
+          flag_name: Node << parameters.version >>
+
+      - run: yarn run lint
+  done:
+    executor:
+      name: node/default
+    steps:
+      - coveralls/upload:
+          parallel_finished: true
+
+workflows:
+  matrix-tests:
+    jobs:
+      - test:
+          matrix:
+            parameters:
+              version: ["15.13.0", "13.14.0"]
+      - done:
+          requires: [test]
