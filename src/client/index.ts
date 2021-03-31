@@ -41,18 +41,18 @@ export default class SimpleCMAClient {
     do {
       const resp = await this.get(`/spaces/${spaceId}/environments/${environmentId}/content_types`, {
         skip: skip.toString(),
-        limit: limit.toString()
+        limit: limit.toString(),
       })
       const body = await resp.json()
 
       if (body.items.length == 0) { return }
-      for(const item of body.items) {
+      for (const item of body.items) {
         yield item
       }
 
       skip = skip + limit
       total = body.total
-    } while(skip < total)
+    } while (skip < total)
   }
 
   public async getEditorInterface(contentType: string): Promise<IEditorInterface> {
@@ -71,6 +71,7 @@ export default class SimpleCMAClient {
     let resp: Response
 
     do {
+      console.log('get', url.toString())
       resp = await this.fetch(url.toString(), {
         method: 'GET',
         headers: {
@@ -78,6 +79,10 @@ export default class SimpleCMAClient {
         },
         redirect: 'follow',
       })
+
+      if (resp.status == 404) {
+        throw new NotFoundError(`404: ${path}`)
+      }
 
       if (resp.status == 429) {
         const reset = resp.headers.get('X-Contentful-RateLimit-Reset')
@@ -95,3 +100,5 @@ export default class SimpleCMAClient {
     return resp
   }
 }
+
+export class NotFoundError extends Error {}

@@ -1,10 +1,8 @@
 import * as fs from 'fs-extra'
+import SimpleCMAClient, { NotFoundError } from './client'
 
 import { IArgs } from './main'
 import { IContentType, IEditorInterface } from './model'
-import { eachInSequence } from './utils'
-
-const {createClient} = require('contentful-management')
 
 export interface ISource {
   id: string
@@ -20,7 +18,7 @@ export function loadSources(args: IArgs): Promise<ISource[]> {
 }
 
 async function loadSource(source: string, args: IArgs): Promise<ISource> {
-  let contentTypes: any[]
+  let contentTypes: IContentType[]
   let editorInterfaces: IEditorInterface[]
 
   if (source == 'scratch' || source == 'empty') {
@@ -40,36 +38,51 @@ async function loadSource(source: string, args: IArgs): Promise<ISource> {
       throw new Error(`${source} is not a file and I don't have a management token to talk to contentful.`)
     }
 
-    const client = createClient({
+    let {spaceId, envId} = parseEnv(source)
+
+    let client = new SimpleCMAClient({
       accessToken: args.managementToken,
+      spaceId,
+      environmentId: envId,
     })
 
-    let {spaceId, envId} = parseEnv(source)
-    let env: any
+    contentTypes = []
+    editorInterfaces = []
     try {
-      const space = await client.getSpace(spaceId)
-      env = await space.getEnvironment(envId)
+      for await (const ct of client.getContentTypes()) {
+        contentTypes.push(ct)
+      }
     } catch (e) {
+      if (!/^404:/.test(e.message)) {
+        console.log('raise', e)
+        throw e
+      }
       // the source may not be a space - it might be an environment on the '--from' space
       if (args.from == source) {
         throw(e)
       }
-      // we're loading the args.to
-
+      // we're loading the args.to, assume the same space ID as the args.from
       spaceId = parseEnv(args.from).spaceId
       envId = source
-      const space = await client.getSpace(spaceId)
-      env = await space.getEnvironment(envId)
+      client = new SimpleCMAClient({
+        accessToken: args.managementToken,
+        spaceId,
+        environmentId: envId,
+      })
+
+      for await (const ct of client.getContentTypes()) {
+        contentTypes.push(ct)
+      }
     }
 
-    contentTypes = (await env.getContentTypes()).items
     if (args.contentTypes && args.contentTypes.length > 0) {
       contentTypes = contentTypes.filter((ct) =>
         args.contentTypes.indexOf(ct.sys.id) >= 0,
       )
     }
-    editorInterfaces = await eachInSequence(contentTypes,
-      (ct: any) => ct.getEditorInterface() as Promise<IEditorInterface>)
+    for (const ct of contentTypes) {
+      editorInterfaces.push(await client.getEditorInterface(ct.sys.id))
+    }
   }
   return {
     id: source,

@@ -119,7 +119,7 @@ test('SimpleCMAClient gets multiple pages of content types', async (t) => {
         skip: 0,
         limit: 2,
         total: 3,
-        items: [fakeContentType, fakeContentType]
+        items: [fakeContentType, fakeContentType],
       }),
     })
     .onSecondCall().resolves({
@@ -129,8 +129,8 @@ test('SimpleCMAClient gets multiple pages of content types', async (t) => {
         skip: 2,
         limit: 2,
         total: 3,
-        items: [fakeContentType]
-      })
+        items: [fakeContentType],
+      }),
     })
 
   const uut = new SimpleCMAClient({
