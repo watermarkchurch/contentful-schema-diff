@@ -1,0 +1,75 @@
+version: 2.1
+orbs:
+  node: circleci/node@4.2.1
+  coveralls: coveralls/coveralls@1.0.6
+
+jobs:
+  test:
+    parameters:
+      version:
+        description: NodeJS version
+        type: string
+    executor:
+      name: node/default
+      tag: << parameters.version >>
+    steps:
+      - checkout
+      - restore_cache:
+          name: Restore Yarn Cache
+          keys:
+            - repo-node-<< parameters.version >>-{{ checksum "yarn.lock" }}
+      - run:
+          name: Install Dependencies
+          command: |
+            yarn install --frozen-lockfile
+      - save_cache:
+          name: Save Yarn Package Cache
+          key: repo-node-<< parameters.version >>-{{ checksum "yarn.lock" }}
+          paths:
+            - ~/.cache/yarn
+
+      - run: yarn run test
+      - coveralls/upload:
+          parallel: true
+          flag_name: Node << parameters.version >>
+
+  lint:
+    parameters:
+      version:
+        description: NodeJS version
+        type: string
+    executor:
+      name: node/default
+      tag: << parameters.version >>
+    steps:
+      - checkout
+      - restore_cache:
+          name: Restore Yarn Cache
+          keys:
+            - repo-node-<< parameters.version >>-{{ checksum "yarn.lock" }}
+      - run:
+          name: Install Dependencies
+          command: |
+            yarn install --frozen-lockfile
+      - save_cache:
+          name: Save Yarn Package Cache
+          key: repo-node-<< parameters.version >>-{{ checksum "yarn.lock" }}
+          paths:
+            - ~/.cache/yarn
+
+      - run: yarn run build
+      - run: yarn run lint
+      - coveralls/upload:
+          parallel_finished: true
+
+workflows:
+  matrix-tests:
+    jobs:
+      - test:
+          matrix:
+            parameters:
+              # https://hub.docker.com/r/cimg/node/tags
+              version: ["15.11", "13.14"]
+      - lint:
+          requires: [test]
+          version: "15.11"

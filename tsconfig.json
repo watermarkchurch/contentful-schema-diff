@@ -6,6 +6,7 @@
     "strictFunctionTypes": true,
     "strictNullChecks": true,
     "sourceMap": true,
+    "esModuleInterop": true,
     "lib": [
       "es2015"
     ]
