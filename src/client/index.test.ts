@@ -109,3 +109,48 @@ test('SimpleCMAClient handles rate limiting', async (t) => {
   t.true(fetch.calledTwice)
   t.true(after - before > 2100)
 })
+
+test('SimpleCMAClient gets multiple pages of content types', async (t) => {
+  const fetch = sinon.stub()
+    .onFirstCall().resolves({
+      status: 200,
+      json: sinon.stub().resolves({
+        sys: { type: 'Array' },
+        skip: 0,
+        limit: 2,
+        total: 3,
+        items: [fakeContentType, fakeContentType]
+      }),
+    })
+    .onSecondCall().resolves({
+      status: 200,
+      json: sinon.stub().resolves({
+        sys: { type: 'Array' },
+        skip: 2,
+        limit: 2,
+        total: 3,
+        items: [fakeContentType]
+      })
+    })
+
+  const uut = new SimpleCMAClient({
+    spaceId: '1234',
+    environmentId: 'staging',
+    accessToken: 'my-token',
+  }, fetch as any)
+
+  // act
+  const allItems = []
+  for await (const item of uut.getContentTypes(2)) {
+    allItems.push(item)
+  }
+
+  // assert
+  t.deepEqual(allItems, [fakeContentType, fakeContentType, fakeContentType])
+  t.true(fetch.calledTwice)
+  const [call0, call1] = fetch.getCalls()
+  t.deepEqual(call0.args[0],
+    `https://api.contentful.com/spaces/1234/environments/staging/content_types?skip=0&limit=2`)
+  t.deepEqual(call1.args[0],
+    `https://api.contentful.com/spaces/1234/environments/staging/content_types?skip=2&limit=2`)
+})

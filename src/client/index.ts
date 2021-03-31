@@ -1,6 +1,6 @@
 import _fetch, { Response } from 'node-fetch'
 import { URL } from 'url'
-import { IEditorInterface } from '../model'
+import { IContentType, IEditorInterface } from '../model'
 import { wait } from '../utils'
 
 interface ClientOptions {
@@ -26,11 +26,33 @@ export default class SimpleCMAClient {
     }
   }
 
-  public async getContentType(contentType: string): Promise<IEditorInterface> {
+  public async getContentType(contentType: string): Promise<IContentType> {
     const {spaceId, environmentId} = this.options
     const resp = await this.get(`/spaces/${spaceId}/environments/${environmentId}/content_types/${contentType}`)
 
     return await resp.json()
+  }
+
+  public async* getContentTypes(limit = 100): AsyncGenerator<IContentType> {
+    const {spaceId, environmentId} = this.options
+    let skip = 0
+    let total: number
+
+    do {
+      const resp = await this.get(`/spaces/${spaceId}/environments/${environmentId}/content_types`, {
+        skip: skip.toString(),
+        limit: limit.toString()
+      })
+      const body = await resp.json()
+
+      if (body.items.length == 0) { return }
+      for(const item of body.items) {
+        yield item
+      }
+
+      skip = skip + limit
+      total = body.total
+    } while(skip < total)
   }
 
   public async getEditorInterface(contentType: string): Promise<IEditorInterface> {
