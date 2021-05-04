@@ -27,11 +27,20 @@ async function loadSource(source: string, args: IArgs): Promise<ISource> {
     editorInterfaces = []
 
   } else if (await fs.pathExists(source)) {
+    // used to create migrations for a space from JSON exports
     const contents = await fs.readFile(source)
     const parsed = JSON.parse(contents.toString())
     contentTypes = parsed.contentTypes
     editorInterfaces = parsed.editorInterfaces
 
+    if (args.contentTypes && args.contentTypes.length > 0) {
+      contentTypes = contentTypes.filter((ct) =>
+        args.contentTypes.indexOf(ct.sys.id) >= 0,
+      )
+      editorInterfaces = editorInterfaces.filter((ei) =>
+        args.contentTypes.indexOf(ei.sys.contentType.sys.id) >= 0,
+      )
+    }
   } else {
     // get from space
     if (!args.managementToken) {
