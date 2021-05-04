@@ -1,0 +1,13 @@
+#! /usr/bin/env node --preserve-symlinks
+// note: --preserve-symlinks option above is necessary for babel to resolve symlinked
+// files in the current directory.  Otherwise babel sees them as outside the current
+// directory and fails to transform them.
+
+// we must initialize babel inside the current package directory to pick up the
+// correct config.
+process.chdir(__dirname + '/..')
+require('ts-node').register({
+})
+
+Error.stackTraceLimit = 200;
+require('../src/index')
