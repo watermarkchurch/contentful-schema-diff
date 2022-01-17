@@ -415,7 +415,7 @@ test('writes defaults if controls have no namespace or ID values', async (t) => 
       },
       controls: [
         { fieldId: 'migrationName' } as any,
-      ]
+      ],
     },
     async (chunk) => chunks.push(chunk))
 
