@@ -395,3 +395,30 @@ test('does not blow up if controls are nil', async (t) => {
 
   t.deepEqual(chunks.join(''), '')
 })
+
+test('writes defaults if controls have no namespace or ID values', async (t) => {
+  const chunks: string[] = []
+
+  await writeEditorInterfaceChange(
+    null,
+    {
+      sys: {
+        id: 'default',
+        type: 'EditorInterface',
+        space: { sys: {} as any },
+        version: 1,
+        createdAt: '2020-01-20T22:32:08.131Z',
+        createdBy: { sys: {} as any },
+        updatedAt: '2020-01-20T22:32:08.131Z',
+        updatedBy: { sys: {} as any },
+        contentType: { sys: { id: 'migrationHistory' } as any },
+      },
+      controls: [
+        { fieldId: 'migrationName' } as any,
+      ]
+    },
+    async (chunk) => chunks.push(chunk))
+
+  const written = chunks.join('')
+  t.regex(written, /\.changeFieldControl\('migrationName', 'builtin', undefined\)/)
+})
